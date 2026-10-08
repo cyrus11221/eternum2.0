@@ -1,0 +1,26 @@
+/* Custom modern gothic memorial adjustments */
+@layer base {
+  body {
+    background-color: #131314;
+    color: #e5e2e3;
+  }
+}
+
+/* Print styling for formal invoices */
+@media print {
+  header, footer, nav, button, .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .bg-surface-container, .bg-surface-container-low, .bg-surface-container-highest {
+    background: transparent !important;
+    border: 1px solid #ccc !important;
+    color: #000 !important;
+  }
+  .text-primary, .text-on-surface, .text-on-surface-variant {
+    color: #000 !important;
+  }
+}

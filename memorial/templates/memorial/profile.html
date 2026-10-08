@@ -1,0 +1,142 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}My Sanctuary Profile — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+
+  <div class="pb-6 border-b border-surface-container-high/60 mb-8">
+    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Account &amp; Registry</span>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Sanctuary Profile: {{ user.get_full_name|default:user.username }}</h1>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    
+    <!-- Profile Info Form (5 cols) -->
+    <div class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6 sm:p-8 space-y-6">
+      <h2 class="font-serif text-xl text-on-surface pb-3 border-b border-surface-container-high/60">
+        Personal Details
+      </h2>
+
+      <form method="POST" action="{% url 'profile' %}" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="update_profile" value="1"/>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-outline mb-1">Email Address (Locked)</label>
+          <input type="text" disabled value="{{ user.email }}" class="w-full bg-surface-container-low text-outline px-4 py-2.5 rounded border border-surface-container-high text-xs cursor-not-allowed"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">First Name</label>
+            <input type="text" name="first_name" value="{{ user.first_name }}" class="w-full bg-surface-container-highest text-on-surface px-4 py-2.5 rounded border border-surface-container-high text-xs focus:border-primary focus:outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Last Name</label>
+            <input type="text" name="last_name" value="{{ user.last_name }}" class="w-full bg-surface-container-highest text-on-surface px-4 py-2.5 rounded border border-surface-container-high text-xs focus:border-primary focus:outline-none"/>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-outline mb-1">Primary Phone</label>
+          <input type="text" name="phone" value="{{ user.phone|default:'' }}" class="w-full bg-surface-container-highest text-on-surface px-4 py-2.5 rounded border border-surface-container-high text-xs focus:border-primary focus:outline-none"/>
+        </div>
+
+        <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary-container px-6 py-2.5 text-xs uppercase tracking-widest font-bold transition-all">
+          Save Details
+        </button>
+      </form>
+
+      <!-- Saved Addresses -->
+      <div class="pt-6 border-t border-surface-container-high/60">
+        <h3 class="font-serif text-lg text-on-surface mb-3">Saved Mortuary Addresses</h3>
+        {% if addresses %}
+          <div class="space-y-3">
+            {% for addr in addresses %}
+              <div class="p-3 bg-surface-container-low border border-surface-container-high text-xs">
+                <span class="text-on-surface font-medium block">{{ addr.line1 }}{% if addr.line2 %}, {{ addr.line2 }}{% endif %}</span>
+                <span class="text-outline">{{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</span>
+                {% if addr.is_default %}<span class="text-primary text-[10px] block mt-1">&bull; Default Delivery Destination</span>{% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-xs text-outline italic">No addresses saved yet. Addresses are saved automatically during checkout.</p>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- Orders & Enquiries Summary (7 cols) -->
+    <div class="lg:col-span-7 flex flex-col gap-6">
+      
+      <!-- Recent Orders Card -->
+      <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
+        <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
+          <h2 class="font-serif text-xl text-on-surface">Recent Casket Orders</h2>
+          <a href="{% url 'order_list' %}" class="text-xs text-primary hover:underline">View All &rarr;</a>
+        </div>
+
+        {% if orders %}
+          <div class="space-y-3">
+            {% for order in orders %}
+              <div class="p-4 bg-surface-container-low border border-surface-container-high flex items-center justify-between gap-4 text-xs">
+                <div>
+                  <span class="font-mono text-primary font-bold">#ETR-{{ order.id|stringformat:"04d" }}</span>
+                  <span class="text-on-surface block font-medium mt-0.5">{{ order.mortuary_name }}</span>
+                  <span class="text-outline text-[11px]">{{ order.created_at|date:"M d, Y" }} &bull; ${{ order.total_amount|floatformat:2 }}</span>
+                </div>
+                <div class="text-right">
+                  <span class="px-2 py-0.5 text-[10px] uppercase font-semibold bg-surface-container-high text-primary border border-primary/20 block mb-2">
+                    {{ order.get_status_display }}
+                  </span>
+                  <a href="{% url 'order_detail' order.id %}" class="text-primary hover:underline">View Invoice &rarr;</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-xs text-outline italic py-4">No casket orders placed yet.</p>
+        {% endif %}
+      </div>
+
+      <!-- Submitted Enquiries Card -->
+      <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
+        <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
+          <h2 class="font-serif text-xl text-on-surface">Submitted Consultations</h2>
+          <a href="{% url 'urgent_enquiry' %}" class="text-xs text-primary hover:underline">+ New Urgent Enquiry</a>
+        </div>
+
+        {% if enquiries %}
+          <div class="space-y-3">
+            {% for enq in enquiries %}
+              <div class="p-4 bg-surface-container-low border border-surface-container-high text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-primary font-bold">{{ enq.tracking_id }}</span>
+                  <span class="px-2 py-0.5 text-[10px] uppercase font-semibold {% if enq.status == 'Responded' %}bg-primary/20 text-primary border border-primary/30{% else %}bg-surface-container-high text-outline{% endif %}">
+                    {{ enq.status }}
+                  </span>
+                </div>
+                <span class="text-on-surface block font-medium">{{ enq.custom_type }} &bull; {{ enq.created_at|date:"M d, Y" }}</span>
+                <p class="text-outline text-[11px] italic">"{{ enq.message }}"</p>
+                {% if enq.admin_response %}
+                  <div class="p-2.5 bg-surface-container border-l-2 border-primary text-[11px] text-on-surface">
+                    <strong class="text-primary block mb-0.5">Counselor Response:</strong>
+                    {{ enq.admin_response }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-xs text-outline italic py-4">No active consultations.</p>
+        {% endif %}
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

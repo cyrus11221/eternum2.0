@@ -1,0 +1,89 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Django collected/static output
+staticfiles/
+*/staticfiles/
+media/
+*/media/
+*.log
+
+# Local settings & secrets (override these, never commit them)
+local_settings.py
+settings_local.py
+.env
+.env.*
+!.env.example
+secrets.json
+*.pem
+*.key
+
+# Database — SQLite lives in the repo root by default
+db.sqlite3
+db.sqlite3-journal
+db.sqlite3-wal
+db.sqlite3-shm
+*.sqlite3
+*.sqlite
+*.db
+
+# Test / coverage
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.cache
+nosetests.xml
+coverage.xml
+
+# Celery / Redis / task queues
+celerybeat-schedule
+celerybeat.pid
+*.pid
+
+# Editors & IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Build / packaging
+build/
+dist/
+develop-eggs/
+eggs/
+.eggs/
+sdist/
+wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# OS noise
+Thumbs.db
+desktop.ini
+
+# Archives / scratch exports
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z

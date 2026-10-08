@@ -1,0 +1,12 @@
+Main Links
+Home Page: http://127.0.0.1:8000/
+Memorial Collections Catalog: http://127.0.0.1:8000/catalog/
+Shopping Cart: http://127.0.0.1:8000/cart/
+24/7 Urgent Dispatch & Custom Inscriptions: http://127.0.0.1:8000/urgent-enquiry/
+Authenticity Certificate Verification: http://127.0.0.1:8000/certificate/verify/
+Atelier Philosophy & FTC Funeral Rule Rights: http://127.0.0.1:8000/about/
+Family FAQ: http://127.0.0.1:8000/faq/
+Management & Portals
+Director Admin Portal: http://127.0.0.1:8000/admin-portal/
+Django Admin Interface: http://127.0.0.1:8000/admin/
+Login Page: http://127.0.0.1:8000/login/

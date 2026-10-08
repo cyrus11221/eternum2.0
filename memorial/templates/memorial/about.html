@@ -1,0 +1,101 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}The Atelier Philosophy &amp; FTC Rights — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 md:px-8 py-16">
+
+  <!-- Hero Header -->
+  <div class="text-center pb-12 border-b border-surface-container-high/60 mb-12">
+    <span class="text-xs uppercase tracking-[0.25em] text-primary font-semibold block mb-2">Artisanal Reverence &bull; Radical Transparency</span>
+    <h1 class="font-serif text-4xl sm:text-5xl text-on-surface">The Eternum Atelier Philosophy</h1>
+    <p class="text-xs sm:text-sm text-on-surface-variant max-w-2xl mx-auto mt-4 leading-relaxed">
+      Founded on the conviction that grieving families deserve unhurried dignity, transparent pricing, and exquisite memorial architecture without high-pressure sales tactics.
+    </p>
+  </div>
+
+  <!-- Narrative Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+    <div class="space-y-4 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+      <h2 class="font-serif text-2xl text-on-surface">Dignifying A Sacred Process</h2>
+      <p>
+        Traditionally, purchasing a casket occurs inside a mortuary showroom under immense emotional distress. Families are presented with limited selections marked up by 300% to 500% over manufacturing costs, with obscure fees and hurried deadlines.
+      </p>
+      <p>
+        Eternum was born to provide an alternative sanctuary: a calm, respectful digital space where you can explore handcrafted hardwood, hermetic bronze, or biodegradable willow caskets with total price clarity, complete dimensions, and zero hidden surcharges.
+      </p>
+    </div>
+    <div class="bg-surface-container border border-surface-container-high p-8 space-y-4">
+      <span class="text-xs uppercase tracking-widest text-primary font-bold block">Our Pillars</span>
+      <div class="space-y-3 text-xs">
+        <div class="flex items-start gap-3">
+          <span class="material-symbols-outlined text-primary text-[20px]">handshake</span>
+          <div>
+            <strong class="text-on-surface block">Upfront Guaranteed Pricing</strong>
+            <span class="text-outline">Every price is published clearly. No undisclosed mortuary delivery fees.</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="material-symbols-outlined text-primary text-[20px]">gavel</span>
+          <div>
+            <strong class="text-on-surface block">Federal Legal Compliance</strong>
+            <span class="text-outline">Full protection under the FTC Funeral Rule (16 CFR &sect; 453).</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="material-symbols-outlined text-primary text-[20px]">eco</span>
+          <div>
+            <strong class="text-on-surface block">Green Burial Council Standards</strong>
+            <span class="text-outline">100% biodegradable willow and pine joinery without synthetic glues.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Federal Trade Commission (FTC) Funeral Rule Rights Guide -->
+  <section id="ftc-rule" class="bg-surface-container border-2 border-primary/40 p-8 sm:p-12 mb-16 shadow-2xl">
+    <div class="flex items-center gap-3 text-primary text-xs uppercase tracking-widest font-bold mb-3">
+      <span class="material-symbols-outlined text-[24px]">gavel</span>
+      <span>Know Your Legal Rights: The FTC Funeral Rule</span>
+    </div>
+    <h2 class="font-serif text-3xl text-on-surface mb-4">
+      Federal Protections for Families Purchasing Third-Party Caskets
+    </h2>
+    <div class="space-y-4 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+      <p>
+        Under United States Federal Law enforced by the Federal Trade Commission (16 CFR Part 453):
+      </p>
+      <ul class="list-disc pl-5 space-y-2 text-on-surface">
+        <li><strong>Right to Purchase from Any Provider:</strong> Funeral homes and mortuaries cannot require you to purchase a casket or urn from them. You have the absolute federal legal right to buy from Eternum.</li>
+        <li><strong>No Handling Fees or Surcharges:</strong> Funeral directors are strictly prohibited by federal law from charging any "handling fee," "receiving fee," or penalty for accepting a casket purchased from a third-party seller.</li>
+        <li><strong>Mandatory Delivery Acceptance:</strong> The funeral provider cannot refuse to accept delivery of a casket or require you to be present when the casket is delivered to the funeral home.</li>
+        <li><strong>General Price List (GPL):</strong> Funeral homes must provide you with an itemized price list before showing you any caskets.</li>
+      </ul>
+      <p class="pt-2 text-outline">
+        Eternum provides official chain-of-custody documentation directly to your appointed funeral director, ensuring seamless compliance and peace of mind.
+      </p>
+    </div>
+  </section>
+
+  <!-- Mortuary Delivery Protocols -->
+  <section id="delivery" class="bg-surface-container-low border border-surface-container-high p-8 sm:p-12">
+    <h2 class="font-serif text-2xl text-on-surface mb-4">White-Glove Mortuary Delivery Protocols</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-on-surface-variant">
+      <div class="p-4 bg-surface-container border border-surface-container-high">
+        <span class="text-primary font-bold block mb-1">1. Director Coordination</span>
+        <p>Our logistics directors immediately contact the receiving mortuary facility manager to confirm receiving bay hours and service schedule.</p>
+      </div>
+      <div class="p-4 bg-surface-container border border-surface-container-high">
+        <span class="text-primary font-bold block mb-1">2. Secure Protective Crate</span>
+        <p>All monuments are enclosed in heavy-gauge shock-absorbing protective armor and tamper-evident cryptographic seals.</p>
+      </div>
+      <div class="p-4 bg-surface-container border border-surface-container-high">
+        <span class="text-primary font-bold block mb-1">3. Direct Transfer Signature</span>
+        <p>The mortuary director signs for custody upon delivery. An electronic delivery receipt is sent immediately to your family.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Enquiry Confirmed — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
+  <div class="bg-surface-container border border-primary/40 p-8 sm:p-12 shadow-2xl">
+    <div class="w-16 h-16 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-6">
+      <span class="material-symbols-outlined text-primary text-[36px]">mark_email_read</span>
+    </div>
+    
+    <span class="text-xs uppercase tracking-[0.25em] text-primary font-semibold block mb-2">Priority Bereavement Counsel</span>
+    <h1 class="font-serif text-3xl text-on-surface mb-3">Enquiry Received</h1>
+    
+    <div class="inline-block bg-surface-container-low px-6 py-3 border border-surface-container-high my-4 font-mono text-primary text-base">
+      Tracking ID: {{ enquiry.tracking_id }}
+    </div>
+
+    <p class="text-xs sm:text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed mb-8">
+      Your consultation regarding <strong>{{ enquiry.custom_type }}</strong> has been forwarded to our senior directors. A bereavement counselor will contact you via {{ enquiry.phone|default:enquiry.email }} promptly.
+    </p>
+
+    <div class="flex items-center justify-center gap-4">
+      <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-6 py-3 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-colors">
+        Browse Collections
+      </a>
+      <a href="{% url 'home' %}" class="bg-surface-container-high text-on-surface px-6 py-3 text-xs uppercase tracking-wider hover:bg-surface-variant transition-colors border border-surface-container-high">
+        Return Home
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

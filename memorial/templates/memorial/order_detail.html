@@ -1,0 +1,120 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Order #ETR-{{ order.id|stringformat:"04d" }} Tracking — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 md:px-8 py-12">
+  
+  <div class="flex items-center justify-between pb-6 border-b border-surface-container-high/60 mb-8">
+    <div>
+      <span class="text-xs uppercase tracking-widest text-primary font-semibold">Direct Mortuary Custody</span>
+      <h1 class="font-serif text-3xl text-on-surface mt-1">Order #ETR-{{ order.id|stringformat:"04d" }}</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="window.print()" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-3 py-2 flex items-center gap-1.5 border border-surface-container-high">
+        <span class="material-symbols-outlined text-[16px]">print</span> Print Invoice
+      </button>
+      <a href="{% url 'order_list' %}" class="text-xs uppercase tracking-wider text-outline hover:text-primary">&larr; Back to Orders</a>
+    </div>
+  </div>
+
+  <div class="bg-surface-container border border-surface-container-high p-8 shadow-xl space-y-8">
+    
+    <!-- Status Progress Bar -->
+    <div class="p-6 bg-surface-container-low border border-surface-container-high">
+      <span class="text-[11px] uppercase tracking-widest text-outline block text-center mb-6">Logistics Chain of Custody State</span>
+      <div class="grid grid-cols-4 gap-2 text-center">
+        
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 rounded-full bg-primary text-on-primary-container flex items-center justify-center text-xs font-bold mb-2">1</div>
+          <span class="text-[11px] font-semibold text-primary">Placed</span>
+          <span class="text-[9px] text-outline">{{ order.created_at|date:"M d, H:i" }}</span>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 rounded-full {% if order.status != 'placed' %}bg-primary text-on-primary-container{% else %}bg-surface-container-high text-outline{% endif %} flex items-center justify-center text-xs font-bold mb-2">2</div>
+          <span class="text-[11px] font-semibold text-on-surface">Vault Prepared</span>
+          <span class="text-[9px] text-outline">Inspected &amp; Sealed</span>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 rounded-full {% if order.status == 'dispatched' or order.status == 'delivered' %}bg-primary text-on-primary-container{% else %}bg-surface-container-high text-outline{% endif %} flex items-center justify-center text-xs font-bold mb-2">3</div>
+          <span class="text-[11px] font-semibold text-on-surface">Dispatched</span>
+          <span class="text-[9px] text-outline">White-Glove Courier</span>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 rounded-full {% if order.status == 'delivered' %}bg-primary text-on-primary-container{% else %}bg-surface-container-high text-outline{% endif %} flex items-center justify-center text-xs font-bold mb-2">4</div>
+          <span class="text-[11px] font-semibold text-on-surface">Delivered</span>
+          <span class="text-[9px] text-outline">Mortuary Signed</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+      <div class="p-4 bg-surface-container-low border border-surface-container-high space-y-1">
+        <span class="text-[10px] uppercase tracking-widest text-primary font-semibold block mb-1">Mortuary Destination</span>
+        <strong class="text-on-surface text-sm block">{{ order.mortuary_name }}</strong>
+        {% if order.mortuary_director %}<span>Attn: {{ order.mortuary_director }}</span><br/>{% endif %}
+        <span>Facility Phone: {{ order.mortuary_phone }}</span><br/>
+        {% if order.shipping_address %}
+          <span>{{ order.shipping_address.line1 }}, {{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.postal_code }}</span>
+        {% endif %}
+        {% if order.delivery_notes %}
+          <div class="mt-2 pt-2 border-t border-surface-container-high/40 text-outline">
+            <em>Notes: {{ order.delivery_notes }}</em>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="p-4 bg-surface-container-low border border-surface-container-high space-y-1">
+        <span class="text-[10px] uppercase tracking-widest text-primary font-semibold block mb-1">Invoice &amp; Transaction</span>
+        <span>Invoice Number: <strong class="text-on-surface font-mono">{{ order.invoice.invoice_number|default:"INV-2026-0001" }}</strong></span><br/>
+        <span>Payment Method: {{ order.payment.method }}</span><br/>
+        <span>Transaction Ref: <code class="text-primary font-mono">{{ order.payment.transaction_ref }}</code></span><br/>
+        <span>Payment Status: <strong class="text-primary uppercase">{{ order.payment.status }}</strong></span>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <div>
+      <span class="text-[10px] uppercase tracking-widest text-primary font-semibold block mb-3">Purchased Memorial Relics</span>
+      <div class="space-y-3">
+        {% for item in order.items.all %}
+          <div class="p-4 bg-surface-container-low border border-surface-container-high flex items-center justify-between gap-4 text-xs">
+            <div class="flex items-center gap-3">
+              <img src="{{ item.product.primary_image_url }}" alt="{{ item.product.name }}" class="w-14 h-14 object-cover border border-surface-container-high"/>
+              <div>
+                <a href="{% url 'product_detail' item.product.id %}" class="font-serif text-base text-on-surface hover:text-primary transition-colors block">
+                  {{ item.product.name }}
+                </a>
+                <span class="text-outline text-[11px] block">
+                  {{ item.product.material }} &bull; {{ item.product.finish|title }} &bull; {{ item.product.proportions_display }}
+                </span>
+                {% if item.product.certificate %}
+                  <a href="{% url 'certificate_verify' %}?code={{ item.product.certificate.verification_code }}" class="text-[10px] text-primary hover:underline">
+                    Provenance Code: {{ item.product.certificate.verification_code }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-outline">{{ item.quantity }} &times; ${{ item.unit_price|floatformat:2 }}</span>
+              <span class="font-serif text-base text-primary font-bold block">${{ item.subtotal|floatformat:2 }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-surface-container-high/60 flex justify-between items-baseline text-sm">
+        <span class="text-outline uppercase text-xs">Grand Total:</span>
+        <span class="font-serif text-2xl text-primary font-bold">${{ order.total_amount|floatformat:2 }}</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}My Orders &amp; Invoices — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+  
+  <div class="pb-6 border-b border-surface-container-high/60 mb-8">
+    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Sanctuary Chain-of-Custody</span>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Order History &amp; Mortuary Invoices</h1>
+  </div>
+
+  {% if orders %}
+    <div class="space-y-6">
+      {% for order in orders %}
+        <div class="bg-surface-container border border-surface-container-high p-6 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 hover:border-primary/50 transition-colors">
+          
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-primary font-mono font-bold">#ETR-{{ order.id|stringformat:"04d" }}</span>
+              <span class="text-outline text-xs">&bull;</span>
+              <span class="text-xs text-outline">{{ order.created_at|date:"M d, Y" }}</span>
+              
+              <!-- Status Pill -->
+              <span class="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-semibold 
+                {% if order.status == 'delivered' %}bg-primary/20 text-primary border border-primary/40
+                {% elif order.status == 'dispatched' %}bg-secondary-container text-on-secondary-container
+                {% elif order.status == 'confirmed' %}bg-surface-container-highest text-primary border border-primary/20
+                {% else %}bg-surface-container-high text-on-surface-variant{% endif %}">
+                {{ order.get_status_display }}
+              </span>
+            </div>
+
+            <h3 class="font-serif text-xl text-on-surface">
+              Destination: {{ order.mortuary_name|default:"Designated Mortuary" }}
+            </h3>
+
+            <span class="text-xs text-on-surface-variant">
+              {% if order.shipping_address %}
+                {{ order.shipping_address.city }}, {{ order.shipping_address.state }} &bull;
+              {% endif %}
+              {{ order.items.count }} item{{ order.items.count|pluralize }} &bull; 
+              Payment: {{ order.payment.method|default:"Sandbox Card" }}
+            </span>
+          </div>
+
+          <div class="flex items-center gap-6 justify-between lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-surface-container-high/60">
+            <div class="text-left lg:text-right">
+              <span class="text-[10px] uppercase text-outline block">Total Payable</span>
+              <span class="font-serif text-2xl text-primary font-semibold">${{ order.total_amount|floatformat:2 }}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <a href="{% url 'order_detail' order.id %}" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-2.5 transition-colors border border-surface-container-high">
+                View Tracking &amp; Invoice
+              </a>
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-20 bg-surface-container-low border border-surface-container-high p-8 flex flex-col items-center">
+      <span class="material-symbols-outlined text-outline text-[48px] mb-3">receipt_long</span>
+      <h3 class="font-serif text-2xl text-on-surface mb-2">No Previous Orders Found</h3>
+      <p class="text-xs text-outline max-w-md mb-6 leading-relaxed">
+        You do not have any active or past casket orders in our registry.
+      </p>
+      <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-6 py-2.5 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-colors">
+        Browse Collections
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

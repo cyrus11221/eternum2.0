@@ -1,0 +1,341 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Memorial Catalog — ETERNUM Sacred Sanctuary Relics{% endblock %}
+
+{% block content %}
+<div class="flex flex-col w-full">
+
+  <!-- Atmospheric Top Ambient Canvas -->
+  <section class="relative w-full bg-surface-container-lowest px-4 md:px-8 lg:px-12 pt-12 pb-16 overflow-hidden border-b border-surface-container-high/40">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[850px] h-[340px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-3xl pointer-events-none"></div>
+    <div class="relative z-10 max-w-6xl mx-auto flex flex-col items-center text-center">
+      
+      <div class="inline-flex items-center gap-2 px-4 py-1 bg-surface-container-high rounded-full mb-4 shadow-sm border border-primary/20">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        <span class="text-[10px] uppercase tracking-widest text-primary font-semibold">Sacred Provenance &amp; Transparency</span>
+        <span class="text-outline text-xs">&bull;</span>
+        <span class="text-[10px] uppercase tracking-wider text-on-surface-variant">FTC Funeral Rule Compliant</span>
+      </div>
+
+      <h1 class="font-serif text-3xl sm:text-5xl text-on-surface max-w-4xl tracking-tight mb-4 leading-tight">
+        Memorial Collections <span class="italic font-normal text-primary">Crafted with Sacred Dignity</span> &amp; Integrity
+      </h1>
+
+      <p class="text-xs sm:text-sm text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
+        Browse by material, architectural construction, and green certification. Full transparent pricing with zero undisclosed fees and guaranteed priority dispatch.
+      </p>
+
+      <!-- Trust Metrics Bar -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-10 p-4 bg-surface-container/60 backdrop-blur-md rounded border border-surface-container-high shadow-md">
+        <div class="flex flex-col items-center text-center px-2">
+          <span class="font-serif text-xl text-primary font-medium">100%</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Upfront Honest Pricing</span>
+        </div>
+        <div class="flex flex-col items-center text-center px-2">
+          <span class="font-serif text-xl text-on-surface font-medium">&lt; 24h</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Rapid Crypt Dispatch</span>
+        </div>
+        <div class="flex flex-col items-center text-center px-2">
+          <span class="font-serif text-xl text-primary font-medium">FTC Protected</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Direct Mortuary Delivery</span>
+        </div>
+        <div class="flex flex-col items-center text-center px-2">
+          <span class="font-serif text-xl text-on-surface font-medium">Individually</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Numbered &amp; Sealed</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive Search, Filter Pillars & Sort Toolbar (Sticky) -->
+  <section class="sticky top-20 z-40 w-full bg-surface-container-low/95 backdrop-blur-xl border-b border-surface-container-high/80 shadow-xl">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-4 flex flex-col gap-4">
+      
+      <!-- Upper Search & Sort Bar -->
+      <form id="filterForm" method="GET" action="{% url 'catalog' %}" class="flex flex-col gap-4">
+        
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+          
+          <!-- Search Input Field -->
+          <div class="relative flex-1 group">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[20px]">search</span>
+            <input 
+              name="q" 
+              value="{{ search_query }}"
+              class="w-full bg-surface-container-highest text-on-surface placeholder:text-outline text-xs pl-10 pr-10 py-3 rounded border border-surface-container-high focus:outline-none focus:border-primary transition-all" 
+              id="catalogSearch" 
+              placeholder="Search caskets by name, wood type, or metal gauge (e.g. Oak, Bronze, Willow)..." 
+              type="text"
+            />
+            {% if search_query %}
+              <a href="{% url 'catalog' %}" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface p-1">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Sort & Quick View Controls -->
+          <div class="flex items-center gap-3 justify-between lg:justify-end">
+            <div class="flex items-center gap-2 bg-surface-container-highest px-3 py-2 rounded border border-surface-container-high">
+              <span class="text-[10px] uppercase text-outline tracking-wider font-semibold">Sort:</span>
+              <select name="sort" onchange="this.form.submit()" class="bg-transparent text-primary text-xs focus:outline-none cursor-pointer pr-2">
+                <option value="featured" {% if selected_sort == 'featured' %}selected{% endif %} class="bg-surface-container text-on-surface">Featured Relics</option>
+                <option value="price-asc" {% if selected_sort == 'price-asc' %}selected{% endif %} class="bg-surface-container text-on-surface">Price: Low to High</option>
+                <option value="price-desc" {% if selected_sort == 'price-desc' %}selected{% endif %} class="bg-surface-container text-on-surface">Price: High to Low</option>
+                <option value="purity" {% if selected_sort == 'purity' %}selected{% endif %} class="bg-surface-container text-on-surface">Material Purity</option>
+              </select>
+            </div>
+            
+            <div class="text-right pl-2">
+              <span class="text-xs text-outline uppercase tracking-wider">
+                <strong class="text-primary font-bold">{{ match_count }}</strong> Collections Found
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button type="submit" name="category" value="all" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'all' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
+            All Collections
+          </button>
+          <button type="submit" name="category" value="hardwood" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'hardwood' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
+            Solid Hardwoods
+          </button>
+          <button type="submit" name="category" value="metal" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'metal' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
+            Protective Metal
+          </button>
+          <button type="submit" name="category" value="eco" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'eco' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
+            Eco-Friendly Biodegradable
+          </button>
+          <button type="submit" name="category" value="artisanal" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'artisanal' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
+            Artisanal Cathedral Craft
+          </button>
+        </div>
+
+        <!-- Advanced Specification Dropdowns -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 border-t border-surface-container-high/40">
+          
+          <!-- Price Range Filter -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] uppercase tracking-widest text-outline">Price Scale</label>
+            <select name="price" onchange="this.form.submit()" class="bg-surface-container-highest text-on-surface text-xs px-3 py-2 rounded border border-surface-container-high focus:outline-none focus:border-primary">
+              <option value="all" {% if selected_price == 'all' %}selected{% endif %}>All Values ($1,000 - $6,000+)</option>
+              <option value="tier1" {% if selected_price == 'tier1' %}selected{% endif %}>$1,000 - $2,500</option>
+              <option value="tier2" {% if selected_price == 'tier2' %}selected{% endif %}>$2,501 - $4,000</option>
+              <option value="tier3" {% if selected_price == 'tier3' %}selected{% endif %}>$4,001 - $6,000+</option>
+            </select>
+          </div>
+
+          <!-- Interior Fabric Filter -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] uppercase tracking-widest text-outline">Interior Bedding</label>
+            <select name="fabric" onchange="this.form.submit()" class="bg-surface-container-highest text-on-surface text-xs px-3 py-2 rounded border border-surface-container-high focus:outline-none focus:border-primary">
+              <option value="all" {% if selected_fabric == 'all' %}selected{% endif %}>All Interior Linings</option>
+              <option value="crepe" {% if selected_fabric == 'crepe' %}selected{% endif %}>Pearl Crepe</option>
+              <option value="velvet" {% if selected_fabric == 'velvet' %}selected{% endif %}>Ivory Velvet</option>
+              <option value="cotton" {% if selected_fabric == 'cotton' %}selected{% endif %}>Natural Organic Cotton</option>
+            </select>
+          </div>
+
+          <!-- Finish Filter -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] uppercase tracking-widest text-outline">Exterior Patina</label>
+            <select name="finish" onchange="this.form.submit()" class="bg-surface-container-highest text-on-surface text-xs px-3 py-2 rounded border border-surface-container-high focus:outline-none focus:border-primary">
+              <option value="all" {% if selected_finish == 'all' %}selected{% endif %}>All Finishes</option>
+              <option value="satin" {% if selected_finish == 'satin' %}selected{% endif %}>Warm Satin Honey</option>
+              <option value="bronze" {% if selected_finish == 'bronze' %}selected{% endif %}>Brushed Midnight Bronze</option>
+              <option value="natural" {% if selected_finish == 'natural' %}selected{% endif %}>Natural Unvarnished</option>
+              <option value="walnut" {% if selected_finish == 'walnut' %}selected{% endif %}>Hand-Carved Walnut</option>
+              <option value="patina" {% if selected_finish == 'patina' %}selected{% endif %}>Hand-Burnished Patina</option>
+              <option value="beeswax" {% if selected_finish == 'beeswax' %}selected{% endif %}>Beeswax Rubbed</option>
+            </select>
+          </div>
+
+          <!-- Availability Filter -->
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] uppercase tracking-widest text-outline">Logistics State</label>
+            <select name="dispatch" onchange="this.form.submit()" class="bg-surface-container-highest text-on-surface text-xs px-3 py-2 rounded border border-surface-container-high focus:outline-none focus:border-primary">
+              <option value="all" {% if selected_dispatch == 'all' %}selected{% endif %}>Immediate &amp; Reserve</option>
+              <option value="ready" {% if selected_dispatch == 'ready' %}selected{% endif %}>Immediate Dispatch (&lt; 24h)</option>
+              <option value="bespoke" {% if selected_dispatch == 'bespoke' %}selected{% endif %}>Artisan Handcraft</option>
+            </select>
+          </div>
+
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- Product Showcase Grid -->
+  <main class="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+    
+    {% if products %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="catalogGrid">
+        {% for product in products %}
+          <article class="group flex flex-col bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all duration-300 shadow-lg hover:shadow-2xl">
+            
+            <!-- Media Container -->
+            <div class="relative w-full h-72 overflow-hidden bg-surface-container-lowest">
+              <img src="{{ product.primary_image_url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"/>
+              
+              <!-- Seals & Badges -->
+              <div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+                <span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-md px-2.5 py-1 text-primary text-[10px] tracking-wider border border-primary/20">
+                  <span class="material-symbols-outlined text-[13px]">verified</span> Cryptographically Verified
+                </span>
+                <span class="bg-surface-variant/90 backdrop-blur-md px-2 py-0.5 text-secondary text-[10px]">
+                  Provenance {{ product.provenance_code|default:"№ 0824" }}
+                </span>
+              </div>
+
+              <div class="absolute bottom-3 right-3">
+                <span class="bg-surface-variant/90 backdrop-blur-md text-primary text-[10px] px-2.5 py-1">
+                  {{ product.stock }} remaining in vault
+                </span>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="flex-1 p-6 flex flex-col justify-between bg-surface-container">
+              <div>
+                <div class="flex items-baseline justify-between gap-2 mb-1">
+                  <span class="text-[10px] uppercase tracking-widest text-primary font-medium">
+                    {{ product.category.name|default:"Sanctuary" }}
+                  </span>
+                  <span class="font-serif text-2xl text-primary font-semibold">${{ product.price|floatformat:0 }}</span>
+                </div>
+
+                <h2 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors tracking-tight mb-2">
+                  <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                </h2>
+
+                <p class="text-xs text-on-surface-variant line-clamp-2 mb-4 leading-relaxed">
+                  {{ product.description }}
+                </p>
+
+                <!-- Technical Specification Table -->
+                <div class="bg-surface-container-low p-3 mb-4 flex flex-col gap-1.5 text-xs border border-surface-container-high/40">
+                  <div class="flex justify-between items-center text-outline">
+                    <span class="text-[10px] uppercase">Exterior Proportions:</span>
+                    <span class="text-on-surface font-medium">{{ product.proportions_display }}</span>
+                  </div>
+                  <div class="flex justify-between items-center text-outline">
+                    <span class="text-[10px] uppercase">Material &amp; Finish:</span>
+                    <span class="text-on-surface font-medium">{{ product.material|truncatewords:2 }} &bull; {{ product.finish|title }}</span>
+                  </div>
+                  <div class="flex justify-between items-center text-outline">
+                    <span class="text-[10px] uppercase">Interior Bedding:</span>
+                    <span class="text-on-surface font-medium">{{ product.fabric|title }} Bedding</span>
+                  </div>
+                  <div class="flex justify-between items-center text-outline">
+                    <span class="text-[10px] uppercase">Tested Capacity:</span>
+                    <span class="text-on-surface font-medium">{{ product.capacity|default:"Tested up to 350 lbs" }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dispatch Note & Actions -->
+              <div class="flex flex-col gap-2 pt-2 border-t border-surface-container-high/60">
+                <div class="flex items-center gap-1.5 text-primary text-xs">
+                  <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                  <span>{{ product.get_dispatch_type_display }}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                  <a href="{% url 'product_detail' product.id %}" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider py-2.5 text-center transition-colors">
+                    Full Details
+                  </a>
+                  <form action="{% url 'cart_add' product.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1"/>
+                    <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container text-xs uppercase tracking-wider py-2.5 text-center font-bold transition-all shadow-md">
+                      Add to Cart
+                    </button>
+                  </form>
+                </div>
+
+                <a href="{% url 'urgent_enquiry' %}?product={{ product.name|urlencode }}" class="w-full text-center py-1 text-[10px] uppercase tracking-widest text-outline hover:text-primary transition-colors">
+                  Request Custom Monogram Carving &rarr;
+                </a>
+              </div>
+
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- Empty State Notification -->
+      <div class="flex flex-col items-center justify-center text-center py-20 bg-surface-container-low border border-surface-container-high px-6">
+        <span class="material-symbols-outlined text-primary text-[48px] mb-3">history_edu</span>
+        <h3 class="font-serif text-2xl text-on-surface mb-2">No Matching Sanctuary Relics</h3>
+        <p class="text-xs text-outline max-w-md mb-6 leading-relaxed">
+          No caskets match your currently specified search query or filter criteria. Our bereavement directors can handcraft or source any custom memorial specification.
+        </p>
+        <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container hover:bg-primary-container px-6 py-2.5 text-xs uppercase tracking-widest font-bold transition-colors">
+          Reset All Filters
+        </a>
+      </div>
+    {% endif %}
+
+  </main>
+
+  <!-- Federal Trade Commission (FTC) Funeral Rule Rights Notice -->
+  <section class="w-full bg-surface-container-low py-16 px-6 md:px-12 border-t border-surface-container-high/60">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div class="lg:col-span-8 flex flex-col gap-2">
+        <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold">
+          <span class="material-symbols-outlined text-[18px]">gavel</span>
+          <span>Know Your Federal Legal Rights — The FTC Funeral Rule</span>
+        </div>
+        <h3 class="font-serif text-2xl text-on-surface">
+          You are never obligated to purchase a casket from a funeral home.
+        </h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Under Federal Law (16 CFR Part 453), funeral providers must accept delivery of third-party caskets without charging any handling fee, surcharge, or penalty. Eternum delivers directly to any licensed mortuary or cemetery across North America with complete chain-of-custody documentation.
+        </p>
+      </div>
+      <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
+        <a href="{% url 'about' %}" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-3 text-center transition-colors flex items-center justify-center gap-2 border border-surface-container-high">
+          <span class="material-symbols-outlined text-[18px]">download</span> FTC Family Rights Guide
+        </a>
+        <a href="{% url 'about' %}#delivery" class="bg-surface-container-high hover:bg-surface-variant text-primary text-xs uppercase tracking-wider px-4 py-3 text-center transition-colors flex items-center justify-center gap-2 border border-surface-container-high">
+          <span class="material-symbols-outlined text-[18px]">local_shipping</span> Mortuary Delivery Protocols
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Urgent Assistance & Immediate Dispatch Banner -->
+  <section class="relative w-full bg-surface-container-highest px-6 md:px-12 py-16 overflow-hidden shadow-2xl border-t border-primary/20">
+    <div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-high to-surface-container-lowest opacity-95"></div>
+    <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative z-10 max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
+      <div class="flex flex-col gap-2 text-center lg:text-left max-w-2xl">
+        <div class="inline-flex items-center gap-2 justify-center lg:justify-start">
+          <span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
+          <span class="text-xs uppercase tracking-widest text-primary font-semibold">Immediate Bereavement Desk &bull; Active 24 Hours</span>
+        </div>
+        <h2 class="font-serif text-3xl text-on-surface tracking-tight">
+          Do you require expedited delivery within 24 hours?
+        </h2>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          We understand that time is sacred during periods of sudden loss. Our dedicated logistics counselors coordinate directly with your mortuary director to ensure seamless delivery.
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+        <a href="tel:18003837686" class="w-full sm:w-auto bg-primary text-on-primary-container hover:bg-primary-container text-xs uppercase tracking-widest px-6 py-3.5 text-center font-bold shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+          <span class="material-symbols-outlined text-[18px]">phone_in_talk</span> Call 1-800-ETERNUM
+        </a>
+        <a href="{% url 'urgent_enquiry' %}" class="w-full sm:w-auto bg-surface-container-low hover:bg-surface-variant text-on-surface text-xs uppercase tracking-widest px-6 py-3.5 text-center transition-colors flex items-center justify-center gap-2 whitespace-nowrap border border-surface-container-high">
+          <span class="material-symbols-outlined text-[18px]">send_time_extension</span> Submit Urgent Enquiry
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

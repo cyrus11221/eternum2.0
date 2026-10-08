@@ -1,0 +1,137 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Urgent Bereavement Enquiry &amp; Bespoke Inscription — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+
+  <div class="mb-10 pb-6 border-b border-surface-container-high/60">
+    <div class="inline-flex items-center gap-2 mb-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
+      <span class="text-xs uppercase tracking-widest text-primary font-bold">Priority Bereavement Counsel &bull; Active 24 Hours</span>
+    </div>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface">Urgent Dispatch &amp; Bespoke Inscription</h1>
+    <p class="text-xs sm:text-sm text-on-surface-variant max-w-2xl mt-2 leading-relaxed">
+      For sudden loss requiring expedited delivery within 24 hours, custom family crest carvings, or non-standard vault proportions. Our atelier directors respond promptly.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+    
+    <!-- Form Box (7 cols) -->
+    <div class="lg:col-span-7 bg-surface-container border border-surface-container-high p-6 sm:p-8 shadow-xl">
+      <h2 class="font-serif text-2xl text-on-surface mb-6 pb-3 border-b border-surface-container-high/60">
+        Submit Urgent Consultation
+      </h2>
+
+      <form method="POST" action="{% url 'urgent_enquiry' %}" class="space-y-4">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Your Full Name *</label>
+            {{ form.name }}
+            {{ form.name.errors }}
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Email Address *</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Direct Phone / WhatsApp *</label>
+            {{ form.phone }}
+            {{ form.phone.errors }}
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Destination Mortuary or City</label>
+            {{ form.mortuary_location }}
+            {{ form.mortuary_location.errors }}
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Urgency Level *</label>
+            {{ form.urgency_level }}
+            {{ form.urgency_level.errors }}
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Custom Requirement Type *</label>
+            {{ form.custom_type }}
+            {{ form.custom_type.errors }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-outline mb-1">Message &amp; Bespoke Specifications *</label>
+          {{ form.message }}
+          {{ form.message.errors }}
+          <span class="text-[11px] text-outline mt-1 block">
+            Please include planned service date, deceased or family name, or specific monogram initials.
+          </span>
+        </div>
+
+        <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl flex items-center justify-center gap-2 mt-2">
+          <span class="material-symbols-outlined text-[18px]">send_time_extension</span>
+          Submit Priority Enquiry
+        </button>
+      </form>
+    </div>
+
+    <!-- Right Side: Direct Hotline & User Enquiries (5 cols) -->
+    <div class="lg:col-span-5 flex flex-col gap-6">
+      
+      <!-- Rapid Contact Card -->
+      <div class="p-6 bg-surface-container-high border border-primary/40 shadow-xl">
+        <span class="text-[10px] uppercase tracking-widest text-primary font-bold block mb-1">Emergency Dispatch Line</span>
+        <h3 class="font-serif text-2xl text-on-surface mb-2">Speak Directly With A Director</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed mb-4">
+          If you need immediate coordination with a mortuary director right now, call our bereavement desk directly.
+        </p>
+        <a href="tel:18003837686" class="block w-full text-center bg-surface-container-lowest text-primary border border-primary/50 py-3 text-sm font-serif tracking-wider font-semibold hover:bg-primary hover:text-on-primary-container transition-colors">
+          1-800-ETERNUM (383-7686)
+        </a>
+      </div>
+
+      <!-- User's Previous Enquiries (If Authenticated) -->
+      {% if user_enquiries %}
+        <div class="bg-surface-container border border-surface-container-high p-6">
+          <h3 class="font-serif text-xl text-on-surface mb-4 pb-2 border-b border-surface-container-high/60">
+            Your Consultation History
+          </h3>
+          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
+            {% for enq in user_enquiries %}
+              <div class="p-4 bg-surface-container-low border border-surface-container-high text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-primary font-semibold">{{ enq.tracking_id }}</span>
+                  <span class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold
+                    {% if enq.status == 'Responded' %}bg-primary/20 text-primary border border-primary/40
+                    {% elif enq.status == 'Closed' %}bg-surface-container-high text-outline
+                    {% else %}bg-secondary-container text-on-secondary-container{% endif %}">
+                    {{ enq.status }}
+                  </span>
+                </div>
+                <span class="text-on-surface font-medium block">{{ enq.custom_type }} &bull; {{ enq.urgency_level }}</span>
+                <p class="text-outline text-[11px] line-clamp-2 italic">"{{ enq.message }}"</p>
+                
+                {% if enq.admin_response %}
+                  <div class="mt-2 p-3 bg-surface-container border-l-2 border-primary text-[11px] text-on-surface">
+                    <strong class="text-primary block mb-0.5">Bereavement Counselor Note:</strong>
+                    {{ enq.admin_response }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

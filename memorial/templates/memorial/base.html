@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+{% load static %}
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>{% block title %}ETERNUM — Sanctuary &amp; Heritage{% endblock %}</title>
+
+  <!-- Typography: EB Garamond & Hanken Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet"/>
+  
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#131314",
+            "surface-dim": "#131314",
+            "surface-bright": "#39393a",
+            "surface-container-lowest": "#0e0e0f",
+            "surface-container-low": "#1c1b1c",
+            "surface-container": "#201f20",
+            "surface-container-high": "#2a2a2b",
+            "surface-container-highest": "#353436",
+            "on-surface": "#e5e2e3",
+            "on-surface-variant": "#d1c5b8",
+            "primary": "#e2c399",
+            "primary-container": "#c5a880",
+            "on-primary-container": "#513d1d",
+            "secondary": "#d7c3b0",
+            "secondary-container": "#554738",
+            "on-secondary-container": "#c9b5a2",
+            "outline": "#998f83",
+            "outline-variant": "#4d463c",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+          },
+          fontFamily: {
+            serif: ["'EB Garamond'", "serif"],
+            sans: ["'Hanken Grotesk'", "sans-serif"],
+          },
+          spacing: {
+            "margin-desktop": "4rem",
+            "space-xl": "3rem",
+            "space-2xl": "5rem",
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #131314;
+      color: #e5e2e3;
+      font-family: 'Hanken Grotesk', sans-serif;
+    }
+    h1, h2, h3, .font-serif {
+      font-family: 'EB Garamond', serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    /* Chiaroscuro ambient aura */
+    .gothic-glow {
+      box-shadow: 0 0 35px -5px rgba(197, 168, 128, 0.15);
+    }
+    .gothic-border {
+      border: 1px solid rgba(138, 121, 104, 0.25);
+    }
+    .gothic-border-gold {
+      border: 1px solid rgba(197, 168, 128, 0.4);
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary/20 selection:text-primary">
+
+  <!-- Header / Navigation Bar -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface/95 backdrop-blur-md border-b border-surface-container-high/80 shadow-[0_4px_30px_rgba(0,0,0,0.85)]">
+    <div class="h-20 w-full px-4 md:px-8 lg:px-12 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 border border-primary/50 flex items-center justify-center bg-surface-container-lowest group-hover:border-primary transition-colors">
+          <span class="material-symbols-outlined text-primary text-[20px]">church</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-serif text-2xl tracking-widest text-primary font-medium">ETERNUM</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-outline">Sanctuary &amp; Heritage</span>
+        </div>
+      </a>
+
+      <!-- Main Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-7">
+        <a href="{% url 'home' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors {% if request.resolver_match.url_name == 'home' %}text-primary font-semibold{% endif %}">
+          Home
+        </a>
+        <a href="{% url 'catalog' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors {% if request.resolver_match.url_name == 'catalog' or request.resolver_match.url_name == 'product_detail' %}text-primary font-semibold{% endif %}">
+          Catalog
+        </a>
+        <a href="{% url 'about' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors {% if request.resolver_match.url_name == 'about' %}text-primary font-semibold{% endif %}">
+          Atelier Philosophy
+        </a>
+        <a href="{% url 'faq' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors {% if request.resolver_match.url_name == 'faq' %}text-primary font-semibold{% endif %}">
+          Family FAQ
+        </a>
+        <a href="{% url 'urgent_enquiry' %}" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-primary hover:text-primary-container transition-colors font-medium">
+          <span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+          Urgent Enquiry
+        </a>
+        <a href="{% url 'certificate_verify' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">verified</span>
+          Authenticity
+        </a>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-4">
+        
+        <!-- Search Bar -->
+        <form action="{% url 'catalog' %}" method="GET" class="hidden md:flex items-center bg-surface-container-low px-3 py-1.5 border border-surface-container-high focus-within:border-primary/50 transition-colors">
+          <span class="material-symbols-outlined text-[18px] text-outline mr-2">search</span>
+          <input name="q" value="{{ request.GET.q|default:'' }}" class="bg-transparent text-xs text-on-surface placeholder:text-outline/70 focus:outline-none w-36 lg:w-48" placeholder="Search relics..." type="text"/>
+        </form>
+
+        <!-- Cart Button -->
+        <a href="{% url 'cart' %}" class="flex items-center gap-1.5 text-xs uppercase tracking-wider text-on-surface-variant hover:text-primary px-2.5 py-1.5 transition-colors border border-surface-container-high hover:border-primary/40 bg-surface-container-lowest">
+          <span class="material-symbols-outlined text-[19px]">shopping_bag</span>
+          <span>Cart (<strong class="text-primary">{{ cart_count }}</strong>)</span>
+        </a>
+
+        <!-- Auth Navigation -->
+        {% if user.is_authenticated %}
+          <div class="relative group">
+            <button class="flex items-center gap-2 text-xs uppercase tracking-wider bg-surface-container-high px-3 py-1.5 text-on-surface hover:text-primary border border-primary/30 transition-colors">
+              <span class="material-symbols-outlined text-[16px] text-primary">account_circle</span>
+              <span class="hidden sm:inline">{{ user.first_name|default:user.username }}</span>
+              <span class="material-symbols-outlined text-[14px]">expand_more</span>
+            </button>
+            <div class="absolute right-0 top-full hidden group-hover:flex flex-col w-52 p-2 bg-surface-container-high border border-primary/20 shadow-2xl z-50">
+              {% if user.is_administrator %}
+                <a href="{% url 'admin_dashboard' %}" class="text-xs uppercase tracking-wider px-3 py-2 text-primary hover:bg-surface-variant flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span> Admin Portal
+                </a>
+                <a href="/admin/" target="_blank" class="text-xs uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:bg-surface-variant flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">tune</span> Django Admin
+                </a>
+                <div class="border-t border-outline/20 my-1"></div>
+              {% endif %}
+              <a href="{% url 'profile' %}" class="text-xs uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:bg-surface-variant flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">person</span> My Sanctuary Profile
+              </a>
+              <a href="{% url 'order_list' %}" class="text-xs uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:bg-surface-variant flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">receipt_long</span> Orders &amp; Invoices
+              </a>
+              <div class="border-t border-outline/20 my-1"></div>
+              <a href="{% url 'logout' %}" class="text-xs uppercase tracking-wider px-3 py-2 text-error hover:bg-surface-variant flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">logout</span> Sign Out
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <div class="flex items-center gap-2">
+            <a href="{% url 'login' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-on-surface px-2.5 py-1.5 transition-colors">
+              Login
+            </a>
+            <a href="{% url 'register' %}" class="bg-primary-container text-on-primary-container text-xs uppercase tracking-widest px-3.5 py-1.5 hover:bg-primary font-bold transition-colors">
+              Sign Up
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Flash Messages Banner -->
+  <div class="pt-20">
+    {% if messages %}
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
+        {% for message in messages %}
+          <div class="p-4 border text-xs sm:text-sm flex items-center justify-between {% if message.tags == 'error' %}bg-error-container/40 border-error text-error{% elif message.tags == 'success' %}bg-surface-container-high border-primary text-primary{% else %}bg-surface-container border-outline/40 text-on-surface{% endif %}">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px]">
+                {% if message.tags == 'error' %}error{% elif message.tags == 'success' %}verified{% else %}info{% endif %}
+              </span>
+              <span>{{ message }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-outline hover:text-on-surface">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Main Content Block -->
+  <main class="flex-1 w-full">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Modern Gothic Solemn Footer -->
+  <footer class="w-full bg-surface-container-lowest border-t border-surface-container-high/60 mt-20">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+        
+        <!-- Col 1: Brand & Bereavement Hotline -->
+        <div class="lg:col-span-2 flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 border border-primary/50 flex items-center justify-center bg-surface-container">
+              <span class="material-symbols-outlined text-primary text-[16px]">church</span>
+            </div>
+            <span class="font-serif text-xl tracking-widest text-primary">ETERNUM</span>
+          </div>
+          <p class="text-xs text-on-surface-variant max-w-sm leading-relaxed">
+            In reverence and quiet luxury. We craft enduring resting places, memorial architecture, and dignified ancestral keepsakes with artisanal solemnity and uncompromised transparency.
+          </p>
+          <div class="flex flex-col gap-1 p-4 bg-surface-container-low border border-surface-container-high mt-2">
+            <span class="text-[10px] uppercase tracking-widest text-primary font-semibold">24/7 Immediate Bereavement Care Hotline</span>
+            <span class="font-serif text-lg text-on-surface">{{ memorial_hotline }}</span>
+            <span class="text-[11px] text-outline">Direct mortuary dispatch and compassionate counsel around the clock</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Sanctuary Collections -->
+        <div class="flex flex-col gap-3">
+          <span class="text-xs uppercase tracking-widest text-primary font-semibold">Collections</span>
+          <nav class="flex flex-col gap-2 text-xs text-on-surface-variant">
+            <a href="{% url 'catalog' %}" class="hover:text-primary transition-colors">All Monuments</a>
+            <a href="{% url 'catalog' %}?category=hardwood" class="hover:text-primary transition-colors">Solid Hardwood Oak &amp; Ash</a>
+            <a href="{% url 'catalog' %}?category=metal" class="hover:text-primary transition-colors">Cast Bronze &amp; Pure Copper</a>
+            <a href="{% url 'catalog' %}?category=eco" class="hover:text-primary transition-colors">Natural Willow &amp; Green Earth</a>
+            <a href="{% url 'catalog' %}?category=artisanal" class="hover:text-primary transition-colors">Artisanal Cathedral Carvings</a>
+          </nav>
+        </div>
+
+        <!-- Col 3: Care & Guidance -->
+        <div class="flex flex-col gap-3">
+          <span class="text-xs uppercase tracking-widest text-primary font-semibold">Care &amp; Legal</span>
+          <nav class="flex flex-col gap-2 text-xs text-on-surface-variant">
+            <a href="{% url 'urgent_enquiry' %}" class="hover:text-primary transition-colors">Immediate Assistance (<24h)</a>
+            <a href="{% url 'about' %}" class="hover:text-primary transition-colors">FTC Funeral Rule Rights</a>
+            <a href="{% url 'about' %}" class="hover:text-primary transition-colors">The Atelier Philosophy</a>
+            <a href="{% url 'faq' %}" class="hover:text-primary transition-colors">Family Questions &amp; Answers</a>
+            <a href="{% url 'certificate_verify' %}" class="hover:text-primary transition-colors">Certificate Verification</a>
+          </nav>
+        </div>
+
+        <!-- Col 4: Pre-Planning & Inscription -->
+        <div class="flex flex-col gap-3">
+          <span class="text-xs uppercase tracking-widest text-primary font-semibold">Pre-Planning</span>
+          <p class="text-xs text-on-surface-variant">
+            Receive dignified memorial pre-planning volumes and estate preservation compendiums.
+          </p>
+          <div class="flex flex-col gap-2 mt-1">
+            <input class="bg-surface-container-high px-3 py-2 text-xs text-on-surface placeholder:text-outline border border-surface-container focus:border-primary focus:outline-none" placeholder="Your email address..." type="email"/>
+            <button class="bg-primary-container text-on-primary-container text-xs uppercase tracking-widest py-2 hover:bg-primary font-semibold transition-colors">
+              Request Volumes
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Legal Row -->
+      <div class="mt-12 pt-8 border-t border-surface-container-high/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-outline">
+        <span>&copy; Eternum Memorial &amp; Heritage. All rights reserved. Solace through artisanal permanence.</span>
+        <div class="flex items-center gap-6">
+          <a href="{% url 'about' %}" class="hover:text-primary transition-colors">Federal Trade Commission Funeral Rule (16 CFR Part 453)</a>
+          <a href="{% url 'certificate_verify' %}" class="hover:text-primary transition-colors">Cryptographic Provenance</a>
+          {% if user.is_authenticated and user.is_administrator %}
+            <a href="{% url 'admin_dashboard' %}" class="text-primary hover:underline font-semibold">Admin Portal</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

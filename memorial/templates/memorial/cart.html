@@ -1,0 +1,136 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Your Memorial Cart — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
+  
+  <div class="flex items-center justify-between pb-6 border-b border-surface-container-high/60 mb-8">
+    <div>
+      <span class="text-xs uppercase tracking-widest text-primary font-semibold">Memorial Curation</span>
+      <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Your Selected Resting Sanctuaries</h1>
+    </div>
+    {% if cart_items %}
+      <a href="{% url 'cart_clear' %}" class="text-xs uppercase tracking-wider text-outline hover:text-error transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear Cart
+      </a>
+    {% endif %}
+  </div>
+
+  {% if cart_items %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      
+      <!-- Items Table / Cards (8 cols) -->
+      <div class="lg:col-span-8 flex flex-col gap-4">
+        {% for item in cart_items %}
+          <div class="bg-surface-container border border-surface-container-high p-6 flex flex-col sm:flex-row items-center gap-6">
+            
+            <!-- Thumbnail -->
+            <div class="w-32 h-24 bg-surface-container-lowest border border-surface-container-high overflow-hidden shrink-0">
+              <img src="{{ item.product.primary_image_url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover"/>
+            </div>
+
+            <!-- Details -->
+            <div class="flex-1 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] uppercase tracking-widest text-primary">{{ item.product.category.name|default:"Sanctuary" }}</span>
+                <h3 class="font-serif text-xl text-on-surface">
+                  <a href="{% url 'product_detail' item.product.id %}" class="hover:text-primary transition-colors">
+                    {{ item.product.name }}
+                  </a>
+                </h3>
+                <span class="text-xs text-outline block mt-0.5">
+                  {{ item.product.proportions_display }} &bull; {{ item.product.finish|title }} &bull; {{ item.product.fabric|title }} Bedding
+                </span>
+              </div>
+
+              <!-- Price & Quantity -->
+              <div class="flex items-center justify-between mt-4 pt-3 border-t border-surface-container-high/40">
+                <div class="flex items-center gap-3">
+                  <form action="{% url 'cart_update' item.id %}" method="POST" class="flex items-center border border-surface-container-high">
+                    {% csrf_token %}
+                    <button type="submit" name="quantity" value="{{ item.quantity|add:-1 }}" class="px-2.5 py-1 text-on-surface hover:text-primary bg-surface-container-high text-xs">-</button>
+                    <span class="px-3 py-1 text-xs text-on-surface font-medium">{{ item.quantity }}</span>
+                    <button type="submit" name="quantity" value="{{ item.quantity|add:1 }}" class="px-2.5 py-1 text-on-surface hover:text-primary bg-surface-container-high text-xs">+</button>
+                  </form>
+                  <a href="{% url 'cart_remove' item.id %}" class="text-xs text-outline hover:text-error transition-colors">Remove</a>
+                </div>
+
+                <div class="text-right">
+                  <span class="text-[11px] text-outline block">${{ item.product.price|floatformat:2 }} each</span>
+                  <span class="font-serif text-xl text-primary font-semibold">${{ item.subtotal|floatformat:2 }}</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        {% endfor %}
+
+        <div class="pt-4">
+          <a href="{% url 'catalog' %}" class="text-xs uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+            &larr; Continue Exploring Catalog
+          </a>
+        </div>
+      </div>
+
+      <!-- Order Summary Card (4 cols) -->
+      <div class="lg:col-span-4 bg-surface-container border border-surface-container-high p-6 flex flex-col gap-6">
+        <h2 class="font-serif text-2xl text-on-surface pb-3 border-b border-surface-container-high/60">
+          Transparent Price Ledger
+        </h2>
+
+        <div class="flex flex-col gap-3 text-xs">
+          <div class="flex justify-between text-on-surface-variant">
+            <span>Selected Sanctuary Total:</span>
+            <span class="text-on-surface font-semibold">${{ total_amount|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between text-on-surface-variant">
+            <span>White-Glove Mortuary Delivery:</span>
+            <span class="text-primary font-semibold">Included ($0.00)</span>
+          </div>
+          <div class="flex justify-between text-on-surface-variant">
+            <span>Direct Mortuary Coordination:</span>
+            <span class="text-primary font-semibold">Complimentary</span>
+          </div>
+          <div class="flex justify-between text-on-surface-variant">
+            <span>Hidden Fees / Surcharges:</span>
+            <span class="text-on-surface font-semibold">$0.00</span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-surface-container-high/60 flex justify-between items-baseline">
+          <span class="text-xs uppercase tracking-wider text-outline">Total Payable:</span>
+          <span class="font-serif text-3xl text-primary font-semibold">${{ total_amount|floatformat:2 }}</span>
+        </div>
+
+        <!-- Dignified Checkout CTA -->
+        <a href="{% url 'checkout' %}" class="w-full text-center bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">verified</span>
+          Proceed to Dignified Checkout
+        </a>
+
+        <!-- FTC Assurance Note -->
+        <div class="p-3 bg-surface-container-low border border-surface-container-high text-[11px] text-outline leading-relaxed">
+          <strong class="text-primary font-semibold block mb-0.5">FTC Funeral Rule Protected:</strong>
+          Federal law guarantees your mortuary or funeral director cannot refuse this delivery or charge any handling fee.
+        </div>
+
+      </div>
+
+    </div>
+  {% else %}
+    <div class="text-center py-24 bg-surface-container-low border border-surface-container-high p-8 flex flex-col items-center">
+      <span class="material-symbols-outlined text-outline text-[54px] mb-3">shopping_bag</span>
+      <h2 class="font-serif text-2xl text-on-surface mb-2">Your Memorial Cart is Empty</h2>
+      <p class="text-xs text-outline max-w-md mb-6 leading-relaxed">
+        You have not yet selected a casket or memorial sanctuary. Explore our collection of solid hardwoods, protective metals, and natural green return options.
+      </p>
+      <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-6 py-3 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-colors">
+        Browse Memorial Collections
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

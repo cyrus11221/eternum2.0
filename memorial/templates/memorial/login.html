@@ -1,0 +1,73 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Sign In — ETERNUM Sanctuary &amp; Heritage{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-20">
+  
+  <div class="bg-surface-container border border-surface-container-high p-8 sm:p-10 shadow-2xl">
+    
+    <div class="text-center pb-6 border-b border-surface-container-high/60 mb-6">
+      <div class="w-10 h-10 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-3">
+        <span class="material-symbols-outlined text-primary text-[22px]">lock</span>
+      </div>
+      <span class="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Sanctuary Access</span>
+      <h1 class="font-serif text-2xl text-on-surface">Welcome Back to Eternum</h1>
+      <p class="text-xs text-on-surface-variant mt-1">Sign in to manage orders, tracking, and family consultations.</p>
+    </div>
+
+    <!-- Quick-Fill Test Account Buttons for Convenience -->
+    <div class="p-3 bg-surface-container-low border border-surface-container-high mb-6 text-xs">
+      <span class="text-[10px] uppercase tracking-wider text-outline block mb-2 font-semibold">Demo Quick-Fill:</span>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="fillCredentials('eleanor@example.com', 'user123')" class="bg-surface-container-high hover:bg-surface-variant text-primary text-[11px] py-1.5 px-2 border border-primary/20 text-center transition-colors">
+          Demo Customer
+        </button>
+        <button type="button" onclick="fillCredentials('admin@eternum.com', 'admin123')" class="bg-surface-container-high hover:bg-surface-variant text-primary text-[11px] py-1.5 px-2 border border-primary/20 text-center transition-colors">
+          Demo Admin
+        </button>
+      </div>
+    </div>
+
+    <form method="POST" action="{% url 'login' %}" class="space-y-4">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-xs uppercase tracking-wider text-outline mb-1">Email Address</label>
+        <input type="email" id="id_email" name="email" required autofocus class="w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-surface-container-high focus:border-primary focus:outline-none text-xs" placeholder="name@example.com"/>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <label class="text-xs uppercase tracking-wider text-outline">Password</label>
+          <a href="#" class="text-[11px] text-outline hover:text-primary">Forgot password?</a>
+        </div>
+        <input type="password" id="id_password" name="password" required class="w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-surface-container-high focus:border-primary focus:outline-none text-xs" placeholder="••••••••"/>
+      </div>
+
+      <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl">
+        Sign In to Eternum
+      </button>
+
+      <p class="text-[11px] text-outline text-center mt-3 leading-relaxed">
+        <em>Note: Administrator accounts log in using this same form.</em>
+      </p>
+
+      <div class="pt-4 border-t border-surface-container-high/60 text-center text-xs text-on-surface-variant">
+        Don't have an account? 
+        <a href="{% url 'register' %}" class="text-primary hover:underline font-semibold ml-1">Create Account</a>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+  function fillCredentials(email, password) {
+    document.getElementById('id_email').value = email;
+    document.getElementById('id_password').value = password;
+  }
+</script>
+{% endblock %}

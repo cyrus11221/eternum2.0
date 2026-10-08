@@ -1,0 +1,125 @@
+{% extends 'memorial/base.html' %}
+
+{% block title %}Authenticity Certificate Verification — ETERNUM{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 md:px-8 py-12">
+
+  <div class="text-center mb-10 pb-6 border-b border-surface-container-high/60">
+    <div class="w-12 h-12 border border-primary/50 flex items-center justify-center bg-surface-container mx-auto mb-4">
+      <span class="material-symbols-outlined text-primary text-[28px]">verified</span>
+    </div>
+    <span class="text-xs uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Cryptographic Provenance Archive</span>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface">Certificate of Authenticity Verification</h1>
+    <p class="text-xs sm:text-sm text-on-surface-variant max-w-lg mx-auto mt-2 leading-relaxed">
+      Verify the artisanal provenance, material purity, and chain-of-custody sealing of any Eternum memorial relic.
+    </p>
+  </div>
+
+  <!-- Search Form -->
+  <form method="GET" action="{% url 'certificate_verify' %}" class="max-w-xl mx-auto mb-10">
+    <div class="flex items-stretch bg-surface-container border border-surface-container-high focus-within:border-primary transition-colors">
+      <input 
+        type="text" 
+        name="code" 
+        value="{{ search_code }}"
+        placeholder="Enter verification code (e.g. ETR-AUTH-0824)..." 
+        class="flex-1 bg-transparent text-xs text-on-surface placeholder:text-outline px-4 py-3.5 focus:outline-none"
+      />
+      <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary-container text-xs uppercase tracking-widest font-bold px-6 py-3.5 transition-colors">
+        Verify
+      </button>
+    </div>
+
+    <!-- Quick test pills -->
+    <div class="flex flex-wrap items-center justify-center gap-2 mt-3 text-[11px] text-outline">
+      <span>Sample Codes:</span>
+      <a href="{% url 'certificate_verify' %}?code=ETR-AUTH-0824" class="text-primary hover:underline font-mono">ETR-AUTH-0824</a>
+      <span>&bull;</span>
+      <a href="{% url 'certificate_verify' %}?code=ETR-AUTH-0912" class="text-primary hover:underline font-mono">ETR-AUTH-0912</a>
+      <span>&bull;</span>
+      <a href="{% url 'certificate_verify' %}?code=ETR-AUTH-1102" class="text-primary hover:underline font-mono">ETR-AUTH-1102</a>
+    </div>
+  </form>
+
+  {% if certificate %}
+    <!-- Ornate Modern Gothic Digital Certificate of Authenticity -->
+    <div class="relative bg-surface-container-low border-2 border-primary/60 p-8 sm:p-14 shadow-2xl overflow-hidden">
+      
+      <!-- Filigree Corner Anchors -->
+      <div class="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-primary"></div>
+      <div class="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-primary"></div>
+      <div class="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-primary"></div>
+      <div class="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-primary"></div>
+
+      <div class="relative z-10 flex flex-col items-center text-center">
+        
+        <span class="text-[10px] uppercase tracking-[0.3em] text-primary font-bold mb-2">Sanctuary Atelier Registry &bull; North America</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-on-surface mb-1">Certificate of Provenance &amp; Sealing</h2>
+        <span class="font-mono text-primary text-sm font-bold tracking-wider mb-8">№ {{ certificate.verification_code }}</span>
+
+        <p class="font-serif text-sm sm:text-base italic text-on-surface-variant max-w-xl leading-relaxed mb-8">
+          This document certifies that the monument below was handcrafted according to liturgical and architectural funeral standards, individually inspected, and hermetically sealed.
+        </p>
+
+        <!-- Product Details Box -->
+        <div class="w-full max-w-lg bg-surface-container p-6 border border-surface-container-high mb-8 text-left text-xs space-y-2.5">
+          <div class="flex justify-between border-b border-surface-container-high/60 pb-2">
+            <span class="text-outline uppercase text-[10px]">Resting Monument:</span>
+            <strong class="font-serif text-base text-on-surface">{{ certificate.product.name }}</strong>
+          </div>
+          <div class="flex justify-between border-b border-surface-container-high/60 pb-2">
+            <span class="text-outline uppercase text-[10px]">Material Purity:</span>
+            <span class="text-on-surface font-medium">{{ certificate.product.material }}</span>
+          </div>
+          <div class="flex justify-between border-b border-surface-container-high/60 pb-2">
+            <span class="text-outline uppercase text-[10px]">Exterior Patina:</span>
+            <span class="text-on-surface font-medium">{{ certificate.product.finish|title }}</span>
+          </div>
+          <div class="flex justify-between border-b border-surface-container-high/60 pb-2">
+            <span class="text-outline uppercase text-[10px]">Proportions:</span>
+            <span class="text-on-surface font-medium">{{ certificate.product.proportions_display }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-outline uppercase text-[10px]">Tested Sealing:</span>
+            <span class="text-primary font-medium">{{ certificate.product.sealing_system }}</span>
+          </div>
+        </div>
+
+        <!-- Seal & QR Code Row -->
+        <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-lg pt-6 border-t border-surface-container-high/60 gap-6">
+          
+          <div class="flex items-center gap-4 text-left">
+            {% if certificate.qr_code_url %}
+              <img src="{{ certificate.qr_code_url }}" alt="QR Code" class="w-20 h-20 border border-primary/40 bg-surface-container p-1"/>
+            {% endif %}
+            <div class="text-xs space-y-0.5">
+              <span class="text-[10px] uppercase text-outline block">Cryptographic Registry</span>
+              <strong class="text-primary block font-mono">{{ certificate.verification_code }}</strong>
+              <span class="text-outline text-[11px]">Issued: {{ certificate.issued_at|date:"M d, Y" }}</span>
+              <span class="text-[10px] text-primary block">&check; Active &amp; Validated</span>
+            </div>
+          </div>
+
+          <div class="text-center sm:text-right text-xs">
+            <span class="font-serif italic text-primary text-base block">Bereavement Atelier Seal</span>
+            <span class="text-outline text-[10px] uppercase tracking-widest">Eternum Custody Master</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  {% elif not_found %}
+    <div class="text-center py-12 bg-surface-container-low border border-surface-container-high p-6">
+      <span class="material-symbols-outlined text-error text-[40px] mb-2">error</span>
+      <h3 class="font-serif text-xl text-on-surface mb-1">Certificate Not Found</h3>
+      <p class="text-xs text-outline max-w-md mx-auto">
+        No record matched the code "<strong>{{ search_code }}</strong>". Please double check your documentation or contact our bereavement desk for manual archive verification.
+      </p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
