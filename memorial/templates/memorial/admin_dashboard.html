@@ -1,158 +1,887 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}Director Admin Portal — ETERNUM Memorial Sanctuary{% endblock %}
+{% block title %}Director Admin Suite — ETERNUM Sanctuary Operations{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-10">
+<div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
 
-  <!-- Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-surface-container-high/60 mb-8">
+  <!-- Header & Live Engine Status Bar -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-surface-container-high/80 mb-6">
     <div>
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-xs uppercase tracking-widest text-primary font-bold">Mortuary Administration &amp; Order Operations</span>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-widest bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          {{ db_engine }} Connected · {{ db_name }}
+        </span>
+        <span class="text-xs text-outline tracking-wider uppercase font-medium">Mortuary Administration Portal</span>
       </div>
-      <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Eternum Central Director Portal</h1>
+      <h1 class="font-serif text-3xl sm:text-4xl text-on-surface">Eternum Central Director Portal</h1>
     </div>
-    <div class="flex items-center gap-3">
-      <a href="/admin/" target="_blank" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-2.5 border border-surface-container-high flex items-center gap-1.5 transition-colors">
-        <span class="material-symbols-outlined text-[16px]">tune</span> Django Admin Console
+
+    <!-- Quick Tool Action Links -->
+    <div class="flex items-center flex-wrap gap-2.5">
+      <a href="{% url 'certificate_verify' %}" target="_blank" class="bg-surface-container border border-surface-container-high hover:border-primary/50 text-on-surface-variant hover:text-primary text-xs uppercase tracking-wider px-3.5 py-2 flex items-center gap-1.5 transition-colors">
+        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span> Verify Crypt Code
       </a>
-      <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container text-xs uppercase tracking-widest px-4 py-2.5 font-bold hover:bg-primary-container transition-colors">
+      <a href="/admin/" target="_blank" class="bg-surface-container border border-surface-container-high hover:border-primary/50 text-on-surface-variant hover:text-primary text-xs uppercase tracking-wider px-3.5 py-2 flex items-center gap-1.5 transition-colors">
+        <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span> Django Root Admin
+      </a>
+      <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container text-xs uppercase tracking-widest px-4 py-2 font-bold hover:bg-primary-container transition-colors shadow">
         View Storefront
       </a>
     </div>
   </div>
 
-  <!-- KPI Overview Metrics -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+  <!-- Operational KPI Metrics Ribbon -->
+  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
     
-    <div class="bg-surface-container border border-surface-container-high p-5">
-      <span class="text-[10px] uppercase tracking-widest text-outline block mb-1">Total Vault Revenue</span>
-      <span class="font-serif text-3xl text-primary font-bold">${{ total_revenue|floatformat:2 }}</span>
-      <span class="text-[10px] text-outline block mt-1">Confirmed &amp; Dispatched Orders</span>
+    <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
+      <span class="text-[10px] uppercase tracking-widest text-outline">Total Vault Revenue</span>
+      <span class="font-serif text-2xl lg:text-3xl text-primary font-bold mt-1">${{ total_revenue|floatformat:2 }}</span>
+      <span class="text-[10px] text-outline mt-1">{{ confirmed_orders_count|add:dispatched_orders_count|add:delivered_orders_count }} Fulfilled / In-Transit</span>
     </div>
 
-    <div class="bg-surface-container border border-surface-container-high p-5">
-      <span class="text-[10px] uppercase tracking-widest text-outline block mb-1">Total Orders Placed</span>
-      <span class="font-serif text-3xl text-on-surface font-bold">{{ total_orders }}</span>
-      <span class="text-[10px] text-primary block mt-1">&check; Chain-of-custody recorded</span>
+    <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
+      <span class="text-[10px] uppercase tracking-widest text-outline">Total Orders Placed</span>
+      <span class="font-serif text-2xl lg:text-3xl text-on-surface font-bold mt-1">{{ total_orders }}</span>
+      <div class="flex items-center gap-1.5 text-[10px] text-primary mt-1">
+        <span>{{ placed_orders_count }} Pending</span> &bull; <span>{{ dispatched_orders_count }} Dispatched</span>
+      </div>
     </div>
 
-    <div class="bg-surface-container border border-surface-container-high p-5">
-      <span class="text-[10px] uppercase tracking-widest text-outline block mb-1">Pending Urgent Enquiries</span>
-      <span class="font-serif text-3xl {% if open_enquiries_count > 0 %}text-error{% else %}text-on-surface{% endif %} font-bold">
+    <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between {% if urgent_24h_count > 0 %}border-error/40 bg-error-container/10{% endif %}">
+      <span class="text-[10px] uppercase tracking-widest text-outline">Bereavement Enquiries</span>
+      <span class="font-serif text-2xl lg:text-3xl {% if urgent_24h_count > 0 %}text-error{% else %}text-on-surface{% endif %} font-bold mt-1">
         {{ open_enquiries_count }}
       </span>
-      <span class="text-[10px] text-outline block mt-1">24h Immediate Desk</span>
+      <span class="text-[10px] {% if urgent_24h_count > 0 %}text-error font-semibold{% else %}text-outline{% endif %} mt-1">
+        {% if urgent_24h_count > 0 %}&#9888; {{ urgent_24h_count }} require &lt;24h care{% else %}All triage answered{% endif %}
+      </span>
     </div>
 
-    <div class="bg-surface-container border border-surface-container-high p-5">
-      <span class="text-[10px] uppercase tracking-widest text-outline block mb-1">Vault Inventory Relics</span>
-      <span class="font-serif text-3xl text-on-surface font-bold">{{ products_count }}</span>
-      <span class="text-[10px] text-outline block mt-1">Active Casket Catalog</span>
+    <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between {% if low_stock_count > 0 %}border-amber-600/40{% endif %}">
+      <span class="text-[10px] uppercase tracking-widest text-outline">Casket Relics in Vault</span>
+      <span class="font-serif text-2xl lg:text-3xl text-on-surface font-bold mt-1">{{ products_count }}</span>
+      <span class="text-[10px] {% if low_stock_count > 0 %}text-amber-400 font-semibold{% else %}text-outline{% endif %} mt-1">
+        {% if low_stock_count > 0 %}&#9888; {{ low_stock_count }} Low Stock (&le;2){% else %}{{ total_inventory_units }} total units in vault{% endif %}
+      </span>
+    </div>
+
+    <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
+      <span class="text-[10px] uppercase tracking-widest text-outline">Crypt Certificates</span>
+      <span class="font-serif text-2xl lg:text-3xl text-primary font-bold mt-1">{{ certificates.count }}</span>
+      <span class="text-[10px] text-outline mt-1">&check; QR Chain Verified</span>
+    </div>
+
+    <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
+      <span class="text-[10px] uppercase tracking-widest text-outline">Registered Users</span>
+      <span class="font-serif text-2xl lg:text-3xl text-on-surface font-bold mt-1">{{ registered_users_count }}</span>
+      <span class="text-[10px] text-outline mt-1">{{ admin_users_count }} Mortuary Admins</span>
     </div>
 
   </div>
 
-  <!-- Tabbed Operational Sections -->
-  <div class="space-y-12">
+  <!-- Navigation Tab Bar -->
+  <div class="border-b border-surface-container-high mb-8 flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 text-xs">
     
-    <!-- Section 1: Orders Management -->
-    <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
-      <div class="flex items-center justify-between pb-4 border-b border-surface-container-high/60 mb-6">
-        <div>
-          <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Logistics Oversight</span>
-          <h2 class="font-serif text-2xl text-on-surface">Casket Orders &amp; Delivery Status</h2>
-        </div>
-        <span class="text-xs text-outline">{{ recent_orders|length }} Orders</span>
-      </div>
+    <a href="?tab=overview" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors {% if active_tab == 'overview' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px] mr-1">dashboard</span> Overview
+    </a>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead>
-            <tr class="border-b border-surface-container-high text-outline uppercase text-[10px] tracking-wider">
-              <th class="py-3 px-3">Order ID</th>
-              <th class="py-3 px-3">Date</th>
-              <th class="py-3 px-3">Family / Buyer</th>
-              <th class="py-3 px-3">Mortuary Facility</th>
-              <th class="py-3 px-3">Total</th>
-              <th class="py-3 px-3">Status</th>
-              <th class="py-3 px-3 text-right">Update Action</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-surface-container-high/40">
-            {% for order in recent_orders %}
-              <tr class="hover:bg-surface-container-low transition-colors">
-                <td class="py-3 px-3 font-mono font-bold text-primary">#ETR-{{ order.id|stringformat:"04d" }}</td>
-                <td class="py-3 px-3 text-outline">{{ order.created_at|date:"M d, Y" }}</td>
-                <td class="py-3 px-3">
-                  <span class="font-medium text-on-surface block">{{ order.user.get_full_name|default:order.user.username }}</span>
-                  <span class="text-[11px] text-outline">{{ order.user.email }}</span>
-                </td>
-                <td class="py-3 px-3">
-                  <span class="text-on-surface font-medium block">{{ order.mortuary_name }}</span>
-                  <span class="text-[11px] text-outline">{{ order.mortuary_phone }}</span>
-                </td>
-                <td class="py-3 px-3 font-serif text-sm text-primary font-semibold">${{ order.total_amount|floatformat:2 }}</td>
-                <td class="py-3 px-3">
-                  <span class="px-2 py-0.5 text-[10px] uppercase font-semibold
-                    {% if order.status == 'delivered' %}bg-primary/20 text-primary border border-primary/40
-                    {% elif order.status == 'dispatched' %}bg-secondary-container text-on-secondary-container
-                    {% elif order.status == 'confirmed' %}bg-surface-container-highest text-primary border border-primary/20
-                    {% else %}bg-surface-container-high text-outline{% endif %}">
-                    {{ order.get_status_display }}
-                  </span>
-                </td>
-                <td class="py-3 px-3 text-right">
-                  <form method="POST" action="{% url 'admin_dashboard' %}" class="inline-flex items-center gap-1.5">
+    <a href="?tab=orders" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 {% if active_tab == 'orders' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px]">local_shipping</span> Orders &amp; Dispatch
+      <span class="px-1.5 py-0.2 rounded-full text-[10px] {% if placed_orders_count > 0 %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+        {{ total_orders }}
+      </span>
+    </a>
+
+    <a href="?tab=inventory" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 {% if active_tab == 'inventory' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px]">inventory_2</span> Vault Inventory
+      {% if low_stock_count > 0 %}
+        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-900/60 text-amber-300 font-bold border border-amber-700/60">
+          {{ low_stock_count }}
+        </span>
+      {% endif %}
+    </a>
+
+    <a href="?tab=enquiries" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 {% if active_tab == 'enquiries' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px]">support_agent</span> Urgent Counseling Desk
+      {% if open_enquiries_count > 0 %}
+        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-error-container text-error font-bold">
+          {{ open_enquiries_count }}
+        </span>
+      {% endif %}
+    </a>
+
+    <a href="?tab=certificates" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors {% if active_tab == 'certificates' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px] mr-1">verified</span> Provenance &amp; QR
+    </a>
+
+    <a href="?tab=settings" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors {% if active_tab == 'settings' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px] mr-1">settings</span> Sanctuary Settings
+    </a>
+
+    <a href="?tab=users" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors {% if active_tab == 'users' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
+      <span class="material-symbols-outlined text-[15px] mr-1">manage_accounts</span> Accounts &amp; Roles
+    </a>
+
+  </div>
+
+  <!-- TAB CONTENT 1: OVERVIEW -->
+  {% if active_tab == 'overview' %}
+    <div class="space-y-8">
+      
+      <!-- Quick Status Highlights Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left 8 Cols: Urgent Attention Queue -->
+        <div class="lg:col-span-8 space-y-6">
+          
+          <!-- Recent Orders Pending Attention -->
+          <div class="bg-surface-container border border-surface-container-high p-6">
+            <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
+              <div>
+                <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Logistics Watchlist</span>
+                <h2 class="font-serif text-xl text-on-surface">Recent Active Orders</h2>
+              </div>
+              <a href="?tab=orders" class="text-xs text-primary hover:underline">View All Orders &rarr;</a>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-surface-container-high text-outline uppercase text-[10px] tracking-wider">
+                    <th class="py-2.5 px-3">Order ID</th>
+                    <th class="py-2.5 px-3">Buyer</th>
+                    <th class="py-2.5 px-3">Mortuary Facility</th>
+                    <th class="py-2.5 px-3">Amount</th>
+                    <th class="py-2.5 px-3">Status</th>
+                    <th class="py-2.5 px-3 text-right">Dispatch Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container-high/40">
+                  {% for order in orders|slice:":5" %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                      <td class="py-2.5 px-3 font-mono font-bold text-primary">#ETR-{{ order.id|stringformat:"04d" }}</td>
+                      <td class="py-2.5 px-3">
+                        <span class="font-medium text-on-surface block">{{ order.user.get_full_name|default:order.user.username }}</span>
+                        <span class="text-[10px] text-outline">{{ order.user.email }}</span>
+                      </td>
+                      <td class="py-2.5 px-3 text-on-surface">{{ order.mortuary_name|default:"Direct Family Residence" }}</td>
+                      <td class="py-2.5 px-3 font-serif font-bold text-primary">${{ order.total_amount|floatformat:2 }}</td>
+                      <td class="py-2.5 px-3">
+                        <span class="px-2 py-0.5 text-[10px] uppercase font-semibold
+                          {% if order.status == 'delivered' %}bg-primary/20 text-primary border border-primary/40
+                          {% elif order.status == 'dispatched' %}bg-secondary-container text-on-secondary-container
+                          {% elif order.status == 'confirmed' %}bg-surface-container-highest text-primary border border-primary/20
+                          {% else %}bg-surface-container-high text-outline{% endif %}">
+                          {{ order.get_status_display }}
+                        </span>
+                      </td>
+                      <td class="py-2.5 px-3 text-right">
+                        <form method="POST" action="{% url 'admin_dashboard' %}" class="inline-flex items-center gap-1">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="update_order_status"/>
+                          <input type="hidden" name="order_id" value="{{ order.id }}"/>
+                          <select name="status" class="bg-surface-container-highest text-on-surface text-[11px] px-2 py-1 border border-surface-container-high">
+                            <option value="placed" {% if order.status == 'placed' %}selected{% endif %}>Placed</option>
+                            <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                            <option value="dispatched" {% if order.status == 'dispatched' %}selected{% endif %}>Dispatched</option>
+                            <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                          </select>
+                          <button type="submit" class="bg-primary text-on-primary-container px-2 py-1 text-[10px] uppercase font-bold hover:bg-primary-container">
+                            Save
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="6" class="py-6 text-center text-outline">No orders placed yet.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Urgent Triage Enquiries -->
+          <div class="bg-surface-container border border-surface-container-high p-6">
+            <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
+              <div>
+                <span class="text-[10px] uppercase tracking-widest text-primary font-bold">24H Bereavement Care Desk</span>
+                <h2 class="font-serif text-xl text-on-surface">Immediate Family Inquiries</h2>
+              </div>
+              <a href="?tab=enquiries" class="text-xs text-primary hover:underline">View All &rarr;</a>
+            </div>
+
+            <div class="space-y-3">
+              {% for enq in enquiries|slice:":3" %}
+                <div class="p-3 bg-surface-container-low border border-surface-container-high text-xs">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="font-mono font-bold text-primary">{{ enq.tracking_id }}</span>
+                      <strong class="text-on-surface">{{ enq.name }}</strong>
+                      <span class="text-outline text-[11px]">({{ enq.phone }})</span>
+                    </div>
+                    <span class="px-2 py-0.5 text-[10px] font-bold uppercase {% if enq.urgency_level == '<24h' %}bg-error-container text-error{% else %}bg-primary/20 text-primary{% endif %}">
+                      {{ enq.urgency_level }}
+                    </span>
+                  </div>
+                  <p class="text-on-surface-variant italic mb-2">&ldquo;{{ enq.message|truncatewords:25 }}&rdquo;</p>
+                  
+                  <form method="POST" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
                     {% csrf_token %}
-                    <input type="hidden" name="action" value="update_order_status"/>
-                    <input type="hidden" name="order_id" value="{{ order.id }}"/>
-                    <select name="status" class="bg-surface-container-highest text-on-surface text-[11px] px-2 py-1 border border-surface-container-high focus:outline-none">
-                      <option value="placed" {% if order.status == 'placed' %}selected{% endif %}>Placed</option>
-                      <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
-                      <option value="dispatched" {% if order.status == 'dispatched' %}selected{% endif %}>Dispatched</option>
-                      <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
-                      <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    <input type="hidden" name="action" value="respond_enquiry"/>
+                    <input type="hidden" name="enquiry_id" value="{{ enq.id }}"/>
+                    <input type="text" name="admin_response" value="{{ enq.admin_response|default:'' }}" placeholder="Quick counselor note to family..." class="flex-1 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
+                    <select name="status" class="bg-surface-container-highest text-on-surface text-xs px-2 py-1 border border-surface-container-high">
+                      <option value="Responded" {% if enq.status == 'Responded' %}selected{% endif %}>Responded</option>
+                      <option value="Closed" {% if enq.status == 'Closed' %}selected{% endif %}>Closed</option>
+                      <option value="Open" {% if enq.status == 'Open' %}selected{% endif %}>Open</option>
                     </select>
-                    <button type="submit" class="bg-primary text-on-primary-container px-2 py-1 text-[10px] uppercase font-bold hover:bg-primary-container transition-colors">
+                    <button type="submit" class="bg-primary text-on-primary-container px-2.5 py-1 text-[10px] uppercase font-bold hover:bg-primary-container">
                       Save
                     </button>
                   </form>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                </div>
+              {% empty %}
+                <p class="text-xs text-outline py-4 text-center">No open bereavement enquiries at this hour.</p>
+              {% endfor %}
+            </div>
+          </div>
 
-    <!-- Section 2: Urgent Consultations & Enquiries Management -->
-    <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
-      <div class="flex items-center justify-between pb-4 border-b border-surface-container-high/60 mb-6">
-        <div>
-          <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Priority Bereavement Care</span>
-          <h2 class="font-serif text-2xl text-on-surface">Urgent Enquiries &amp; Custom Relic Requests</h2>
         </div>
-        <span class="text-xs text-outline">{{ recent_enquiries|length }} Enquiries</span>
+
+        <!-- Right 4 Cols: Low Stock Alerts & Quick Launch -->
+        <div class="lg:col-span-4 space-y-6">
+          
+          <!-- Low Stock Vault Alerts -->
+          <div class="bg-surface-container border border-surface-container-high p-6">
+            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Vault Inventory Monitor</span>
+            <h2 class="font-serif text-xl text-on-surface mb-4">Stock Attention Required</h2>
+
+            <div class="space-y-3">
+              {% for p in products %}
+                {% if p.stock <= 2 %}
+                  <div class="p-3 bg-surface-container-low border border-surface-container-high flex items-center justify-between text-xs">
+                    <div>
+                      <span class="font-serif text-sm font-semibold text-on-surface block">{{ p.name }}</span>
+                      <span class="text-[10px] text-outline">{{ p.category.name }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 text-[10px] font-bold uppercase {% if p.stock == 0 %}bg-error-container text-error{% else %}bg-amber-900/60 text-amber-300 border border-amber-700/60{% endif %}">
+                        {{ p.stock }} in vault
+                      </span>
+                      <form method="POST" action="{% url 'admin_dashboard' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="quick_stock"/>
+                        <input type="hidden" name="product_id" value="{{ p.id }}"/>
+                        <input type="hidden" name="delta" value="1"/>
+                        <button type="submit" title="Add 1 unit to vault" class="w-6 h-6 bg-surface-container-highest hover:bg-primary hover:text-on-primary-container border border-surface-container-high text-xs flex items-center justify-center font-bold">
+                          +1
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                {% endif %}
+              {% empty %}
+                <p class="text-xs text-outline py-2">No active products found.</p>
+              {% endfor %}
+            </div>
+            
+            <a href="?tab=inventory" class="mt-4 block text-center bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider py-2 border border-surface-container-high">
+              Manage All Vault Caskets &rarr;
+            </a>
+          </div>
+
+          <!-- System Status Card -->
+          <div class="bg-surface-container border border-surface-container-high p-6">
+            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Crypt Architecture</span>
+            <h2 class="font-serif text-xl text-on-surface mb-3">Database &amp; SLA Status</h2>
+
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-center justify-between py-1.5 border-b border-surface-container-high/40">
+                <span class="text-outline">Database Engine</span>
+                <span class="font-mono text-emerald-400 font-bold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> {{ db_engine }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-surface-container-high/40">
+                <span class="text-outline">Database Name</span>
+                <span class="font-mono text-on-surface">{{ db_name }}</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-surface-container-high/40">
+                <span class="text-outline">Chain-of-Custody</span>
+                <span class="text-primary font-medium">Crypt QR Verifiable</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5">
+                <span class="text-outline">FTC 16 CFR Rule 453</span>
+                <span class="text-emerald-400 font-semibold">&check; Compliant</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="space-y-4">
-        {% for enq in recent_enquiries %}
-          <div class="p-5 bg-surface-container-low border border-surface-container-high text-xs space-y-3">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="font-mono text-primary font-bold">{{ enq.tracking_id }}</span>
-                <span class="text-outline">&bull;</span>
-                <strong class="text-on-surface text-sm">{{ enq.name }}</strong>
-                <span class="text-outline">({{ enq.email }} &bull; {{ enq.phone }})</span>
+    </div>
+  {% endif %}
+
+  <!-- TAB CONTENT 2: ORDERS & DISPATCH LOGISTICS -->
+  {% if active_tab == 'orders' %}
+    <div class="space-y-6">
+      
+      <!-- Filter Bar -->
+      <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <!-- Status Filter Pills -->
+        <div class="flex items-center gap-1.5 flex-wrap text-xs">
+          <span class="text-outline text-[11px] uppercase tracking-wider mr-1">Status:</span>
+          <a href="?tab=orders&order_status=all" class="px-3 py-1 text-xs uppercase tracking-wider {% if order_filter_status == 'all' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline hover:text-on-surface{% endif %}">
+            All ({{ total_orders }})
+          </a>
+          <a href="?tab=orders&order_status=placed" class="px-3 py-1 text-xs uppercase tracking-wider {% if order_filter_status == 'placed' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline hover:text-on-surface{% endif %}">
+            Placed ({{ placed_orders_count }})
+          </a>
+          <a href="?tab=orders&order_status=confirmed" class="px-3 py-1 text-xs uppercase tracking-wider {% if order_filter_status == 'confirmed' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline hover:text-on-surface{% endif %}">
+            Confirmed ({{ confirmed_orders_count }})
+          </a>
+          <a href="?tab=orders&order_status=dispatched" class="px-3 py-1 text-xs uppercase tracking-wider {% if order_filter_status == 'dispatched' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline hover:text-on-surface{% endif %}">
+            Dispatched ({{ dispatched_orders_count }})
+          </a>
+          <a href="?tab=orders&order_status=delivered" class="px-3 py-1 text-xs uppercase tracking-wider {% if order_filter_status == 'delivered' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline hover:text-on-surface{% endif %}">
+            Delivered ({{ delivered_orders_count }})
+          </a>
+          <a href="?tab=orders&order_status=cancelled" class="px-3 py-1 text-xs uppercase tracking-wider {% if order_filter_status == 'cancelled' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline hover:text-on-surface{% endif %}">
+            Cancelled ({{ cancelled_orders_count }})
+          </a>
+        </div>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
+          <input type="hidden" name="tab" value="orders"/>
+          <input type="hidden" name="order_status" value="{{ order_filter_status }}"/>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[16px]">search</span>
+            <input type="text" name="order_search" value="{{ order_search }}" placeholder="Search ID, Mortuary, Buyer..." class="bg-surface-container-highest text-on-surface text-xs pl-8 pr-3 py-1.5 border border-surface-container-high focus:outline-none focus:border-primary w-60"/>
+          </div>
+          <button type="submit" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs px-3 py-1.5 border border-surface-container-high">
+            Search
+          </button>
+          {% if order_search %}
+            <a href="?tab=orders&order_status={{ order_filter_status }}" class="text-xs text-outline hover:text-primary">&times; Clear</a>
+          {% endif %}
+        </form>
+
+      </div>
+
+      <!-- Orders List Table -->
+      <div class="bg-surface-container border border-surface-container-high p-6">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-surface-container-high text-outline uppercase text-[10px] tracking-wider">
+                <th class="py-3 px-3">Order Code</th>
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Family Contact</th>
+                <th class="py-3 px-3">Destination Mortuary</th>
+                <th class="py-3 px-3">Items Summary</th>
+                <th class="py-3 px-3">Total Amount</th>
+                <th class="py-3 px-3">Logistics Status</th>
+                <th class="py-3 px-3 text-right">Update Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container-high/40">
+              {% for order in orders %}
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-3.5 px-3">
+                    <span class="font-mono font-bold text-primary block">#ETR-{{ order.id|stringformat:"04d" }}</span>
+                    <a href="{% url 'order_detail' order.id %}" target="_blank" class="text-[10px] text-outline hover:text-primary flex items-center gap-0.5 mt-0.5">
+                      <span class="material-symbols-outlined text-[12px]">open_in_new</span> Client View
+                    </a>
+                  </td>
+                  <td class="py-3.5 px-3 text-outline">
+                    {{ order.created_at|date:"M d, Y" }}
+                    <span class="block text-[10px] text-outline/60">{{ order.created_at|date:"H:i" }} UTC</span>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="font-medium text-on-surface block">{{ order.user.get_full_name|default:order.user.username }}</span>
+                    <span class="text-[11px] text-outline block">{{ order.user.email }}</span>
+                    {% if order.user.phone %}
+                      <span class="text-[10px] text-primary/80">{{ order.user.phone }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <strong class="text-on-surface block">{{ order.mortuary_name|default:"Not specified" }}</strong>
+                    <span class="text-[11px] text-outline block">Dir: {{ order.mortuary_director|default:"—" }}</span>
+                    <span class="text-[10px] text-outline/80">{{ order.mortuary_phone|default:"" }}</span>
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <div class="space-y-1">
+                      {% for it in order.items.all %}
+                        <div class="text-[11px] text-on-surface-variant flex items-center gap-1.5">
+                          <span class="font-bold text-primary">{{ it.quantity }}x</span> {{ it.product.name }}
+                        </div>
+                      {% empty %}
+                        <span class="text-outline text-[11px]">No items</span>
+                      {% endfor %}
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-3 font-serif text-sm text-primary font-bold">
+                    ${{ order.total_amount|floatformat:2 }}
+                  </td>
+                  <td class="py-3.5 px-3">
+                    <span class="px-2.5 py-1 text-[10px] uppercase font-semibold inline-block
+                      {% if order.status == 'delivered' %}bg-primary/20 text-primary border border-primary/40
+                      {% elif order.status == 'dispatched' %}bg-secondary-container text-on-secondary-container
+                      {% elif order.status == 'confirmed' %}bg-surface-container-highest text-primary border border-primary/20
+                      {% elif order.status == 'cancelled' %}bg-error-container text-error
+                      {% else %}bg-surface-container-high text-outline{% endif %}">
+                      {{ order.get_status_display }}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-3 text-right">
+                    <form method="POST" action="{% url 'admin_dashboard' %}" class="inline-flex items-center gap-1.5">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="update_order_status"/>
+                      <input type="hidden" name="order_id" value="{{ order.id }}"/>
+                      <select name="status" class="bg-surface-container-highest text-on-surface text-[11px] px-2 py-1.5 border border-surface-container-high">
+                        <option value="placed" {% if order.status == 'placed' %}selected{% endif %}>Placed</option>
+                        <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="dispatched" {% if order.status == 'dispatched' %}selected{% endif %}>Dispatched</option>
+                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                      </select>
+                      <button type="submit" class="bg-primary text-on-primary-container px-2.5 py-1.5 text-[10px] uppercase font-bold hover:bg-primary-container">
+                        Update
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+
+                <!-- Collapsible Delivery & Dispatch Notes Row -->
+                <tr class="bg-surface-container-lowest/60 border-b border-surface-container-high/40">
+                  <td colspan="8" class="px-4 py-2 text-[11px]">
+                    <form method="POST" action="{% url 'admin_dashboard' %}" class="flex flex-col sm:flex-row items-center gap-2">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="update_order_details"/>
+                      <input type="hidden" name="order_id" value="{{ order.id }}"/>
+                      
+                      <span class="text-outline uppercase text-[9px] font-bold tracking-wider">Logistics &amp; Mortuary Notes:</span>
+                      <input type="text" name="delivery_notes" value="{{ order.delivery_notes|default:'' }}" placeholder="White-glove courier notes, receiving bay, service timing..." class="flex-1 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
+
+                      <input type="text" name="mortuary_name" value="{{ order.mortuary_name|default:'' }}" placeholder="Mortuary Name" class="w-48 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
+                      <input type="text" name="mortuary_director" value="{{ order.mortuary_director|default:'' }}" placeholder="Director Name" class="w-36 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
+                      <input type="text" name="mortuary_phone" value="{{ order.mortuary_phone|default:'' }}" placeholder="Director Phone" class="w-32 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
+
+                      <button type="submit" class="bg-surface-container-high hover:bg-primary hover:text-on-primary-container text-on-surface text-[10px] uppercase font-semibold px-3 py-1 border border-surface-container-high transition-colors">
+                        Save Notes
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+
+              {% empty %}
+                <tr>
+                  <td colspan="8" class="py-12 text-center text-outline">
+                    No orders match the selected criteria.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
+
+  <!-- TAB CONTENT 3: VAULT INVENTORY & CATALOG -->
+  {% if active_tab == 'inventory' %}
+    <div class="space-y-8">
+      
+      <!-- Inventory Controls & Search -->
+      <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-2 flex-wrap text-xs">
+          <!-- Category Filter -->
+          <span class="text-outline text-[11px] uppercase tracking-wider">Category:</span>
+          <a href="?tab=inventory&prod_category=all&prod_stock={{ prod_stock }}" class="px-2.5 py-1 text-xs uppercase {% if prod_category == 'all' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            All
+          </a>
+          {% for cat in categories %}
+            <a href="?tab=inventory&prod_category={{ cat.id }}&prod_stock={{ prod_stock }}" class="px-2.5 py-1 text-xs uppercase {% if prod_category == cat.id|stringformat:'s' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+              {{ cat.name }}
+            </a>
+          {% endfor %}
+
+          <!-- Stock level filter -->
+          <span class="text-outline text-[11px] uppercase tracking-wider ml-2">Stock:</span>
+          <a href="?tab=inventory&prod_category={{ prod_category }}&prod_stock=all" class="px-2 py-1 text-xs {% if prod_stock == 'all' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            All Stock
+          </a>
+          <a href="?tab=inventory&prod_category={{ prod_category }}&prod_stock=low" class="px-2 py-1 text-xs {% if prod_stock == 'low' %}bg-amber-500 text-black font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            Low (&le;2)
+          </a>
+          <a href="?tab=inventory&prod_category={{ prod_category }}&prod_stock=out" class="px-2 py-1 text-xs {% if prod_stock == 'out' %}bg-error-container text-error font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            Out of Stock
+          </a>
+        </div>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
+          <input type="hidden" name="tab" value="inventory"/>
+          <input type="hidden" name="prod_category" value="{{ prod_category }}"/>
+          <input type="hidden" name="prod_stock" value="{{ prod_stock }}"/>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[16px]">search</span>
+            <input type="text" name="prod_search" value="{{ prod_search }}" placeholder="Search casket name, material..." class="bg-surface-container-highest text-on-surface text-xs pl-8 pr-3 py-1.5 border border-surface-container-high focus:outline-none focus:border-primary w-52"/>
+          </div>
+          <button type="submit" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs px-3 py-1.5 border border-surface-container-high">
+            Filter
+          </button>
+        </form>
+
+      </div>
+
+      <!-- Main Grid: Casket Catalog + Add New Form -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Inventory Table (7 Cols) -->
+        <div class="lg:col-span-7 bg-surface-container border border-surface-container-high p-6">
+          <div class="flex items-center justify-between pb-4 border-b border-surface-container-high/60 mb-6">
+            <h2 class="font-serif text-2xl text-on-surface">Vault Relic Inventory</h2>
+            <span class="text-xs text-outline">{{ products|length }} Caskets in Catalog</span>
+          </div>
+
+          <div class="space-y-4">
+            {% for p in products %}
+              <div class="p-4 bg-surface-container-low border border-surface-container-high text-xs space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <img src="{{ p.primary_image_url }}" alt="{{ p.name }}" class="w-16 h-16 object-cover border border-surface-container-high"/>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-serif text-base text-on-surface font-semibold">{{ p.name }}</span>
+                        {% if not p.is_active %}
+                          <span class="px-1.5 py-0.2 text-[9px] bg-surface-container-high text-outline uppercase">Inactive</span>
+                        {% endif %}
+                      </div>
+                      <span class="text-primary font-serif font-bold text-sm block mt-0.5">${{ p.price|floatformat:0 }}</span>
+                      <span class="text-outline text-[11px] block">{{ p.category.name }} &bull; {{ p.material }} &bull; {{ p.finish }}</span>
+                      <span class="font-mono text-[10px] text-outline/80">Code: {{ p.provenance_code|default:"Unassigned" }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Quick Stock Controls -->
+                  <div class="flex flex-col items-end gap-1.5">
+                    <div class="flex items-center gap-1">
+                      <form method="POST" action="{% url 'admin_dashboard' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="quick_stock"/>
+                        <input type="hidden" name="product_id" value="{{ p.id }}"/>
+                        <input type="hidden" name="delta" value="-1"/>
+                        <button type="submit" class="w-6 h-6 bg-surface-container-highest hover:bg-surface-variant text-on-surface border border-surface-container-high flex items-center justify-center font-bold">
+                          -
+                        </button>
+                      </form>
+
+                      <span class="px-2.5 py-0.5 text-xs font-bold font-mono min-w-[28px] text-center {% if p.stock <= 2 %}bg-amber-900/60 text-amber-300 border border-amber-700/60{% else %}bg-surface-container-highest text-on-surface{% endif %}">
+                        {{ p.stock }}
+                      </span>
+
+                      <form method="POST" action="{% url 'admin_dashboard' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="quick_stock"/>
+                        <input type="hidden" name="product_id" value="{{ p.id }}"/>
+                        <input type="hidden" name="delta" value="1"/>
+                        <button type="submit" class="w-6 h-6 bg-surface-container-highest hover:bg-primary hover:text-on-primary-container text-on-surface border border-surface-container-high flex items-center justify-center font-bold">
+                          +
+                        </button>
+                      </form>
+                    </div>
+
+                    <span class="text-[9px] uppercase tracking-wider text-outline">Units in Vault</span>
+                  </div>
+                </div>
+
+                <!-- Action Bar: Toggle Active, Quick Edit Toggle, Delete -->
+                <div class="pt-2 border-t border-surface-container-high/40 flex items-center justify-between text-[11px]">
+                  <div class="flex items-center gap-2">
+                    <form method="POST" action="{% url 'admin_dashboard' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="toggle_product"/>
+                      <input type="hidden" name="product_id" value="{{ p.id }}"/>
+                      <button type="submit" class="text-xs {% if p.is_active %}text-primary hover:underline{% else %}text-outline hover:text-on-surface{% endif %}">
+                        {% if p.is_active %}&check; Catalog Active{% else %}Mark Active{% endif %}
+                      </button>
+                    </form>
+                    <span class="text-outline/40">&bull;</span>
+                    <button type="button" onclick="document.getElementById('edit-modal-{{ p.id }}').classList.toggle('hidden')" class="text-xs text-outline hover:text-primary flex items-center gap-0.5">
+                      <span class="material-symbols-outlined text-[14px]">edit</span> Edit Specs
+                    </button>
+                    <span class="text-outline/40">&bull;</span>
+                    <a href="{% url 'product_detail' p.id %}" target="_blank" class="text-xs text-outline hover:text-primary flex items-center gap-0.5">
+                      <span class="material-symbols-outlined text-[14px]">visibility</span> Preview
+                    </a>
+                  </div>
+
+                  <form method="POST" action="{% url 'admin_dashboard' %}" onsubmit="return confirm('Remove casket {{ p.name }} from the catalog?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_product"/>
+                    <input type="hidden" name="product_id" value="{{ p.id }}"/>
+                    <button type="submit" class="text-error/80 hover:text-error text-xs">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Collapsible Edit Modal / Panel -->
+                <div id="edit-modal-{{ p.id }}" class="hidden pt-3 border-t border-surface-container-high bg-surface-container p-3 space-y-3">
+                  <span class="font-serif text-sm text-primary font-bold block">Edit Casket: {{ p.name }}</span>
+                  <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-2 text-xs">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit_product"/>
+                    <input type="hidden" name="product_id" value="{{ p.id }}"/>
+
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Name</label>
+                        <input type="text" name="name" value="{{ p.name }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Category</label>
+                        <select name="category" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high">
+                          {% for c in categories %}
+                            <option value="{{ c.id }}" {% if p.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Price ($)</label>
+                        <input type="number" step="0.01" name="price" value="{{ p.price }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Stock</label>
+                        <input type="number" name="stock" value="{{ p.stock }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Dispatch State</label>
+                        <select name="dispatch_type" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high">
+                          <option value="ready" {% if p.dispatch_type == 'ready' %}selected{% endif %}>&lt; 24h Ready</option>
+                          <option value="bespoke" {% if p.dispatch_type == 'bespoke' %}selected{% endif %}>Bespoke Handcraft</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Material</label>
+                        <input type="text" name="material" value="{{ p.material|default:'' }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Finish Patina</label>
+                        <input type="text" name="finish" value="{{ p.finish|default:'' }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Length</label>
+                        <input type="text" name="length" value="{{ p.length|default:'' }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Width</label>
+                        <input type="text" name="width" value="{{ p.width|default:'' }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                      <div>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Height</label>
+                        <input type="text" name="height" value="{{ p.height|default:'' }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Primary Image URL</label>
+                      <input type="url" name="image_url" value="{{ p.primary_image_url }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
+                    </div>
+
+                    <div>
+                      <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Description</label>
+                      <textarea name="description" rows="2" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high">{{ p.description|default:'' }}</textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                      <label class="flex items-center gap-1.5 text-xs text-outline cursor-pointer">
+                        <input type="checkbox" name="is_active" {% if p.is_active %}checked{% endif %} class="accent-primary"/>
+                        <span>Casket Is Active In Storefront</span>
+                      </label>
+                      <div class="flex items-center gap-2">
+                        <button type="button" onclick="document.getElementById('edit-modal-{{ p.id }}').classList.add('hidden')" class="px-2.5 py-1 text-xs text-outline hover:text-on-surface">
+                          Cancel
+                        </button>
+                        <button type="submit" class="bg-primary text-on-primary-container px-3 py-1 text-xs uppercase font-bold hover:bg-primary-container">
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
               </div>
+            {% empty %}
+              <p class="text-xs text-outline py-8 text-center">No casket records found.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Add New Casket Form (5 Cols) -->
+        <div class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6">
+          <div class="pb-3 border-b border-surface-container-high/60 mb-4">
+            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">New Catalog Addition</span>
+            <h2 class="font-serif text-xl text-on-surface">Commission Casket Relic</h2>
+          </div>
+
+          <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-3 text-xs">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_product"/>
+
+            <div>
+              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Casket Name *</label>
+              {{ product_form.name }}
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Category *</label>
+                {{ product_form.category }}
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Price ($) *</label>
+                {{ product_form.price }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Vault Stock Units</label>
+                {{ product_form.stock }}
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Dispatch State</label>
+                {{ product_form.dispatch_type }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Material</label>
+                {{ product_form.material }}
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Finish Patina</label>
+                {{ product_form.finish }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Length</label>
+                {{ product_form.length }}
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Width</label>
+                {{ product_form.width }}
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Height</label>
+                {{ product_form.height }}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Image URL</label>
+              {{ product_form.image_url }}
+            </div>
+
+            <div>
+              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Craftsmanship Description</label>
+              {{ product_form.description }}
+            </div>
+
+            <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3 text-xs uppercase tracking-widest font-bold transition-all shadow-md">
+              Publish &amp; Issue Crypt Certificate
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  {% endif %}
+
+  <!-- TAB CONTENT 4: URGENT COUNSELING DESK -->
+  {% if active_tab == 'enquiries' %}
+    <div class="space-y-6">
+      
+      <!-- Filter Bar -->
+      <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-2 flex-wrap text-xs">
+          <span class="text-outline text-[11px] uppercase tracking-wider">Status:</span>
+          <a href="?tab=enquiries&enq_status=all&enq_urgency={{ enq_urgency }}" class="px-2.5 py-1 text-xs uppercase {% if enq_status == 'all' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            All
+          </a>
+          <a href="?tab=enquiries&enq_status=Open&enq_urgency={{ enq_urgency }}" class="px-2.5 py-1 text-xs uppercase {% if enq_status == 'Open' %}bg-error-container text-error font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            Open ({{ open_enquiries_count }})
+          </a>
+          <a href="?tab=enquiries&enq_status=Responded&enq_urgency={{ enq_urgency }}" class="px-2.5 py-1 text-xs uppercase {% if enq_status == 'Responded' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            Responded
+          </a>
+          <a href="?tab=enquiries&enq_status=Closed&enq_urgency={{ enq_urgency }}" class="px-2.5 py-1 text-xs uppercase {% if enq_status == 'Closed' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            Closed
+          </a>
+
+          <span class="text-outline text-[11px] uppercase tracking-wider ml-4">Urgency:</span>
+          <a href="?tab=enquiries&enq_status={{ enq_status }}&enq_urgency=all" class="px-2.5 py-1 text-xs {% if enq_urgency == 'all' %}bg-primary text-on-primary-container font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            All Levels
+          </a>
+          <a href="?tab=enquiries&enq_status={{ enq_status }}&enq_urgency=%3C24h" class="px-2.5 py-1 text-xs {% if enq_urgency == '<24h' %}bg-error-container text-error font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            &lt;24h Immediate
+          </a>
+          <a href="?tab=enquiries&enq_status={{ enq_status }}&enq_urgency=24-48h" class="px-2.5 py-1 text-xs {% if enq_urgency == '24-48h' %}bg-amber-900/60 text-amber-300 font-bold{% else %}bg-surface-container-high text-outline{% endif %}">
+            24-48h Urgent
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Enquiries Cards -->
+      <div class="space-y-4">
+        {% for enq in enquiries %}
+          <div class="bg-surface-container border border-surface-container-high p-6 text-xs space-y-4">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-container-high/60">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-mono text-primary font-bold text-sm">{{ enq.tracking_id }}</span>
+                <span class="text-outline">&bull;</span>
+                <strong class="text-on-surface text-base">{{ enq.name }}</strong>
+                <span class="text-outline">({{ enq.email|default:"No email" }} &bull; {{ enq.phone|default:"No phone" }})</span>
+              </div>
+
               <div class="flex items-center gap-2">
-                <span class="text-primary bg-primary/10 px-2 py-0.5 border border-primary/20 text-[10px] font-semibold">
+                <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded
+                  {% if enq.urgency_level == '<24h' %}bg-error-container text-error
+                  {% elif enq.urgency_level == '24-48h' %}bg-amber-900/60 text-amber-300 border border-amber-700/60
+                  {% else %}bg-surface-container-highest text-primary{% endif %}">
                   {{ enq.urgency_level }}
                 </span>
-                <span class="px-2 py-0.5 text-[10px] uppercase font-semibold
+                <span class="px-2.5 py-0.5 text-[10px] uppercase font-semibold
                   {% if enq.status == 'Responded' %}bg-primary/20 text-primary border border-primary/40
                   {% elif enq.status == 'Closed' %}bg-surface-container-high text-outline
                   {% else %}bg-error-container text-error{% endif %}">
@@ -161,154 +890,320 @@
               </div>
             </div>
 
-            <p class="text-on-surface-variant bg-surface-container p-3 border-l-2 border-primary/50 text-xs italic">
-              "{{ enq.message }}"
-            </p>
-
-            {% if enq.mortuary_location %}
-              <span class="text-[11px] text-outline block">Destination Facility: {{ enq.mortuary_location }}</span>
-            {% endif %}
-
-            <!-- Response Form -->
-            <form method="POST" action="{% url 'admin_dashboard' %}" class="pt-2 border-t border-surface-container-high/40 flex flex-col sm:flex-row gap-2">
-              {% csrf_token %}
-              <input type="hidden" name="action" value="respond_enquiry"/>
-              <input type="hidden" name="enquiry_id" value="{{ enq.id }}"/>
-              
-              <input type="text" name="admin_response" value="{{ enq.admin_response|default:'' }}" placeholder="Bereavement counselor response note to family..." class="flex-1 bg-surface-container-highest text-on-surface px-3 py-2 text-xs border border-surface-container-high focus:outline-none focus:border-primary"/>
-              
-              <select name="status" class="bg-surface-container-highest text-on-surface text-xs px-2 py-2 border border-surface-container-high">
-                <option value="Responded" {% if enq.status == 'Responded' %}selected{% endif %}>Responded</option>
-                <option value="Closed" {% if enq.status == 'Closed' %}selected{% endif %}>Closed</option>
-                <option value="Open" {% if enq.status == 'Open' %}selected{% endif %}>Open</option>
-              </select>
-
-              <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary-container px-4 py-2 text-xs uppercase tracking-wider font-bold transition-colors">
-                Save Note
-              </button>
-            </form>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Section 3: Product Catalog Management & Add New Relic -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- Existing Products (7 cols) -->
-      <div class="lg:col-span-7 bg-surface-container border border-surface-container-high p-6 sm:p-8">
-        <h2 class="font-serif text-2xl text-on-surface mb-6 pb-3 border-b border-surface-container-high/60">
-          Vault Inventory &amp; Casket Listings
-        </h2>
-
-        <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-          {% for p in all_products %}
-            <div class="p-3 bg-surface-container-low border border-surface-container-high flex items-center justify-between gap-3 text-xs">
-              <div class="flex items-center gap-3">
-                <img src="{{ p.primary_image_url }}" alt="{{ p.name }}" class="w-12 h-12 object-cover border border-surface-container-high"/>
-                <div>
-                  <span class="font-serif text-sm text-on-surface font-medium block">{{ p.name }}</span>
-                  <span class="text-outline text-[11px]">{{ p.category.name }} &bull; ${{ p.price|floatformat:0 }} &bull; {{ p.stock }} in vault</span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2 space-y-2">
+                <span class="text-[10px] uppercase tracking-wider text-outline block">Family Request &amp; Specifications:</span>
+                <p class="text-on-surface-variant bg-surface-container-low p-3.5 border-l-2 border-primary/60 italic text-xs leading-relaxed">
+                  &ldquo;{{ enq.message }}&rdquo;
+                </p>
+                <div class="flex items-center gap-4 text-[11px] text-outline pt-1">
+                  {% if enq.mortuary_location %}
+                    <span><strong class="text-on-surface">Destination:</strong> {{ enq.mortuary_location }}</span>
+                  {% endif %}
+                  <span><strong class="text-on-surface">Service Type:</strong> {{ enq.custom_type }}</span>
+                  <span><strong class="text-on-surface">Logged:</strong> {{ enq.created_at|date:"M d, Y H:i" }}</span>
                 </div>
               </div>
 
-              <div class="flex items-center gap-2">
-                <form method="POST" action="{% url 'admin_dashboard' %}">
+              <!-- Counselor Response Form -->
+              <div class="bg-surface-container-low border border-surface-container-high p-4 space-y-3">
+                <span class="text-[10px] uppercase tracking-wider text-primary font-bold block">Counselor Disposition</span>
+
+                <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-2">
                   {% csrf_token %}
-                  <input type="hidden" name="action" value="toggle_product"/>
-                  <input type="hidden" name="product_id" value="{{ p.id }}"/>
-                  <button type="submit" class="px-2.5 py-1 text-[10px] uppercase font-semibold transition-colors {% if p.is_active %}bg-primary/20 text-primary border border-primary/30{% else %}bg-surface-container-high text-outline{% endif %}">
-                    {% if p.is_active %}Active{% else %}Inactive{% endif %}
-                  </button>
+                  <input type="hidden" name="action" value="respond_enquiry"/>
+                  <input type="hidden" name="enquiry_id" value="{{ enq.id }}"/>
+
+                  <textarea name="admin_response" rows="3" placeholder="Record counselor response note to family..." class="w-full bg-surface-container-highest text-on-surface px-2.5 py-1.5 text-xs border border-surface-container-high focus:outline-none focus:border-primary">{{ enq.admin_response|default:'' }}</textarea>
+
+                  <div class="flex items-center justify-between gap-2 pt-1">
+                    <select name="status" class="bg-surface-container-highest text-on-surface text-xs px-2 py-1.5 border border-surface-container-high">
+                      <option value="Responded" {% if enq.status == 'Responded' %}selected{% endif %}>Responded</option>
+                      <option value="Closed" {% if enq.status == 'Closed' %}selected{% endif %}>Closed</option>
+                      <option value="Open" {% if enq.status == 'Open' %}selected{% endif %}>Open</option>
+                    </select>
+
+                    <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary-container px-3 py-1.5 text-xs uppercase font-bold tracking-wider">
+                      Save Note
+                    </button>
+                  </div>
                 </form>
+
+                <div class="pt-2 border-t border-surface-container-high/40 flex items-center justify-between text-[11px]">
+                  {% if enq.email %}
+                    <a href="mailto:{{ enq.email }}?subject=Eternum Memorial Bereavement Support [{{ enq.tracking_id }}]" class="text-primary hover:underline flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">mail</span> Email Family
+                    </a>
+                  {% endif %}
+                  {% if enq.phone %}
+                    <a href="tel:{{ enq.phone }}" class="text-primary hover:underline flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">call</span> Call Family
+                    </a>
+                  {% endif %}
+                  <form method="POST" action="{% url 'admin_dashboard' %}" onsubmit="return confirm('Delete enquiry record?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_enquiry"/>
+                    <input type="hidden" name="enquiry_id" value="{{ enq.id }}"/>
+                    <button type="submit" class="text-error/70 hover:text-error">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+
               </div>
             </div>
-          {% endfor %}
-        </div>
+
+          </div>
+        {% empty %}
+          <div class="bg-surface-container border border-surface-container-high p-12 text-center text-outline">
+            No bereavement enquiries found in this view.
+          </div>
+        {% endfor %}
       </div>
 
-      <!-- Add New Product Form (5 cols) -->
-      <div class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6 sm:p-8">
-        <h2 class="font-serif text-xl text-on-surface mb-4 pb-2 border-b border-surface-container-high/60">
-          Add New Memorial Casket
-        </h2>
+    </div>
+  {% endif %}
 
-        <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-3 text-xs">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="add_product"/>
+  <!-- TAB CONTENT 5: PROVENANCE & AUTHENTICITY CERTIFICATES -->
+  {% if active_tab == 'certificates' %}
+    <div class="space-y-6">
+      
+      <!-- Search & Info Header -->
+      <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="font-serif text-xl text-on-surface">Chain-of-Custody Crypt Certificates</h2>
+          <span class="text-xs text-outline">Cryptographic verification seals guaranteeing mortuary acceptance &amp; materials integrity</span>
+        </div>
 
-          <div>
-            <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Casket Name *</label>
-            {{ product_form.name }}
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Category *</label>
-              {{ product_form.category }}
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Price ($) *</label>
-              {{ product_form.price }}
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Stock in Vault</label>
-              {{ product_form.stock }}
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Dispatch State</label>
-              {{ product_form.dispatch_type }}
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Material</label>
-              {{ product_form.material }}
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Finish Patina</label>
-              {{ product_form.finish }}
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Length</label>
-              {{ product_form.length }}
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Width</label>
-              {{ product_form.width }}
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Height</label>
-              {{ product_form.height }}
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Image URL</label>
-            {{ product_form.image_url }}
-          </div>
-
-          <div>
-            <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Description</label>
-            {{ product_form.description }}
-          </div>
-
-          <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3 text-xs uppercase tracking-widest font-bold transition-all shadow-md">
-            Publish New Monument
+        <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
+          <input type="hidden" name="tab" value="certificates"/>
+          <input type="text" name="cert_search" value="{{ cert_search }}" placeholder="Search verification code or casket..." class="bg-surface-container-highest text-on-surface text-xs px-3 py-1.5 border border-surface-container-high focus:outline-none focus:border-primary w-64"/>
+          <button type="submit" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs px-3 py-1.5 border border-surface-container-high">
+            Search
           </button>
         </form>
       </div>
 
-    </div>
+      <!-- Certificates Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for cert in certificates %}
+          <div class="bg-surface-container border border-surface-container-high p-5 text-xs space-y-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-container-high/60">
+                <span class="font-mono text-primary font-bold text-xs">{{ cert.verification_code }}</span>
+                <span class="px-2 py-0.5 text-[9px] uppercase font-semibold {% if cert.is_active %}bg-primary/20 text-primary border border-primary/30{% else %}bg-error-container text-error{% endif %}">
+                  {% if cert.is_active %}Verified Active{% else %}Revoked{% endif %}
+                </span>
+              </div>
 
-  </div>
+              <div class="flex items-start gap-4">
+                {% if cert.qr_code_url %}
+                  <img src="{{ cert.qr_code_url }}" alt="QR Code" class="w-20 h-20 bg-white p-1 border border-surface-container-high shrink-0"/>
+                {% else %}
+                  <div class="w-20 h-20 bg-surface-container-highest border border-surface-container-high flex items-center justify-center text-outline">
+                    No QR
+                  </div>
+                {% endif %}
+
+                <div class="space-y-1">
+                  <span class="font-serif text-sm font-semibold text-on-surface block">{{ cert.product.name }}</span>
+                  <span class="text-[11px] text-outline block">${{ cert.product.price|floatformat:0 }} &bull; {{ cert.product.category.name }}</span>
+                  <span class="text-[10px] text-outline/80 block">Issued: {{ cert.issued_at|date:"M d, Y" }}</span>
+                  <span class="text-[10px] text-outline/80 block">By: {{ cert.issued_by.get_full_name|default:cert.issued_by.email }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-surface-container-high/40 flex items-center justify-between">
+              <a href="{% url 'certificate_verify' %}?code={{ cert.verification_code }}" target="_blank" class="text-xs text-primary hover:underline flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">verified</span> Test Public Portal &rarr;
+              </a>
+
+              <form method="POST" action="{% url 'admin_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle_certificate"/>
+                <input type="hidden" name="cert_id" value="{{ cert.id }}"/>
+                <button type="submit" class="text-[10px] uppercase tracking-wider text-outline hover:text-on-surface">
+                  {% if cert.is_active %}Revoke{% else %}Activate{% endif %}
+                </button>
+              </form>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-span-3 bg-surface-container border border-surface-container-high p-12 text-center text-outline">
+            No authenticity certificates issued yet.
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  {% endif %}
+
+  <!-- TAB CONTENT 6: SANCTUARY SYSTEM SETTINGS -->
+  {% if active_tab == 'settings' %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Existing Settings (7 Cols) -->
+      <div class="lg:col-span-7 bg-surface-container border border-surface-container-high p-6 space-y-6">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Policy &amp; Service Config</span>
+          <h2 class="font-serif text-2xl text-on-surface">Sanctuary Operational Settings</h2>
+        </div>
+
+        <div class="space-y-4">
+          {% for setting in system_settings %}
+            <div class="p-4 bg-surface-container-low border border-surface-container-high text-xs space-y-2">
+              <div class="flex items-center justify-between pb-1 border-b border-surface-container-high/40">
+                <span class="font-mono text-primary font-bold">{{ setting.setting_key }}</span>
+                <span class="text-[10px] text-outline">Updated: {{ setting.updated_at|date:"M d, Y" }}</span>
+              </div>
+
+              <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_system_setting"/>
+                <input type="hidden" name="setting_key" value="{{ setting.setting_key }}"/>
+                
+                <textarea name="setting_value" rows="2" class="w-full bg-surface-container-highest text-on-surface px-2.5 py-1.5 text-xs border border-surface-container-high">{{ setting.setting_value }}</textarea>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] text-outline">Modified by: {{ setting.updated_by.email|default:"System Initializer" }}</span>
+                  <button type="submit" class="bg-primary text-on-primary-container text-[10px] uppercase font-bold px-3 py-1 hover:bg-primary-container">
+                    Update Value
+                  </button>
+                </div>
+              </form>
+            </div>
+          {% empty %}
+            <p class="text-xs text-outline py-4">No custom settings created yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Add New Setting Key (5 Cols) -->
+      <div class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6 space-y-4">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Configuration Parameters</span>
+          <h2 class="font-serif text-xl text-on-surface">Define New Setting Key</h2>
+        </div>
+
+        <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-3 text-xs">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="update_system_setting"/>
+
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Setting Key (e.g. mortuary_concierge_phone)</label>
+            <input type="text" name="setting_key" required placeholder="concierge_hotline" class="w-full bg-surface-container-highest text-on-surface px-3 py-2 border border-surface-container-high font-mono text-xs"/>
+          </div>
+
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Setting Value</label>
+            <textarea name="setting_value" rows="3" required placeholder="Setting description or parameter value..." class="w-full bg-surface-container-highest text-on-surface px-3 py-2 border border-surface-container-high text-xs"></textarea>
+          </div>
+
+          <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-2.5 text-xs uppercase tracking-wider font-bold">
+            Register Setting
+          </button>
+        </form>
+
+        <div class="p-3 bg-surface-container-low border border-surface-container-high/60 text-[11px] text-outline space-y-1">
+          <strong class="text-on-surface block">Predefined Sanctuary Keys:</strong>
+          <p>&bull; <code>bereavement_hotline</code>: Emergency phone displayed on header &amp; urgent form</p>
+          <p>&bull; <code>dispatch_email</code>: Primary logistics coordination inbox</p>
+          <p>&bull; <code>ftc_compliance_notice</code>: Legal statement on mortuary casket rights</p>
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
+
+  <!-- TAB CONTENT 7: ACCOUNTS & DIRECTOR ROLES -->
+  {% if active_tab == 'users' %}
+    <div class="space-y-6">
+      
+      <div class="bg-surface-container border border-surface-container-high p-4 flex items-center justify-between">
+        <div>
+          <h2 class="font-serif text-xl text-on-surface">Registered Sanctuary User Accounts</h2>
+          <span class="text-xs text-outline">Manage family buyer profiles and Mortuary Administration permissions</span>
+        </div>
+        <span class="text-xs text-primary font-bold">{{ users_list|length }} Total Users</span>
+      </div>
+
+      <div class="bg-surface-container border border-surface-container-high p-6">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-surface-container-high text-outline uppercase text-[10px] tracking-wider">
+                <th class="py-3 px-3">User</th>
+                <th class="py-3 px-3">Contact</th>
+                <th class="py-3 px-3">Current Role</th>
+                <th class="py-3 px-3">Orders</th>
+                <th class="py-3 px-3">Joined Date</th>
+                <th class="py-3 px-3">Account Status</th>
+                <th class="py-3 px-3 text-right">Role Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container-high/40">
+              {% for u in users_list %}
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-3 px-3">
+                    <span class="font-medium text-on-surface block">{{ u.get_full_name|default:u.username }}</span>
+                    <span class="text-[11px] text-outline">{{ u.email }}</span>
+                  </td>
+                  <td class="py-3 px-3 text-outline">
+                    {{ u.phone|default:"No phone registered" }}
+                  </td>
+                  <td class="py-3 px-3">
+                    <span class="px-2 py-0.5 text-[10px] uppercase font-bold
+                      {% if u.role == 'admin' %}bg-primary/20 text-primary border border-primary/40
+                      {% else %}bg-surface-container-highest text-outline{% endif %}">
+                      {{ u.get_role_display }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 font-mono font-bold text-primary">
+                    {{ u.order_count }}
+                  </td>
+                  <td class="py-3 px-3 text-outline">
+                    {{ u.date_joined|date:"M d, Y" }}
+                  </td>
+                  <td class="py-3 px-3">
+                    <span class="px-2 py-0.5 text-[10px] uppercase font-semibold {% if u.is_active %}text-emerald-400{% else %}text-error{% endif %}">
+                      {% if u.is_active %}&check; Active{% else %}Deactivated{% endif %}
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-right">
+                    {% if u != request.user %}
+                      <div class="inline-flex items-center gap-2">
+                        <form method="POST" action="{% url 'admin_dashboard' %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="toggle_user_role"/>
+                          <input type="hidden" name="user_id" value="{{ u.id }}"/>
+                          <button type="submit" class="bg-surface-container-highest hover:bg-surface-variant text-on-surface px-2 py-1 text-[10px] uppercase font-semibold border border-surface-container-high">
+                            {% if u.role == 'admin' %}Demote to Buyer{% else %}Make Director{% endif %}
+                          </button>
+                        </form>
+
+                        <form method="POST" action="{% url 'admin_dashboard' %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="toggle_user_status"/>
+                          <input type="hidden" name="user_id" value="{{ u.id }}"/>
+                          <button type="submit" class="text-[10px] uppercase font-semibold text-outline hover:text-error">
+                            {% if u.is_active %}Suspend{% else %}Reactivate{% endif %}
+                          </button>
+                        </form>
+                      </div>
+                    {% else %}
+                      <span class="text-[10px] text-primary italic">(You - Active Director)</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
 
 </div>
 {% endblock %}

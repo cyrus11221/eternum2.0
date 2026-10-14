@@ -1,0 +1,832 @@
+[
+{
+  "model": "memorial.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$0nYqwEM9KVrvamETUejP2S$elO08nsI+hYrxMBhCihwYUrU7MCFtws+OiiFvIDO4+s=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "Bereavement",
+    "last_name": "Administrator",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-10-06T13:15:58.916Z",
+    "email": "admin@eternum.com",
+    "role": "admin",
+    "phone": "1-800-383-7686",
+    "created_at": "2026-10-06T13:15:58.917Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "memorial.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$BsC1qwTgd1coK1ourCy8rE$GiB7n1zxGR/T23Y8iCRaezTPQ1LXfqmflApXTfM/FjI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "eleanor",
+    "first_name": "Eleanor",
+    "last_name": "Vance",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-06T13:15:59.820Z",
+    "email": "eleanor@example.com",
+    "role": "user",
+    "phone": "+1 (555) 234-5678",
+    "created_at": "2026-10-06T13:15:59.820Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "memorial.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$iJwpVAFQSmL0Z05IwqkD19$meOacsU9NxLMHENqYxblw5RF7c9p/9KcTqpHK7+5JHQ=",
+    "last_login": "2026-10-06T13:38:00.058Z",
+    "is_superuser": false,
+    "username": "cyrusabdd",
+    "first_name": "cyrus",
+    "last_name": "p",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-06T13:35:37.165Z",
+    "email": "cyrus@gmail.com",
+    "role": "user",
+    "phone": null,
+    "created_at": "2026-10-06T13:35:38.301Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "memorial.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jPQXqzWRRIKdMPTUiby7RU$p9OBxMGWlEmdE7gB7Zy17qsuDZWIAypxWrqLpFdcWuM=",
+    "last_login": "2026-10-06T13:37:44.074Z",
+    "is_superuser": false,
+    "username": "sgdgsdf568",
+    "first_name": "eggsg",
+    "last_name": "sgddg",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-06T13:37:42.593Z",
+    "email": "sgdgsd@gmail.com",
+    "role": "user",
+    "phone": null,
+    "created_at": "2026-10-06T13:37:44.045Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "memorial.address",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "eleanor@example.com"
+    ],
+    "line1": "742 Evergreen Terrace",
+    "line2": "Liaison: Graceview Mortuary Direct",
+    "city": "Portland",
+    "state": "OR",
+    "postal_code": "97201",
+    "country": "United States",
+    "is_default": true
+  }
+},
+{
+  "model": "memorial.category",
+  "pk": 1,
+  "fields": {
+    "name": "Solid Hardwood Sanctuary",
+    "slug": "hardwood",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.category",
+  "pk": 2,
+  "fields": {
+    "name": "Protective Metal Architecture",
+    "slug": "metal",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.category",
+  "pk": 3,
+  "fields": {
+    "name": "Natural Living Return",
+    "slug": "eco",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.category",
+  "pk": 4,
+  "fields": {
+    "name": "Artisanal Cathedral Craft",
+    "slug": "artisanal",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "name": "The Westminster Solid Oak",
+    "description": "Constructed from sustainably harvested American white oak with warm satin honey seal and hand-tufted tailored pearl crepe interior bedding. Includes antique brass drop bar handles and dignified classical proportions.",
+    "material": "Solid American White Oak",
+    "length": "82″",
+    "width": "28″",
+    "height": "23″",
+    "finish": "satin",
+    "price": "2850.00",
+    "stock": 4,
+    "fabric": "crepe",
+    "sealing_system": "Master Joinery Lock",
+    "capacity": "Tested up to 350 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-0824",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.127Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 2,
+  "fields": {
+    "category": 2,
+    "name": "The Obsidian Nocturne Bronze",
+    "description": "Engineered with an impenetrable continuous welded seam, internal rubber gasket preservation, and hand-brushed nocturnal bronze finish. 18-gauge high-tensile steel designed for timeless preservation and dignified solemnity.",
+    "material": "18-Gauge High-Tensile Steel",
+    "length": "83″",
+    "width": "28.5″",
+    "height": "23″",
+    "finish": "bronze",
+    "price": "3450.00",
+    "stock": 6,
+    "fabric": "crepe",
+    "sealing_system": "Full Gasket Hermetic Lock",
+    "capacity": "Tested up to 450 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-0912",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.175Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 3,
+  "fields": {
+    "category": 3,
+    "name": "The Avalon Woven Willow",
+    "description": "Hand-braided using coppiced English willow. Free from metals, synthetic glues, or chemical lacquers. Certified by the Green Burial Council and lined with unbleached organic calico cotton and a natural straw pillow.",
+    "material": "Organic Coppiced Willow",
+    "length": "78″",
+    "width": "26″",
+    "height": "20″",
+    "finish": "natural",
+    "price": "1420.00",
+    "stock": 8,
+    "fabric": "cotton",
+    "sealing_system": "Hand-Braided Willow Ties",
+    "capacity": "Tested up to 300 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1033",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.206Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 4,
+  "fields": {
+    "category": 4,
+    "name": "The St. Jude Hand-Carved Walnut",
+    "description": "Individually sculpted from old-growth Appalachian walnut with bespoke lancet arch colonnade friezes, accented with crushed ivory silk-velvet padding. A master atelier guild masterpiece crafted for heirloom legacy.",
+    "material": "Old-Growth Appalachian Walnut",
+    "length": "84″",
+    "width": "29″",
+    "height": "24″",
+    "finish": "walnut",
+    "price": "4600.00",
+    "stock": 2,
+    "fabric": "velvet",
+    "sealing_system": "Artisan Concealed Bolt Vault Seal",
+    "capacity": "Tested up to 400 lbs",
+    "dispatch_type": "bespoke",
+    "provenance_code": "ETR-AUTH-1102",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.222Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 5,
+  "fields": {
+    "category": 2,
+    "name": "The Elysium Brushed Copper",
+    "description": "Naturally rustproof solid 32-ounce pure copper construction featuring hand-burnished warm patina, cast bronze swing handles, and tufted champagne velvet interior. Sealed chamber guarantee with lifetime gasket warranty.",
+    "material": "Solid 32oz Pure Copper",
+    "length": "83″",
+    "width": "28″",
+    "height": "23.5″",
+    "finish": "patina",
+    "price": "5200.00",
+    "stock": 3,
+    "fabric": "velvet",
+    "sealing_system": "Perpetual Sealed Chamber Assurance",
+    "capacity": "Tested up to 500 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1205",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.256Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 6,
+  "fields": {
+    "category": 3,
+    "name": "The Serenity Forest Pine",
+    "description": "Constructed from certified sustainable northern white pine with natural wooden dowel fasteners, warm beeswax rub, and an unbleached organic cotton interior mattress. Zero metal screws, 100% biodegradable return.",
+    "material": "Sustainable Northern White Pine",
+    "length": "79″",
+    "width": "26.5″",
+    "height": "21″",
+    "finish": "beeswax",
+    "price": "1150.00",
+    "stock": 7,
+    "fabric": "cotton",
+    "sealing_system": "100% Wooden Joinery",
+    "capacity": "Tested up to 320 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1340",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.292Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 7,
+  "fields": {
+    "category": 1,
+    "name": "The Canterbury Solid Mahogany",
+    "description": "Hand-selected ribbon-grain Honduran mahogany with deep hand-rubbed luster, velvet tufted interior, and solid antiqued brass handles. Reflects traditional English cathedral solemnity and lasting grace.",
+    "material": "Solid Honduran Mahogany",
+    "length": "83″",
+    "width": "28.5″",
+    "height": "23″",
+    "finish": "patina",
+    "price": "3850.00",
+    "stock": 5,
+    "fabric": "velvet",
+    "sealing_system": "Precision Mortise & Tenon Lock",
+    "capacity": "Tested up to 400 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1402",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.323Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 8,
+  "fields": {
+    "category": 2,
+    "name": "The Lincoln Cast Heritage Bronze",
+    "description": "Cast from pure 32-ounce bronze alloy, the noblest of memorial metals. Hand-polished midnight bronze finish with vacuum gasket crypt seal and champagne velvet bed. Fully non-corrosive for eternity.",
+    "material": "Solid Architectural Bronze",
+    "length": "83.5″",
+    "width": "29″",
+    "height": "24″",
+    "finish": "bronze",
+    "price": "5900.00",
+    "stock": 2,
+    "fabric": "velvet",
+    "sealing_system": "Dual Vacuum Crypt Hermetic Gasket",
+    "capacity": "Tested up to 550 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1550",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.352Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 9,
+  "fields": {
+    "category": 3,
+    "name": "The Eden Woven Bamboo",
+    "description": "Meticulously crafted from fast-growing, renewable organic bamboo canes and rush weaves. Zero nails, formaldehyde-free, with natural calico lining and unbleached cotton pillows.",
+    "material": "Natural Renewable Bamboo",
+    "length": "79″",
+    "width": "27″",
+    "height": "20.5″",
+    "finish": "natural",
+    "price": "1650.00",
+    "stock": 6,
+    "fabric": "cotton",
+    "sealing_system": "Twined Bamboo Fasteners",
+    "capacity": "Tested up to 310 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1620",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.387Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 10,
+  "fields": {
+    "category": 4,
+    "name": "The Notre Dame Cathedral Relic",
+    "description": "A monument to sacred architecture. Features hand-chiseled pointed gothic arches along the side panels, warm antique walnut wood, hand-gilded bronze corners, and rich ivory silk velvet lining.",
+    "material": "Cathedral Black Walnut & Bronze",
+    "length": "85″",
+    "width": "30″",
+    "height": "24.5″",
+    "finish": "walnut",
+    "price": "6200.00",
+    "stock": 1,
+    "fabric": "velvet",
+    "sealing_system": "Gothic Vault Pin Joinery",
+    "capacity": "Tested up to 450 lbs",
+    "dispatch_type": "bespoke",
+    "provenance_code": "ETR-AUTH-1777",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.446Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 11,
+  "fields": {
+    "category": 2,
+    "name": "The Valhalla 18G Nocturne Steel",
+    "description": "Constructed from cold-rolled 18-gauge protective steel, electrostatically treated with midnight bronze powder coat and hermetic dual neoprene gaskets. Quiet dignity and high endurance.",
+    "material": "18-Gauge Cold-Rolled Steel",
+    "length": "83″",
+    "width": "28″",
+    "height": "23″",
+    "finish": "bronze",
+    "price": "2950.00",
+    "stock": 5,
+    "fabric": "crepe",
+    "sealing_system": "Dual Neoprene Gasket Hermetic Lock",
+    "capacity": "Tested up to 420 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1880",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.499Z"
+  }
+},
+{
+  "model": "memorial.product",
+  "pk": 12,
+  "fields": {
+    "category": 1,
+    "name": "The Glastonbury Alabaster Ash",
+    "description": "Milled from high-purity northern white ash with warm honey stain and subtle satin wax sheen. Lined with hand-tailored pearl crepe interior and reinforced solid brass swing bar handles.",
+    "material": "Northern White Ash",
+    "length": "82″",
+    "width": "27.5″",
+    "height": "22.5″",
+    "finish": "satin",
+    "price": "2600.00",
+    "stock": 4,
+    "fabric": "crepe",
+    "sealing_system": "Precision Hand-Fitted Dowel Seal",
+    "capacity": "Tested up to 360 lbs",
+    "dispatch_type": "ready",
+    "provenance_code": "ETR-AUTH-1994",
+    "is_active": true,
+    "created_at": "2026-10-06T13:16:01.544Z"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCBi8k5J9jpxSrq6_Ig5-qZww3t3WrZ2gCIGvUvgQeVzcjgsS1XkffTjHSYWGNzIWKwY2Id2mX2gtd8sKomhJuINTviUuc7TlVmLKHNgn0cVUrKlL_0duld9XRJrE55Pzec7xwU_U4bDpikodDfMB6HRgInIAjZTxXNjuJ94R6YQPe4xpTux-qXMpbNT-Zpx4vPjsdP3vgnolkGnIWXDdww5xOE_QUHhuD7Hb0rj6tvyyI6wV-3QTu8"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 2,
+  "fields": {
+    "product": 2,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDM0IFsljflvXgITtGLWWzZRMPrDRuFEqBelq1-gPiIeX-__OTVsLqT7FVrn1AYQ0rlosEaHHxqEstpxmqWxI1dlHJBOuahDuF9hqB5QfKtI6cx3TM7nPIaJc1jikjz9olp04dMISXJetcmbY9kZKGItu2wlLoseVVYX1icenR6hlIflSDD-kqKgqUaUTO4p4dmtDQdb1TBygCq9_9oMK45DJmxsdhyXiskG5RcJNP6lMoyReQkMOF3"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 3,
+  "fields": {
+    "product": 3,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDPdJZjSls9QTrTbI-K6gTgMylPCJFRlY6jEvwD0ieXRoowc-8pW3qn8jMtwlzvBTrdy6cAiHh9xZinl_GcQ9YB-_iom-X3LM3YZCoH4sZuHm0gOUsc2PbBNjDfjjEK5cCxbkwo27EjKLHRk6YSStOAOqJmrx0UzUZdmW2AUXnbQmVqeufXC0HCza9X0CY2AqvXS6nATofDyr1pdCwcuvlpXzZQFoa7wzp5cWPNZ7SZC0co2sVkUlUJ"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 4,
+  "fields": {
+    "product": 4,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuA-85aPU5xM5vQfRQxt9lTmUUrW-CvK0AbBFhValLKXHFzxPtchayJr_YVejUgystUYZZsS2BJHH-SnE3P5EOYMFcddpz1Cjp8KwaVpOzhBVv4Lu1YBlXTm36q3d0dmaYJfRUXg_SM041_1zcd0adWMF9lp7DHiSEjPB5elkkmKciqOcnmrMgPpmww8i8JVTpzMk48VC5itn77wx_zrrb1EILydctEzVcZW0xSOxazNgwM_HC_7Wlog"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 5,
+  "fields": {
+    "product": 5,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuB_Dv91CRcgXDd2SF18iLsfETbN64VB6NUY8HMyFJCgM1Mna_nzThZZhGs4wZbmEtwadvCwDxAG5UO6KzgiHf-mjBFY6Pb-akZDPHDlGF47TQgPAaK9npgc1-i_hnY60-em3GVdRZMzFdUHuQsk7VMSSOSA-XuTvfYGpmau7YGqnVNsSRd5QNp2Sn4l5xBtVuTH0o_DWnU5ok6iWPlGMK6059_W_qJF64OXf2QKUwfdd-Pb4YthndM2"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 6,
+  "fields": {
+    "product": 6,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDypYFncp9gMYC75_407TVNfMGK-7ltX8cm_GKYIAToG2gLqAULmQg4ikbILVHUSxmEyW8CSMuWgdjs09cJaVp-Bm68ebTGi6_iuNE2jnQZu7dH5xKvhG1a9GPQCpsaHJSabzLL8HW-aVZrbsHdPYhDs78--zhxKM1BQP8cOMjRmouSTpZfiPm9V6fNLcvLEiwjUwtSJRRFme5BGqc_Yv4He24wm3KyvHnrggLiEU_mXLEWX3vzu9sS"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 7,
+  "fields": {
+    "product": 7,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCBi8k5J9jpxSrq6_Ig5-qZww3t3WrZ2gCIGvUvgQeVzcjgsS1XkffTjHSYWGNzIWKwY2Id2mX2gtd8sKomhJuINTviUuc7TlVmLKHNgn0cVUrKlL_0duld9XRJrE55Pzec7xwU_U4bDpikodDfMB6HRgInIAjZTxXNjuJ94R6YQPe4xpTux-qXMpbNT-Zpx4vPjsdP3vgnolkGnIWXDdww5xOE_QUHhuD7Hb0rj6tvyyI6wV-3QTu8"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 8,
+  "fields": {
+    "product": 8,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDM0IFsljflvXgITtGLWWzZRMPrDRuFEqBelq1-gPiIeX-__OTVsLqT7FVrn1AYQ0rlosEaHHxqEstpxmqWxI1dlHJBOuahDuF9hqB5QfKtI6cx3TM7nPIaJc1jikjz9olp04dMISXJetcmbY9kZKGItu2wlLoseVVYX1icenR6hlIflSDD-kqKgqUaUTO4p4dmtDQdb1TBygCq9_9oMK45DJmxsdhyXiskG5RcJNP6lMoyReQkMOF3"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 9,
+  "fields": {
+    "product": 9,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDPdJZjSls9QTrTbI-K6gTgMylPCJFRlY6jEvwD0ieXRoowc-8pW3qn8jMtwlzvBTrdy6cAiHh9xZinl_GcQ9YB-_iom-X3LM3YZCoH4sZuHm0gOUsc2PbBNjDfjjEK5cCxbkwo27EjKLHRk6YSStOAOqJmrx0UzUZdmW2AUXnbQmVqeufXC0HCza9X0CY2AqvXS6nATofDyr1pdCwcuvlpXzZQFoa7wzp5cWPNZ7SZC0co2sVkUlUJ"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 10,
+  "fields": {
+    "product": 10,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuA-85aPU5xM5vQfRQxt9lTmUUrW-CvK0AbBFhValLKXHFzxPtchayJr_YVejUgystUYZZsS2BJHH-SnE3P5EOYMFcddpz1Cjp8KwaVpOzhBVv4Lu1YBlXTm36q3d0dmaYJfRUXg_SM041_1zcd0adWMF9lp7DHiSEjPB5elkkmKciqOcnmrMgPpmww8i8JVTpzMk48VC5itn77wx_zrrb1EILydctEzVcZW0xSOxazNgwM_HC_7Wlog"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 11,
+  "fields": {
+    "product": 11,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuB_Dv91CRcgXDd2SF18iLsfETbN64VB6NUY8HMyFJCgM1Mna_nzThZZhGs4wZbmEtwadvCwDxAG5UO6KzgiHf-mjBFY6Pb-akZDPHDlGF47TQgPAaK9npgc1-i_hnY60-em3GVdRZMzFdUHuQsk7VMSSOSA-XuTvfYGpmau7YGqnVNsSRd5QNp2Sn4l5xBtVuTH0o_DWnU5ok6iWPlGMK6059_W_qJF64OXf2QKUwfdd-Pb4YthndM2"
+  }
+},
+{
+  "model": "memorial.productimage",
+  "pk": 12,
+  "fields": {
+    "product": 12,
+    "image_url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDypYFncp9gMYC75_407TVNfMGK-7ltX8cm_GKYIAToG2gLqAULmQg4ikbILVHUSxmEyW8CSMuWgdjs09cJaVp-Bm68ebTGi6_iuNE2jnQZu7dH5xKvhG1a9GPQCpsaHJSabzLL8HW-aVZrbsHdPYhDs78--zhxKM1BQP8cOMjRmouSTpZfiPm9V6fNLcvLEiwjUwtSJRRFme5BGqc_Yv4He24wm3KyvHnrggLiEU_mXLEWX3vzu9sS"
+  }
+},
+{
+  "model": "memorial.cart",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "eleanor@example.com"
+    ],
+    "created_at": "2026-10-06T13:16:01.082Z"
+  }
+},
+{
+  "model": "memorial.cart",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "cyrus@gmail.com"
+    ],
+    "created_at": "2026-10-06T13:35:38.338Z"
+  }
+},
+{
+  "model": "memorial.cart",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "sgdgsd@gmail.com"
+    ],
+    "created_at": "2026-10-06T13:37:44.057Z"
+  }
+},
+{
+  "model": "memorial.cartitem",
+  "pk": 1,
+  "fields": {
+    "cart": 2,
+    "product": 2,
+    "quantity": 1,
+    "added_at": "2026-10-06T13:36:38.874Z"
+  }
+},
+{
+  "model": "memorial.cartitem",
+  "pk": 2,
+  "fields": {
+    "cart": 2,
+    "product": 3,
+    "quantity": 1,
+    "added_at": "2026-10-06T13:38:45.476Z"
+  }
+},
+{
+  "model": "memorial.order",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "eleanor@example.com"
+    ],
+    "shipping_address": 1,
+    "status": "confirmed",
+    "total_amount": "2850.00",
+    "mortuary_name": "Graceview Memorial Sanctuary",
+    "mortuary_director": "Director Robert Sterling",
+    "mortuary_phone": "+1 (555) 890-1234",
+    "delivery_notes": "Deliver directly to loading bay B by Thursday morning for Friday service.",
+    "created_at": "2026-10-06T13:16:01.582Z"
+  }
+},
+{
+  "model": "memorial.orderitem",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "product": 1,
+    "quantity": 1,
+    "unit_price": "2850.00"
+  }
+},
+{
+  "model": "memorial.payment",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "method": "Sandbox Card",
+    "transaction_ref": "TXN-ETR-849204",
+    "status": "success",
+    "paid_at": null
+  }
+},
+{
+  "model": "memorial.invoice",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "invoice_number": "INV-2026-0042",
+    "invoice_date": "2026-10-06T13:16:01.615Z",
+    "total_amount": "2850.00",
+    "status": "PAID"
+  }
+},
+{
+  "model": "memorial.enquiry",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "eleanor@example.com"
+    ],
+    "name": "Eleanor Vance",
+    "email": "eleanor@example.com",
+    "phone": "+1 (555) 234-5678",
+    "mortuary_location": "Oakridge Mortuary, Portland OR",
+    "urgency_level": "<24h",
+    "custom_type": "Custom Monogram Carving",
+    "message": "We require expedited dispatch of The Westminster Oak with monogrammed initials \"H.V.\" on the head end panel for a Saturday memorial service.",
+    "admin_response": "Bereavement Counselor Marcus has confirmed expedited hand-carving in our workshop. Scheduled for mortuary direct courier transfer within 18 hours.",
+    "status": "Responded",
+    "created_at": "2026-10-06T13:16:01.627Z"
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "verification_code": "ETR-AUTH-0824",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-0824",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.171Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 2,
+  "fields": {
+    "product": 2,
+    "verification_code": "ETR-AUTH-0912",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-0912",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.191Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 3,
+  "fields": {
+    "product": 3,
+    "verification_code": "ETR-AUTH-1033",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1033",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.222Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 4,
+  "fields": {
+    "product": 4,
+    "verification_code": "ETR-AUTH-1102",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1102",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.254Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 5,
+  "fields": {
+    "product": 5,
+    "verification_code": "ETR-AUTH-1205",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1205",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.270Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 6,
+  "fields": {
+    "product": 6,
+    "verification_code": "ETR-AUTH-1340",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1340",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.313Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 7,
+  "fields": {
+    "product": 7,
+    "verification_code": "ETR-AUTH-1402",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1402",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.333Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 8,
+  "fields": {
+    "product": 8,
+    "verification_code": "ETR-AUTH-1550",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1550",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.375Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 9,
+  "fields": {
+    "product": 9,
+    "verification_code": "ETR-AUTH-1620",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1620",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.414Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 10,
+  "fields": {
+    "product": 10,
+    "verification_code": "ETR-AUTH-1777",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1777",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.483Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 11,
+  "fields": {
+    "product": 11,
+    "verification_code": "ETR-AUTH-1880",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1880",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.527Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.authenticitycertificate",
+  "pk": 12,
+  "fields": {
+    "product": 12,
+    "verification_code": "ETR-AUTH-1994",
+    "qr_code_url": "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=ETR-AUTH-1994",
+    "issued_by": [
+      "admin@eternum.com"
+    ],
+    "issued_at": "2026-10-06T13:16:01.572Z",
+    "is_active": true
+  }
+},
+{
+  "model": "memorial.systemsetting",
+  "pk": 1,
+  "fields": {
+    "setting_key": "bereavement_hotline",
+    "setting_value": "1-800-ETERNUM (383-7686)",
+    "updated_by": [
+      "admin@eternum.com"
+    ],
+    "updated_at": "2026-10-06T13:16:01.640Z"
+  }
+},
+{
+  "model": "memorial.systemsetting",
+  "pk": 2,
+  "fields": {
+    "setting_key": "dispatch_email",
+    "setting_value": "counselor@eternum-memorial.com",
+    "updated_by": [
+      "admin@eternum.com"
+    ],
+    "updated_at": "2026-10-06T13:16:01.647Z"
+  }
+},
+{
+  "model": "memorial.systemsetting",
+  "pk": 3,
+  "fields": {
+    "setting_key": "ftc_compliance_notice",
+    "setting_value": "Under FTC 16 CFR Part 453, mortuaries cannot reject or penalize third-party casket deliveries.",
+    "updated_by": [
+      "admin@eternum.com"
+    ],
+    "updated_at": "2026-10-06T13:16:01.663Z"
+  }
+}
+]

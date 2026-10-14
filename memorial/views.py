@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -52,16 +54,18 @@ def catalog_view(request):
     # Category filter
     category_slug = request.GET.get('category', 'all')
     if category_slug and category_slug != 'all':
-        if category_slug == 'hardwood':
-            products = products.filter(category__id=1)
-        elif category_slug == 'metal':
-            products = products.filter(category__id=2)
-        elif category_slug == 'eco':
-            products = products.filter(category__id=3)
-        elif category_slug == 'artisanal':
-            products = products.filter(category__id=4)
-        else:
-            products = products.filter(category__slug=category_slug)
+        slug_map = {
+            'hardwood': 'hardwood',
+            'metal': 'metal',
+            'eco': 'eco',
+            'artisanal': 'artisanal',
+        }
+        target_slug = slug_map.get(category_slug, category_slug)
+        products = products.filter(
+            Q(category__slug__iexact=target_slug) |
+            Q(category__name__icontains=target_slug) |
+            Q(category__slug__icontains=target_slug)
+        )
 
     # Price filter
     price_tier = request.GET.get('price', 'all')
@@ -560,21 +564,19 @@ def profile_view(request):
     })
 
 
-# --- Admin Portal (Solemn Modern Gothic Admin View) ---
+# --- Admin Portal (Solemn Modern Gothic Director Suite) ---
 
 @user_passes_test(is_admin, login_url='login')
 def admin_dashboard_view(request):
-    total_revenue = Order.objects.filter(status__in=['confirmed', 'dispatched', 'delivered']).aggregate(Sum('total_amount'))['total_amount__sum'] or Decimal('0.00')
-    total_orders = Order.objects.count()
-    open_enquiries_count = Enquiry.objects.filter(status='Open').count()
-    products_count = Product.objects.filter(is_active=True).count()
+    """
+    Central mortuary administrative operations suite:
+    - Multi-tab management: overview, orders & dispatch, inventory, enquiries, certificates, settings, and users.
+    - Handles status transitions, stock quick-adjustments, product commissioning, certificate issuing, and counselor notes.
+    """
+    # Active tab from query param
+    active_tab = request.GET.get('tab', 'overview')
 
-    recent_orders = Order.objects.all().order_by('-created_at')[:8]
-    recent_enquiries = Enquiry.objects.all().order_by('-created_at')[:6]
-    all_products = Product.objects.all().order_by('-id')
-    certificates = AuthenticityCertificate.objects.all().order_by('-issued_at')[:8]
-
-    # Handle actions
+    # Handle POST Actions
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -583,9 +585,109 @@ def admin_dashboard_view(request):
             new_status = request.POST.get('status')
             order = get_object_or_404(Order, pk=order_id)
             order.status = new_status
+            delivery_notes = request.POST.get('delivery_notes')
+            if delivery_notes is not None:
+                order.delivery_notes = delivery_notes
             order.save()
-            messages.success(request, f'Order #{order.id} status updated to {order.get_status_display()}')
-            return redirect('admin_dashboard')
+            messages.success(request, f'Order #ETR-{order.id:04d} status updated to {order.get_status_display()}')
+            return redirect(f"{reverse('admin_dashboard')}?tab=orders")
+
+        elif action == 'update_order_details':
+            order_id = request.POST.get('order_id')
+            order = get_object_or_404(Order, pk=order_id)
+            order.mortuary_name = request.POST.get('mortuary_name', order.mortuary_name)
+            order.mortuary_director = request.POST.get('mortuary_director', order.mortuary_director)
+            order.mortuary_phone = request.POST.get('mortuary_phone', order.mortuary_phone)
+            order.delivery_notes = request.POST.get('delivery_notes', order.delivery_notes)
+            order.save()
+            messages.success(request, f'Mortuary destination details updated for Order #ETR-{order.id:04d}.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=orders")
+
+        elif action == 'add_product':
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                p = form.save(commit=False)
+                prov_code = f"ETR-AUTH-{uuid.uuid4().hex[:4].upper()}"
+                p.provenance_code = prov_code
+                p.save()
+                img_url = form.cleaned_data.get('image_url') or 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80'
+                ProductImage.objects.create(product=p, image_url=img_url)
+                AuthenticityCertificate.objects.create(
+                    product=p,
+                    verification_code=prov_code,
+                    qr_code_url=f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={prov_code}',
+                    issued_by=request.user,
+                    is_active=True
+                )
+                messages.success(request, f'New casket "{p.name}" added to vault with code {prov_code}')
+            else:
+                messages.error(request, f'Error adding casket: {form.errors.as_text()}')
+            return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+
+        elif action == 'edit_product':
+            p_id = request.POST.get('product_id')
+            p = get_object_or_404(Product, pk=p_id)
+            p.name = request.POST.get('name', p.name).strip()
+            cat_id = request.POST.get('category')
+            if cat_id:
+                p.category_id = cat_id
+            try:
+                p.price = Decimal(request.POST.get('price', p.price))
+            except Exception:
+                pass
+            try:
+                p.stock = max(0, int(request.POST.get('stock', p.stock)))
+            except Exception:
+                pass
+            p.material = request.POST.get('material', p.material)
+            p.finish = request.POST.get('finish', p.finish)
+            p.fabric = request.POST.get('fabric', p.fabric)
+            p.length = request.POST.get('length', p.length)
+            p.width = request.POST.get('width', p.width)
+            p.height = request.POST.get('height', p.height)
+            p.capacity = request.POST.get('capacity', p.capacity)
+            p.sealing_system = request.POST.get('sealing_system', p.sealing_system)
+            p.dispatch_type = request.POST.get('dispatch_type', p.dispatch_type)
+            p.description = request.POST.get('description', p.description)
+            p.is_active = request.POST.get('is_active') in ['on', 'true', 'True', '1']
+            p.save()
+
+            image_url = request.POST.get('image_url', '').strip()
+            if image_url:
+                first_img = p.images.first()
+                if first_img:
+                    first_img.image_url = image_url
+                    first_img.save()
+                else:
+                    ProductImage.objects.create(product=p, image_url=image_url)
+
+            messages.success(request, f'Vault casket "{p.name}" specifications updated.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+
+        elif action == 'quick_stock':
+            p_id = request.POST.get('product_id')
+            p = get_object_or_404(Product, pk=p_id)
+            delta = int(request.POST.get('delta', 0))
+            p.stock = max(0, p.stock + delta)
+            p.save()
+            messages.success(request, f'Stock for "{p.name}" updated to {p.stock} units in vault.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+
+        elif action == 'toggle_product':
+            p_id = request.POST.get('product_id')
+            p = get_object_or_404(Product, pk=p_id)
+            p.is_active = not p.is_active
+            p.save()
+            messages.info(request, f'Product "{p.name}" active status: {p.is_active}')
+            return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+
+        elif action == 'delete_product':
+            p_id = request.POST.get('product_id')
+            p = get_object_or_404(Product, pk=p_id)
+            name = p.name
+            p.delete()
+            messages.warning(request, f'Casket "{name}" removed from sanctuary catalog.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
         elif action == 'respond_enquiry':
             enquiry_id = request.POST.get('enquiry_id')
@@ -596,45 +698,219 @@ def admin_dashboard_view(request):
             enquiry.status = new_status
             enquiry.save()
             messages.success(request, f'Response recorded for Enquiry {enquiry.tracking_id()}')
-            return redirect('admin_dashboard')
+            return redirect(f"{reverse('admin_dashboard')}?tab=enquiries")
 
-        elif action == 'add_product':
-            form = ProductForm(request.POST)
-            if form.is_valid():
-                p = form.save(commit=False)
-                prov_code = f"ETR-AUTH-{uuid.uuid4().hex[:4].upper()}"
-                p.provenance_code = prov_code
-                p.save()
-                img_url = form.cleaned_data.get('image_url') or 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBi8k5J9jpxSrq6_Ig5-qZww3t3WrZ2gCIGvUvgQeVzcjgsS1XkffTjHSYWGNzIWKwY2Id2mX2gtd8sKomhJuINTviUuc7TlVmLKHNgn0cVUrKlL_0duld9XRJrE55Pzec7xwU_U4bDpikodDfMB6HRgInIAjZTxXNjuJ94R6YQPe4xpTux-qXMpbNT-Zpx4vPjsdP3vgnolkGnIWXDdww5xOE_QUHhuD7Hb0rj6tvyyI6wV-3QTu8'
-                ProductImage.objects.create(product=p, image_url=img_url)
-                AuthenticityCertificate.objects.create(
-                    product=p,
-                    verification_code=prov_code,
-                    qr_code_url=f'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={prov_code}',
-                    issued_by=request.user,
-                    is_active=True
-                )
-                messages.success(request, f'New casket "{p.name}" added with provenance code {prov_code}')
-                return redirect('admin_dashboard')
+        elif action == 'delete_enquiry':
+            enquiry_id = request.POST.get('enquiry_id')
+            enquiry = get_object_or_404(Enquiry, pk=enquiry_id)
+            tracking = enquiry.tracking_id()
+            enquiry.delete()
+            messages.info(request, f'Enquiry {tracking} removed.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=enquiries")
 
-        elif action == 'toggle_product':
+        elif action == 'issue_certificate':
             p_id = request.POST.get('product_id')
             p = get_object_or_404(Product, pk=p_id)
-            p.is_active = not p.is_active
-            p.save()
-            messages.info(request, f'Product "{p.name}" active status: {p.is_active}')
-            return redirect('admin_dashboard')
+            prov_code = p.provenance_code or f"ETR-AUTH-{uuid.uuid4().hex[:4].upper()}"
+            if not p.provenance_code:
+                p.provenance_code = prov_code
+                p.save()
+            cert, created = AuthenticityCertificate.objects.get_or_create(
+                product=p,
+                defaults={
+                    'verification_code': prov_code,
+                    'qr_code_url': f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={prov_code}',
+                    'issued_by': request.user,
+                    'is_active': True
+                }
+            )
+            if not created:
+                cert.verification_code = prov_code
+                cert.qr_code_url = f'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={prov_code}'
+                cert.is_active = True
+                cert.issued_by = request.user
+                cert.save()
+            messages.success(request, f'Authenticity certificate issued/refreshed for {p.name} ({prov_code})')
+            return redirect(f"{reverse('admin_dashboard')}?tab=certificates")
 
+        elif action == 'toggle_certificate':
+            cert_id = request.POST.get('cert_id')
+            cert = get_object_or_404(AuthenticityCertificate, pk=cert_id)
+            cert.is_active = not cert.is_active
+            cert.save()
+            messages.info(request, f'Certificate {cert.verification_code} active status: {cert.is_active}')
+            return redirect(f"{reverse('admin_dashboard')}?tab=certificates")
+
+        elif action == 'update_system_setting':
+            key = request.POST.get('setting_key', '').strip()
+            val = request.POST.get('setting_value', '').strip()
+            if key:
+                setting, _ = SystemSetting.objects.get_or_create(setting_key=key)
+                setting.setting_value = val
+                setting.updated_by = request.user
+                setting.save()
+                messages.success(request, f'System setting "{key}" saved.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=settings")
+
+        elif action == 'delete_system_setting':
+            setting_id = request.POST.get('setting_id')
+            setting = get_object_or_404(SystemSetting, pk=setting_id)
+            key = setting.setting_key
+            setting.delete()
+            messages.info(request, f'Setting "{key}" removed.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=settings")
+
+        elif action == 'toggle_user_role':
+            u_id = request.POST.get('user_id')
+            target_user = get_object_or_404(User, pk=u_id)
+            if target_user == request.user:
+                messages.error(request, 'You cannot modify your own administrator role.')
+            else:
+                if target_user.role == 'admin':
+                    target_user.role = 'user'
+                    target_user.is_staff = False
+                else:
+                    target_user.role = 'admin'
+                    target_user.is_staff = True
+                target_user.save()
+                messages.success(request, f'User {target_user.email} role updated to {target_user.get_role_display()}.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=users")
+
+        elif action == 'toggle_user_status':
+            u_id = request.POST.get('user_id')
+            target_user = get_object_or_404(User, pk=u_id)
+            if target_user == request.user:
+                messages.error(request, 'You cannot deactivate your own account.')
+            else:
+                target_user.is_active = not target_user.is_active
+                target_user.save()
+                messages.info(request, f'User account {target_user.email} active status: {target_user.is_active}.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=users")
+
+    # Analytics & Metrics
+    total_revenue = Order.objects.filter(status__in=['confirmed', 'dispatched', 'delivered']).aggregate(Sum('total_amount'))['total_amount__sum'] or Decimal('0.00')
+    total_orders = Order.objects.count()
+    placed_orders_count = Order.objects.filter(status='placed').count()
+    confirmed_orders_count = Order.objects.filter(status='confirmed').count()
+    dispatched_orders_count = Order.objects.filter(status='dispatched').count()
+    delivered_orders_count = Order.objects.filter(status='delivered').count()
+    cancelled_orders_count = Order.objects.filter(status='cancelled').count()
+
+    open_enquiries_count = Enquiry.objects.filter(status='Open').count()
+    urgent_24h_count = Enquiry.objects.filter(status='Open', urgency_level='<24h').count()
+
+    products_count = Product.objects.filter(is_active=True).count()
+    low_stock_count = Product.objects.filter(is_active=True, stock__lte=2).count()
+    total_inventory_units = Product.objects.filter(is_active=True).aggregate(Sum('stock'))['stock__sum'] or 0
+
+    registered_users_count = User.objects.count()
+    admin_users_count = User.objects.filter(role='admin').count()
+
+    # Query Filter: Orders
+    order_filter_status = request.GET.get('order_status', 'all')
+    order_search = request.GET.get('order_search', '').strip()
+    orders_qs = Order.objects.select_related('user', 'shipping_address').prefetch_related('items__product').order_by('-created_at')
+
+    if order_filter_status != 'all':
+        orders_qs = orders_qs.filter(status=order_filter_status)
+    if order_search:
+        clean_search = order_search.replace('#', '').replace('ETR-', '')
+        orders_qs = orders_qs.filter(
+            Q(id__icontains=clean_search) |
+            Q(mortuary_name__icontains=order_search) |
+            Q(mortuary_director__icontains=order_search) |
+            Q(user__email__icontains=order_search) |
+            Q(user__first_name__icontains=order_search) |
+            Q(user__last_name__icontains=order_search)
+        )
+
+    # Query Filter: Products
+    prod_category = request.GET.get('prod_category', 'all')
+    prod_search = request.GET.get('prod_search', '').strip()
+    prod_stock = request.GET.get('prod_stock', 'all')
+    products_qs = Product.objects.select_related('category', 'certificate').prefetch_related('images').order_by('-id')
+
+    if prod_category != 'all':
+        products_qs = products_qs.filter(category__id=prod_category)
+    if prod_stock == 'low':
+        products_qs = products_qs.filter(stock__lte=2, stock__gt=0)
+    elif prod_stock == 'out':
+        products_qs = products_qs.filter(stock=0)
+    if prod_search:
+        products_qs = products_qs.filter(
+            Q(name__icontains=prod_search) |
+            Q(material__icontains=prod_search) |
+            Q(provenance_code__icontains=prod_search)
+        )
+
+    # Query Filter: Enquiries
+    enq_status = request.GET.get('enq_status', 'all')
+    enq_urgency = request.GET.get('enq_urgency', 'all')
+    enquiries_qs = Enquiry.objects.select_related('user').order_by('-created_at')
+
+    if enq_status != 'all':
+        enquiries_qs = enquiries_qs.filter(status=enq_status)
+    if enq_urgency != 'all':
+        enquiries_qs = enquiries_qs.filter(urgency_level=enq_urgency)
+
+    # Certificates
+    cert_search = request.GET.get('cert_search', '').strip()
+    certs_qs = AuthenticityCertificate.objects.select_related('product', 'issued_by').order_by('-issued_at')
+    if cert_search:
+        certs_qs = certs_qs.filter(
+            Q(verification_code__icontains=cert_search) |
+            Q(product__name__icontains=cert_search)
+        )
+
+    # Users
+    users_qs = User.objects.annotate(order_count=Count('orders')).order_by('-date_joined')
+
+    # System Settings
+    settings_qs = SystemSetting.objects.select_related('updated_by').order_by('setting_key')
+
+    # Categories for filters and forms
+    categories = Category.objects.all()
+
+    # Form
     product_form = ProductForm()
 
+    # Database Info
+    engine_raw = settings.DATABASES['default']['ENGINE']
+    db_engine = 'PostgreSQL' if 'postgresql' in engine_raw else engine_raw.split('.')[-1].capitalize()
+    db_name = settings.DATABASES['default']['NAME']
+
     return render(request, 'memorial/admin_dashboard.html', {
+        'active_tab': active_tab,
         'total_revenue': total_revenue,
         'total_orders': total_orders,
+        'placed_orders_count': placed_orders_count,
+        'confirmed_orders_count': confirmed_orders_count,
+        'dispatched_orders_count': dispatched_orders_count,
+        'delivered_orders_count': delivered_orders_count,
+        'cancelled_orders_count': cancelled_orders_count,
         'open_enquiries_count': open_enquiries_count,
+        'urgent_24h_count': urgent_24h_count,
         'products_count': products_count,
-        'recent_orders': recent_orders,
-        'recent_enquiries': recent_enquiries,
-        'all_products': all_products,
-        'certificates': certificates,
+        'low_stock_count': low_stock_count,
+        'total_inventory_units': total_inventory_units,
+        'registered_users_count': registered_users_count,
+        'admin_users_count': admin_users_count,
+        'orders': orders_qs,
+        'products': products_qs,
+        'enquiries': enquiries_qs,
+        'certificates': certs_qs,
+        'users_list': users_qs,
+        'system_settings': settings_qs,
+        'categories': categories,
         'product_form': product_form,
+        'order_filter_status': order_filter_status,
+        'order_search': order_search,
+        'prod_category': prod_category,
+        'prod_search': prod_search,
+        'prod_stock': prod_stock,
+        'enq_status': enq_status,
+        'enq_urgency': enq_urgency,
+        'cert_search': cert_search,
+        'db_engine': db_engine,
+        'db_name': db_name,
     })
