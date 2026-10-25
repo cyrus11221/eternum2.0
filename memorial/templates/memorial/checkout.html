@@ -1,13 +1,13 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}Dignified Checkout — ETERNUM Memorial Sanctuary{% endblock %}
+{% block title %}Checkout — ETERNUM{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
 
   <div class="mb-8 pb-6 border-b border-surface-container-high/60">
-    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Step 2 of 2 &bull; Direct Mortuary Transfer</span>
-    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Dignified Order &amp; Logistics Coordination</h1>
+    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Checkout</span>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Delivery Details</h1>
   </div>
 
   <form method="POST" action="{% url 'checkout' %}" class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -26,10 +26,10 @@
       <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold mb-4">
           <span class="material-symbols-outlined text-[18px]">location_city</span>
-          <span>1. Mortuary Destination &amp; Director Contact</span>
+          <span>1. Funeral Home Details</span>
         </div>
         <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">
-          Please designate the receiving licensed mortuary, chapel, or crematory. Eternum coordinates directly with their facility manager to ensure seamless chain of custody.
+          Enter the name and contact details for the funeral home or facility receiving the order.
         </p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -57,7 +57,7 @@
       <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold mb-4">
           <span class="material-symbols-outlined text-[18px]">local_shipping</span>
-          <span>2. Facility Receiving Address</span>
+          <span>2. Delivery Address</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -68,7 +68,7 @@
           </div>
 
           <div class="sm:col-span-2">
-            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Suite, Bay, or Receiving Room (Optional)</label>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Suite or Unit (Optional)</label>
             {{ form.line2 }}
             {{ form.line2.errors }}
           </div>
@@ -99,7 +99,7 @@
           </div>
 
           <div class="sm:col-span-2 mt-2">
-            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Planned Service Date &amp; Ritual Delivery Notes (Optional)</label>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Service Date or Delivery Notes (Optional)</label>
             {{ form.delivery_notes }}
             {{ form.delivery_notes.errors }}
           </div>
@@ -110,10 +110,10 @@
       <div class="bg-surface-container-low border border-surface-container-high p-6 flex flex-col gap-2">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold">
           <span class="material-symbols-outlined text-[18px]">gavel</span>
-          <span>FTC Funeral Rule Direct Delivery Affirmation</span>
+          <span>FTC Funeral Rule Information</span>
         </div>
         <p class="text-xs text-on-surface-variant leading-relaxed">
-          By proceeding, Eternum will issue an official notice of direct delivery under 16 CFR &sect; 453 to your specified funeral director. They are legally barred from refusing this casket or charging any surcharge.
+          The FTC Funeral Rule includes requirements for funeral providers receiving products purchased elsewhere. Contact your provider if you have questions about delivery arrangements.
         </p>
       </div>
 
@@ -121,11 +121,11 @@
       <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold mb-4">
           <span class="material-symbols-outlined text-[18px]">lock</span>
-          <span>3. Simulated Demo Payment Processing</span>
+          <span>3. Payment</span>
         </div>
 
         <p class="text-xs text-on-surface-variant mb-4 leading-relaxed">
-          For this academic demonstration environment, payment processing is simulated instantly. Zero actual financial charges will occur.
+          Payment is simulated for this demonstration. No actual charge will be made.
         </p>
 
         <div class="space-y-3">
@@ -140,7 +140,7 @@
         <!-- Simulated Card Details Pre-Fill -->
         <div class="mt-4 p-4 bg-surface-container-lowest border border-surface-container-high/60 grid grid-cols-2 gap-3 text-xs">
           <div class="col-span-2 flex justify-between items-center text-outline text-[11px]">
-            <span>Simulated Test Sandbox Card:</span>
+            <span>Test Card:</span>
             <span class="text-primary font-mono">4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</span>
           </div>
           <div class="text-outline text-[11px]">
@@ -159,7 +159,7 @@
     <div class="lg:col-span-4 bg-surface-container border border-surface-container-high p-6 flex flex-col gap-6 sticky top-28">
       
       <h2 class="font-serif text-2xl text-on-surface pb-3 border-b border-surface-container-high/60">
-        Summary of Rest
+        Order Summary
       </h2>
 
       <!-- Items List -->
@@ -183,11 +183,11 @@
           <span class="text-on-surface">₹{{ total_amount|floatformat:2 }}</span>
         </div>
         <div class="flex justify-between text-primary">
-          <span>White-Glove Delivery:</span>
+          <span>Delivery:</span>
           <span>Included (₹0.00)</span>
         </div>
         <div class="flex justify-between">
-          <span>Sales Tax (Transparent):</span>
+          <span>Tax:</span>
           <span>₹0.00</span>
         </div>
       </div>
@@ -204,7 +204,7 @@
       </button>
 
       <span class="text-[11px] text-outline text-center block leading-relaxed">
-        Immediate confirmation invoice (#INV-2026-XXXX) and direct mortuary tracking number will be generated instantly.
+        An order confirmation and invoice will be provided after checkout.
       </span>
 
     </div>

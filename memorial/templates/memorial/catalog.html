@@ -1,6 +1,6 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}Memorial Catalog — ETERNUM Sacred Sanctuary Relics{% endblock %}
+{% block title %}Casket Catalog — ETERNUM{% endblock %}
 
 {% block content %}
 <div class="flex flex-col w-full">
@@ -12,36 +12,36 @@
       
       <div class="inline-flex items-center gap-2 px-4 py-1 bg-surface-container-high rounded-full mb-4 shadow-sm border border-primary/20">
         <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-[10px] uppercase tracking-widest text-primary font-semibold">Sacred Provenance &amp; Transparency</span>
+        <span class="text-[10px] uppercase tracking-widest text-primary font-semibold">Product Information</span>
         <span class="text-outline text-xs">&bull;</span>
-        <span class="text-[10px] uppercase tracking-wider text-on-surface-variant">FTC Funeral Rule Compliant</span>
+        <span class="text-[10px] uppercase tracking-wider text-on-surface-variant">FTC Funeral Rule Information</span>
       </div>
 
       <h1 class="font-serif text-3xl sm:text-5xl text-on-surface max-w-4xl tracking-tight mb-4 leading-tight">
-        Memorial Collections <span class="italic font-normal text-primary">Crafted with Sacred Dignity</span> &amp; Integrity
+        Casket Catalog <span class="italic font-normal text-primary">Compare Materials and Styles</span>
       </h1>
 
       <p class="text-xs sm:text-sm text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-        Browse by material, architectural construction, and green certification. Full transparent pricing with zero undisclosed fees and guaranteed priority dispatch.
+        Compare products by material, style, and price. Review available product details and delivery options before ordering.
       </p>
 
       <!-- Trust Metrics Bar -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-10 p-4 bg-surface-container/60 backdrop-blur-md rounded border border-surface-container-high shadow-md">
         <div class="flex flex-col items-center text-center px-2">
-          <span class="font-serif text-xl text-primary font-medium">100%</span>
-          <span class="text-[10px] uppercase tracking-wider text-outline">Upfront Honest Pricing</span>
+          <span class="font-serif text-xl text-primary font-medium">Prices</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Shown with Products</span>
         </div>
         <div class="flex flex-col items-center text-center px-2">
-          <span class="font-serif text-xl text-on-surface font-medium">&lt; 24h</span>
-          <span class="text-[10px] uppercase tracking-wider text-outline">Rapid Crypt Dispatch</span>
+          <span class="font-serif text-xl text-on-surface font-medium">Delivery</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Options Available</span>
         </div>
         <div class="flex flex-col items-center text-center px-2">
-          <span class="font-serif text-xl text-primary font-medium">FTC Protected</span>
-          <span class="text-[10px] uppercase tracking-wider text-outline">Direct Mortuary Delivery</span>
+          <span class="font-serif text-xl text-primary font-medium">FTC Rule</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Information Available</span>
         </div>
         <div class="flex flex-col items-center text-center px-2">
-          <span class="font-serif text-xl text-on-surface font-medium">Individually</span>
-          <span class="text-[10px] uppercase tracking-wider text-outline">Numbered &amp; Sealed</span>
+          <span class="font-serif text-xl text-on-surface font-medium">Product</span>
+          <span class="text-[10px] uppercase tracking-wider text-outline">Specifications Listed</span>
         </div>
       </div>
 
@@ -80,7 +80,7 @@
             <div class="flex items-center gap-2 bg-surface-container-highest px-3 py-2 rounded border border-surface-container-high">
               <span class="text-[10px] uppercase text-outline tracking-wider font-semibold">Sort:</span>
               <select name="sort" onchange="this.form.submit()" class="bg-transparent text-primary text-xs focus:outline-none cursor-pointer pr-2">
-                <option value="featured" {% if selected_sort == 'featured' %}selected{% endif %} class="bg-surface-container text-on-surface">Featured Relics</option>
+                <option value="featured" {% if selected_sort == 'featured' %}selected{% endif %} class="bg-surface-container text-on-surface">Featured Products</option>
                 <option value="price-asc" {% if selected_sort == 'price-asc' %}selected{% endif %} class="bg-surface-container text-on-surface">Price: Low to High</option>
                 <option value="price-desc" {% if selected_sort == 'price-desc' %}selected{% endif %} class="bg-surface-container text-on-surface">Price: High to Low</option>
                 <option value="purity" {% if selected_sort == 'purity' %}selected{% endif %} class="bg-surface-container text-on-surface">Material Purity</option>
@@ -102,16 +102,16 @@
             All Collections
           </button>
           <button type="submit" name="category" value="hardwood" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'hardwood' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
-            Solid Hardwoods
+            Hardwood Caskets
           </button>
           <button type="submit" name="category" value="metal" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'metal' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
-            Protective Metal
+            Metal Caskets
           </button>
           <button type="submit" name="category" value="eco" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'eco' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
-            Eco-Friendly Biodegradable
+            Eco-friendly Caskets
           </button>
           <button type="submit" name="category" value="artisanal" class="whitespace-nowrap px-4 py-2 rounded-full text-[11px] uppercase tracking-wider transition-all {% if selected_category == 'artisanal' %}bg-primary text-on-primary-container font-bold shadow-md{% else %}bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container border border-surface-container-high{% endif %}">
-            Artisanal Cathedral Craft
+            Custom Caskets
           </button>
         </div>
 
@@ -159,8 +159,8 @@
             <label class="text-[10px] uppercase tracking-widest text-outline">Logistics State</label>
             <select name="dispatch" onchange="this.form.submit()" class="bg-surface-container-highest text-on-surface text-xs px-3 py-2 rounded border border-surface-container-high focus:outline-none focus:border-primary">
               <option value="all" {% if selected_dispatch == 'all' %}selected{% endif %}>Immediate &amp; Reserve</option>
-              <option value="ready" {% if selected_dispatch == 'ready' %}selected{% endif %}>Immediate Dispatch (&lt; 24h)</option>
-              <option value="bespoke" {% if selected_dispatch == 'bespoke' %}selected{% endif %}>Artisan Handcraft</option>
+              <option value="ready" {% if selected_dispatch == 'ready' %}selected{% endif %}>Ready for dispatch</option>
+              <option value="bespoke" {% if selected_dispatch == 'bespoke' %}selected{% endif %}>Custom-made</option>
             </select>
           </div>
 
@@ -185,7 +185,7 @@
               <!-- Seals & Badges -->
               <div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
                 <span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-md px-2.5 py-1 text-primary text-[10px] tracking-wider border border-primary/20">
-                  <span class="material-symbols-outlined text-[13px]">verified</span> Cryptographically Verified
+                  <span class="material-symbols-outlined text-[13px]">verified</span> Certificate Available
                 </span>
                 <span class="bg-surface-variant/90 backdrop-blur-md px-2 py-0.5 text-secondary text-[10px]">
                   Provenance {{ product.provenance_code|default:"№ 0824" }}
@@ -194,7 +194,7 @@
 
               <div class="absolute bottom-3 right-3">
                 <span class="bg-surface-variant/90 backdrop-blur-md text-primary text-[10px] px-2.5 py-1">
-                  {{ product.stock }} remaining in vault
+                  {{ product.stock }} available
                 </span>
               </div>
             </div>
@@ -204,7 +204,7 @@
               <div>
                 <div class="flex items-baseline justify-between gap-2 mb-1">
                   <span class="text-[10px] uppercase tracking-widest text-primary font-medium">
-                    {{ product.category.name|default:"Sanctuary" }}
+                    {{ product.category.name|default:"Product" }}
                   </span>
                   <span class="font-serif text-2xl text-primary font-semibold">₹{{ product.price|floatformat:0 }}</span>
                 </div>
@@ -271,9 +271,9 @@
       <!-- Empty State Notification -->
       <div class="flex flex-col items-center justify-center text-center py-20 bg-surface-container-low border border-surface-container-high px-6">
         <span class="material-symbols-outlined text-primary text-[48px] mb-3">history_edu</span>
-        <h3 class="font-serif text-2xl text-on-surface mb-2">No Matching Sanctuary Relics</h3>
+        <h3 class="font-serif text-2xl text-on-surface mb-2">No Products Found</h3>
         <p class="text-xs text-outline max-w-md mb-6 leading-relaxed">
-          No caskets match your currently specified search query or filter criteria. Our bereavement directors can handcraft or source any custom memorial specification.
+          No caskets match your search or filters. Try changing your search or contact us to ask about custom options.
         </p>
         <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container hover:bg-primary-container px-6 py-2.5 text-xs uppercase tracking-widest font-bold transition-colors">
           Reset All Filters
@@ -289,21 +289,21 @@
       <div class="lg:col-span-8 flex flex-col gap-2">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold">
           <span class="material-symbols-outlined text-[18px]">gavel</span>
-          <span>Know Your Federal Legal Rights — The FTC Funeral Rule</span>
+          <span>FTC Funeral Rule Information</span>
         </div>
         <h3 class="font-serif text-2xl text-on-surface">
-          You are never obligated to purchase a casket from a funeral home.
+          The FTC Funeral Rule includes protections when purchasing funeral goods.
         </h3>
         <p class="text-xs text-on-surface-variant leading-relaxed">
-          Under Federal Law (16 CFR Part 453), funeral providers must accept delivery of third-party caskets without charging any handling fee, surcharge, or penalty. Eternum delivers directly to any licensed mortuary or cemetery across North America with complete chain-of-custody documentation.
+          Rules can depend on the circumstances. Review the FTC’s current guidance and contact your funeral provider about delivery arrangements and any questions about your rights.
         </p>
       </div>
       <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
         <a href="{% url 'about' %}" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-3 text-center transition-colors flex items-center justify-center gap-2 border border-surface-container-high">
-          <span class="material-symbols-outlined text-[18px]">download</span> FTC Family Rights Guide
+          <span class="material-symbols-outlined text-[18px]">info</span> Read Our Overview
         </a>
         <a href="{% url 'about' %}#delivery" class="bg-surface-container-high hover:bg-surface-variant text-primary text-xs uppercase tracking-wider px-4 py-3 text-center transition-colors flex items-center justify-center gap-2 border border-surface-container-high">
-          <span class="material-symbols-outlined text-[18px]">local_shipping</span> Mortuary Delivery Protocols
+          <span class="material-symbols-outlined text-[18px]">local_shipping</span> Delivery Information
         </a>
       </div>
     </div>
@@ -317,13 +317,13 @@
       <div class="flex flex-col gap-2 text-center lg:text-left max-w-2xl">
         <div class="inline-flex items-center gap-2 justify-center lg:justify-start">
           <span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
-          <span class="text-xs uppercase tracking-widest text-primary font-semibold">Immediate Bereavement Desk &bull; Active 24 Hours</span>
+          <span class="text-xs uppercase tracking-widest text-primary font-semibold">Customer Support</span>
         </div>
         <h2 class="font-serif text-3xl text-on-surface tracking-tight">
           Do you require expedited delivery within 24 hours?
         </h2>
         <p class="text-xs text-on-surface-variant leading-relaxed">
-          We understand that time is sacred during periods of sudden loss. Our dedicated logistics counselors coordinate directly with your mortuary director to ensure seamless delivery.
+          Contact us with questions about delivery times or product options. We can help you review the details for your order.
         </p>
       </div>
       <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">

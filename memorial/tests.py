@@ -28,7 +28,7 @@ class EternumSystemTests(TestCase):
             first_name='Eleanor',
             last_name='Vance'
         )
-        self.category = Category.objects.create(name='Solid Hardwood Sanctuary', slug='hardwood')
+        self.category = Category.objects.create(name='Hardwood Caskets', slug='hardwood')
         self.product = Product.objects.create(
             category=self.category,
             name='The Westminster Solid Oak',
@@ -58,7 +58,7 @@ class EternumSystemTests(TestCase):
     def test_home_page(self):
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'A Dignified Choice for Every Family')
+        self.assertContains(response, 'Memorial Products for Every Family')
         self.assertContains(response, 'The Westminster Solid Oak')
 
     def test_catalog_and_filtering(self):
@@ -106,7 +106,7 @@ class EternumSystemTests(TestCase):
     def test_certificate_verification(self):
         response = self.client.get(reverse('certificate_verify'), {'code': 'ETR-AUTH-0824'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Certificate of Provenance &amp; Sealing')
+        self.assertContains(response, 'Product Certificate')
         self.assertContains(response, 'The Westminster Solid Oak')
 
     def test_authenticated_checkout(self):
@@ -182,9 +182,9 @@ class EternumSystemTests(TestCase):
 
         inventory_response = self.client.get(reverse('admin_dashboard'), {'tab': 'inventory'})
         self.assertContains(inventory_response, 'Add Product')
+        self.assertContains(inventory_response, 'id="add-product"')
         self.assertContains(inventory_response, 'id="delete-product-dialog"')
         self.assertNotContains(inventory_response, 'onsubmit="return confirm(')
-        self.assertContains(inventory_response, 'id="add-product"')
 
         response = self.client.post(reverse('admin_dashboard'), {
             'action': 'add_product',
@@ -199,6 +199,7 @@ class EternumSystemTests(TestCase):
         self.assertEqual(response.status_code, 200)
         product = Product.objects.get(name='The Cedar Memorial')
         self.assertTrue(AuthenticityCertificate.objects.filter(product=product).exists())
+
     def test_admin_can_delete_product_with_themed_toast(self):
         self.client.login(username='admin@eternum.com', password='admin123')
 

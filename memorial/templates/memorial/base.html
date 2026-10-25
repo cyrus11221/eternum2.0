@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>{% block title %}ETERNUM — Sanctuary &amp; Heritage{% endblock %}</title>
+  <title>{% block title %}ETERNUM — Memorial Products{% endblock %}</title>
 
   <!-- Typography: EB Garamond & Hanken Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -96,7 +96,7 @@
         </div>
         <div class="flex flex-col">
           <span class="font-serif text-2xl tracking-widest text-primary font-medium">ETERNUM</span>
-          <span class="text-[10px] uppercase tracking-[0.2em] text-outline">Sanctuary &amp; Heritage</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-outline">Memorial Products</span>
         </div>
       </a>
 
@@ -109,14 +109,14 @@
           Catalog
         </a>
         <a href="{% url 'about' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors {% if request.resolver_match.url_name == 'about' %}text-primary font-semibold{% endif %}">
-          Atelier Philosophy
+          About
         </a>
         <a href="{% url 'faq' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors {% if request.resolver_match.url_name == 'faq' %}text-primary font-semibold{% endif %}">
-          Family FAQ
+          Help &amp; FAQ
         </a>
         <a href="{% url 'urgent_enquiry' %}" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-primary hover:text-primary-container transition-colors font-medium">
           <span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
-          Urgent Enquiry
+          Contact Us
         </a>
         <a href="{% url 'certificate_verify' %}" class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
           <span class="material-symbols-outlined text-[16px]">verified</span>
@@ -130,7 +130,7 @@
         <!-- Search Bar -->
         <form action="{% url 'catalog' %}" method="GET" class="hidden md:flex items-center bg-surface-container-low px-3 py-1.5 border border-surface-container-high focus-within:border-primary/50 transition-colors">
           <span class="material-symbols-outlined text-[18px] text-outline mr-2">search</span>
-          <input name="q" value="{{ request.GET.q|default:'' }}" class="bg-transparent text-xs text-on-surface placeholder:text-outline/70 focus:outline-none w-36 lg:w-48" placeholder="Search relics..." type="text"/>
+          <input name="q" value="{{ request.GET.q|default:'' }}" class="bg-transparent text-xs text-on-surface placeholder:text-outline/70 focus:outline-none w-36 lg:w-48"           placeholder="Search products..." type="text"/>
         </form>
 
         <!-- Cart Button -->
@@ -158,7 +158,7 @@
                 <div class="border-t border-outline/20 my-1"></div>
               {% endif %}
               <a href="{% url 'profile' %}" class="text-xs uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:bg-surface-variant flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px]">person</span> My Sanctuary Profile
+                <span class="material-symbols-outlined text-[16px]">person</span> My Account
               </a>
               <a href="{% url 'order_list' %}" class="text-xs uppercase tracking-wider px-3 py-2 text-on-surface-variant hover:bg-surface-variant flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]">receipt_long</span> Orders &amp; Invoices
@@ -210,7 +210,7 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Modern Gothic Solemn Footer -->
+  <!-- Footer -->
   <footer class="w-full bg-surface-container-lowest border-t border-surface-container-high/60 mt-20">
     <div class="max-w-7xl mx-auto px-6 md:px-12 py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
@@ -224,24 +224,24 @@
             <span class="font-serif text-xl tracking-widest text-primary">ETERNUM</span>
           </div>
           <p class="text-xs text-on-surface-variant max-w-sm leading-relaxed">
-            In reverence and quiet luxury. We craft enduring resting places, memorial architecture, and dignified ancestral keepsakes with artisanal solemnity and uncompromised transparency.
+            We offer memorial products with clear information, transparent pricing, and respectful service for families.
           </p>
           <div class="flex flex-col gap-1 p-4 bg-surface-container-low border border-surface-container-high mt-2">
-            <span class="text-[10px] uppercase tracking-widest text-primary font-semibold">24/7 Immediate Bereavement Care Hotline</span>
+            <span class="text-[10px] uppercase tracking-widest text-primary font-semibold">24/7 Customer Support</span>
             <span class="font-serif text-lg text-on-surface">{{ memorial_hotline }}</span>
-            <span class="text-[11px] text-outline">Direct mortuary dispatch and compassionate counsel around the clock</span>
+            <span class="text-[11px] text-outline">Help with product and delivery enquiries</span>
           </div>
         </div>
 
-        <!-- Col 2: Sanctuary Collections -->
+        <!-- Col 2: Product collections -->
         <div class="flex flex-col gap-3">
           <span class="text-xs uppercase tracking-widest text-primary font-semibold">Collections</span>
           <nav class="flex flex-col gap-2 text-xs text-on-surface-variant">
-            <a href="{% url 'catalog' %}" class="hover:text-primary transition-colors">All Monuments</a>
-            <a href="{% url 'catalog' %}?category=hardwood" class="hover:text-primary transition-colors">Solid Hardwood Oak &amp; Ash</a>
-            <a href="{% url 'catalog' %}?category=metal" class="hover:text-primary transition-colors">Cast Bronze &amp; Pure Copper</a>
-            <a href="{% url 'catalog' %}?category=eco" class="hover:text-primary transition-colors">Natural Willow &amp; Green Earth</a>
-            <a href="{% url 'catalog' %}?category=artisanal" class="hover:text-primary transition-colors">Artisanal Cathedral Carvings</a>
+            <a href="{% url 'catalog' %}" class="hover:text-primary transition-colors">All Products</a>
+            <a href="{% url 'catalog' %}?category=hardwood" class="hover:text-primary transition-colors">Hardwood</a>
+            <a href="{% url 'catalog' %}?category=metal" class="hover:text-primary transition-colors">Metal</a>
+            <a href="{% url 'catalog' %}?category=eco" class="hover:text-primary transition-colors">Eco-friendly</a>
+            <a href="{% url 'catalog' %}?category=artisanal" class="hover:text-primary transition-colors">Artisan-made</a>
           </nav>
         </div>
 
@@ -249,9 +249,9 @@
         <div class="flex flex-col gap-3">
           <span class="text-xs uppercase tracking-widest text-primary font-semibold">Care &amp; Legal</span>
           <nav class="flex flex-col gap-2 text-xs text-on-surface-variant">
-            <a href="{% url 'urgent_enquiry' %}" class="hover:text-primary transition-colors">Immediate Assistance (<24h)</a>
+            <a href="{% url 'urgent_enquiry' %}" class="hover:text-primary transition-colors">Contact Support</a>
             <a href="{% url 'about' %}" class="hover:text-primary transition-colors">FTC Funeral Rule Rights</a>
-            <a href="{% url 'about' %}" class="hover:text-primary transition-colors">The Atelier Philosophy</a>
+            <a href="{% url 'about' %}" class="hover:text-primary transition-colors">About Eternum</a>
             <a href="{% url 'faq' %}" class="hover:text-primary transition-colors">Family Questions &amp; Answers</a>
             <a href="{% url 'certificate_verify' %}" class="hover:text-primary transition-colors">Certificate Verification</a>
           </nav>
@@ -261,12 +261,12 @@
         <div class="flex flex-col gap-3">
           <span class="text-xs uppercase tracking-widest text-primary font-semibold">Pre-Planning</span>
           <p class="text-xs text-on-surface-variant">
-            Receive dignified memorial pre-planning volumes and estate preservation compendiums.
+            Contact us for help with planning and product selection.
           </p>
           <div class="flex flex-col gap-2 mt-1">
             <input class="bg-surface-container-high px-3 py-2 text-xs text-on-surface placeholder:text-outline border border-surface-container focus:border-primary focus:outline-none" placeholder="Your email address..." type="email"/>
             <button class="bg-primary-container text-on-primary-container text-xs uppercase tracking-widest py-2 hover:bg-primary font-semibold transition-colors">
-              Request Volumes
+              Contact Us
             </button>
           </div>
         </div>
@@ -275,10 +275,10 @@
 
       <!-- Bottom Legal Row -->
       <div class="mt-12 pt-8 border-t border-surface-container-high/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-outline">
-        <span>&copy; Eternum Memorial &amp; Heritage. All rights reserved. Solace through artisanal permanence.</span>
+        <span>&copy; Eternum Memorial Products. All rights reserved.</span>
         <div class="flex items-center gap-6">
           <a href="{% url 'about' %}" class="hover:text-primary transition-colors">Federal Trade Commission Funeral Rule (16 CFR Part 453)</a>
-          <a href="{% url 'certificate_verify' %}" class="hover:text-primary transition-colors">Cryptographic Provenance</a>
+          <a href="{% url 'certificate_verify' %}" class="hover:text-primary transition-colors">Product Certificates</a>
           {% if user.is_authenticated and user.is_administrator %}
             <a href="{% url 'admin_dashboard' %}" class="text-primary hover:underline font-semibold">Admin Portal</a>
           {% endif %}

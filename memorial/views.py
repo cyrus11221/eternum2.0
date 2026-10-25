@@ -179,7 +179,7 @@ def cart_add_view(request, product_id):
         request.session['guest_cart'] = session_cart
         request.session.modified = True
 
-    messages.success(request, f'"{product.name}" placed into memorial cart.')
+    messages.success(request, f'"{product.name}" was added to your cart.')
     next_url = request.POST.get('next') or request.META.get('HTTP_REFERER') or 'cart'
     return redirect(next_url)
 
@@ -192,7 +192,7 @@ def cart_update_view(request, item_id):
             item = CartItem.objects.get(id=item_id, cart__user=request.user)
             if qty <= 0:
                 item.delete()
-                messages.info(request, 'Item removed from memorial cart.')
+                messages.info(request, 'Item removed from your cart.')
             else:
                 item.quantity = qty
                 item.save()
@@ -205,7 +205,7 @@ def cart_update_view(request, item_id):
         if str_id in session_cart:
             if qty <= 0:
                 del session_cart[str_id]
-                messages.info(request, 'Item removed from memorial cart.')
+                messages.info(request, 'Item removed from your cart.')
             else:
                 session_cart[str_id] = qty
                 messages.success(request, 'Cart quantity updated.')
@@ -226,7 +226,7 @@ def cart_remove_view(request, item_id):
             request.session['guest_cart'] = session_cart
             request.session.modified = True
 
-    messages.info(request, 'Item removed from memorial cart.')
+    messages.info(request, 'Item removed from your cart.')
     return redirect('cart')
 
 
@@ -253,7 +253,7 @@ def checkout_view(request):
     items = cart.items.select_related('product').all()
 
     if not items.exists():
-        messages.warning(request, 'Your cart is empty. Please select a memorial casket first.')
+        messages.warning(request, 'Your cart is empty. Add a product before checking out.')
         return redirect('catalog')
 
     total_amount = cart.total_amount()
@@ -390,7 +390,7 @@ def urgent_enquiry_view(request):
             enquiry.save()
             messages.success(
                 request,
-                f"Urgent enquiry {enquiry.tracking_id()} received. A senior bereavement counselor has been dispatched to coordinate."
+                f"Enquiry {enquiry.tracking_id()} received. We’ll contact you using the details provided."
             )
             return redirect('urgent_enquiry_success', enquiry_id=enquiry.id)
     else:
@@ -626,7 +626,7 @@ def admin_dashboard_view(request):
                     issued_by=request.user,
                     is_active=True
                 )
-                messages.success(request, f'New casket "{p.name}" added to vault with code {prov_code}')
+                messages.success(request, f'Product "{p.name}" added. Certificate code: {prov_code}')
             else:
                 messages.error(request, f'Error adding casket: {form.errors.as_text()}')
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
@@ -685,7 +685,7 @@ def admin_dashboard_view(request):
                         image_url='' if uploaded_image else image_url,
                     )
 
-            messages.success(request, f'Vault casket "{p.name}" specifications updated.')
+            messages.success(request, f'Product "{p.name}" updated.')
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
         elif action == 'quick_stock':
@@ -694,7 +694,7 @@ def admin_dashboard_view(request):
             delta = int(request.POST.get('delta', 0))
             p.stock = max(0, p.stock + delta)
             p.save()
-            messages.success(request, f'Stock for "{p.name}" updated to {p.stock} units in vault.')
+            messages.success(request, f'Stock for "{p.name}" updated to {p.stock}.')
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
         elif action == 'toggle_product':

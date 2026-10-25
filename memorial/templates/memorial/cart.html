@@ -7,8 +7,8 @@
   
   <div class="flex items-center justify-between pb-6 border-b border-surface-container-high/60 mb-8">
     <div>
-      <span class="text-xs uppercase tracking-widest text-primary font-semibold">Memorial Curation</span>
-      <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Your Selected Resting Sanctuaries</h1>
+      <span class="text-xs uppercase tracking-widest text-primary font-semibold">Shopping Cart</span>
+      <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Your Cart</h1>
     </div>
     {% if cart_items %}
       <a href="{% url 'cart_clear' %}" class="text-xs uppercase tracking-wider text-outline hover:text-error transition-colors flex items-center gap-1">
@@ -33,7 +33,7 @@
             <!-- Details -->
             <div class="flex-1 flex flex-col justify-between">
               <div>
-                <span class="text-[10px] uppercase tracking-widest text-primary">{{ item.product.category.name|default:"Sanctuary" }}</span>
+                <span class="text-[10px] uppercase tracking-widest text-primary">{{ item.product.category.name|default:"Product" }}</span>
                 <h3 class="font-serif text-xl text-on-surface">
                   <a href="{% url 'product_detail' item.product.id %}" class="hover:text-primary transition-colors">
                     {{ item.product.name }}
@@ -77,43 +77,43 @@
       <!-- Order Summary Card (4 cols) -->
       <div class="lg:col-span-4 bg-surface-container border border-surface-container-high p-6 flex flex-col gap-6">
         <h2 class="font-serif text-2xl text-on-surface pb-3 border-b border-surface-container-high/60">
-          Transparent Price Ledger
+          Order Summary
         </h2>
 
         <div class="flex flex-col gap-3 text-xs">
           <div class="flex justify-between text-on-surface-variant">
-            <span>Selected Sanctuary Total:</span>
+            <span>Subtotal:</span>
             <span class="text-on-surface font-semibold">₹{{ total_amount|floatformat:2 }}</span>
           </div>
           <div class="flex justify-between text-on-surface-variant">
-            <span>White-Glove Mortuary Delivery:</span>
+            <span>Delivery:</span>
             <span class="text-primary font-semibold">Included (₹0.00)</span>
           </div>
           <div class="flex justify-between text-on-surface-variant">
-            <span>Direct Mortuary Coordination:</span>
-            <span class="text-primary font-semibold">Complimentary</span>
+            <span>Coordination:</span>
+            <span class="text-primary font-semibold">Included</span>
           </div>
           <div class="flex justify-between text-on-surface-variant">
-            <span>Hidden Fees / Surcharges:</span>
+            <span>Additional Fees:</span>
             <span class="text-on-surface font-semibold">₹0.00</span>
           </div>
         </div>
 
         <div class="pt-4 border-t border-surface-container-high/60 flex justify-between items-baseline">
-          <span class="text-xs uppercase tracking-wider text-outline">Total Payable:</span>
+          <span class="text-xs uppercase tracking-wider text-outline">Total:</span>
           <span class="font-serif text-3xl text-primary font-semibold">₹{{ total_amount|floatformat:2 }}</span>
         </div>
 
-        <!-- Dignified Checkout CTA -->
+        <!-- Checkout -->
         <a href="{% url 'checkout' %}" class="w-full text-center bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-[18px]">verified</span>
-          Proceed to Dignified Checkout
+          Continue to Checkout
         </a>
 
         <!-- FTC Assurance Note -->
         <div class="p-3 bg-surface-container-low border border-surface-container-high text-[11px] text-outline leading-relaxed">
-          <strong class="text-primary font-semibold block mb-0.5">FTC Funeral Rule Protected:</strong>
-          Federal law guarantees your mortuary or funeral director cannot refuse this delivery or charge any handling fee.
+          <strong class="text-primary font-semibold block mb-0.5">FTC Funeral Rule:</strong>
+          See our information page for an overview of the rule and related resources.
         </div>
 
       </div>
@@ -122,12 +122,12 @@
   {% else %}
     <div class="text-center py-24 bg-surface-container-low border border-surface-container-high p-8 flex flex-col items-center">
       <span class="material-symbols-outlined text-outline text-[54px] mb-3">shopping_bag</span>
-      <h2 class="font-serif text-2xl text-on-surface mb-2">Your Memorial Cart is Empty</h2>
+      <h2 class="font-serif text-2xl text-on-surface mb-2">Your Cart is Empty</h2>
       <p class="text-xs text-outline max-w-md mb-6 leading-relaxed">
-        You have not yet selected a casket or memorial sanctuary. Explore our collection of solid hardwoods, protective metals, and natural green return options.
+        Browse the catalog to view caskets by material, style, and price.
       </p>
       <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-6 py-3 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-colors">
-        Browse Memorial Collections
+        Browse Products
       </a>
     </div>
   {% endif %}

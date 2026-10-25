@@ -1,6 +1,6 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}Director Admin Suite — ETERNUM Sanctuary Operations{% endblock %}
+{% block title %}Administration — ETERNUM{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
@@ -21,7 +21,7 @@
     <!-- Quick Tool Action Links -->
     <div class="flex items-center flex-wrap gap-2.5">
       <a href="{% url 'certificate_verify' %}" target="_blank" class="bg-surface-container border border-surface-container-high hover:border-primary/50 text-on-surface-variant hover:text-primary text-xs uppercase tracking-wider px-3.5 py-2 flex items-center gap-1.5 transition-colors">
-        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span> Verify Crypt Code
+        <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span> Verify Certificate
       </a>
       <a href="/admin/" target="_blank" class="bg-surface-container border border-surface-container-high hover:border-primary/50 text-on-surface-variant hover:text-primary text-xs uppercase tracking-wider px-3.5 py-2 flex items-center gap-1.5 transition-colors">
         <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span> Django Root Admin
@@ -36,7 +36,7 @@
   <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
     
     <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
-      <span class="text-[10px] uppercase tracking-widest text-outline">Total Vault Revenue</span>
+      <span class="text-[10px] uppercase tracking-widest text-outline">Total Revenue</span>
       <span class="font-serif text-2xl lg:text-3xl text-primary font-bold mt-1">₹{{ total_revenue|floatformat:2 }}</span>
       <span class="text-[10px] text-outline mt-1">{{ confirmed_orders_count|add:dispatched_orders_count|add:delivered_orders_count }} Fulfilled / In-Transit</span>
     </div>
@@ -50,7 +50,7 @@
     </div>
 
     <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between {% if urgent_24h_count > 0 %}border-error/40 bg-error-container/10{% endif %}">
-      <span class="text-[10px] uppercase tracking-widest text-outline">Bereavement Enquiries</span>
+      <span class="text-[10px] uppercase tracking-widest text-outline">Customer Enquiries</span>
       <span class="font-serif text-2xl lg:text-3xl {% if urgent_24h_count > 0 %}text-error{% else %}text-on-surface{% endif %} font-bold mt-1">
         {{ open_enquiries_count }}
       </span>
@@ -60,15 +60,15 @@
     </div>
 
     <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between {% if low_stock_count > 0 %}border-amber-600/40{% endif %}">
-      <span class="text-[10px] uppercase tracking-widest text-outline">Casket Relics in Vault</span>
+      <span class="text-[10px] uppercase tracking-widest text-outline">Active Products</span>
       <span class="font-serif text-2xl lg:text-3xl text-on-surface font-bold mt-1">{{ products_count }}</span>
       <span class="text-[10px] {% if low_stock_count > 0 %}text-amber-400 font-semibold{% else %}text-outline{% endif %} mt-1">
-        {% if low_stock_count > 0 %}&#9888; {{ low_stock_count }} Low Stock (&le;2){% else %}{{ total_inventory_units }} total units in vault{% endif %}
+        {% if low_stock_count > 0 %}&#9888; {{ low_stock_count }} Low Stock (&le;2){% else %}{{ total_inventory_units }} units in stock{% endif %}
       </span>
     </div>
 
     <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
-      <span class="text-[10px] uppercase tracking-widest text-outline">Crypt Certificates</span>
+      <span class="text-[10px] uppercase tracking-widest text-outline">Product Certificates</span>
       <span class="font-serif text-2xl lg:text-3xl text-primary font-bold mt-1">{{ certificates.count }}</span>
       <span class="text-[10px] text-outline mt-1">&check; QR Chain Verified</span>
     </div>
@@ -96,7 +96,7 @@
     </a>
 
     <a href="?tab=inventory" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 {% if active_tab == 'inventory' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
-      <span class="material-symbols-outlined text-[15px]">inventory_2</span> Vault Inventory
+      <span class="material-symbols-outlined text-[15px]">inventory_2</span> Inventory
       {% if low_stock_count > 0 %}
         <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-900/60 text-amber-300 font-bold border border-amber-700/60">
           {{ low_stock_count }}
@@ -118,7 +118,7 @@
     </a>
 
     <a href="?tab=settings" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors {% if active_tab == 'settings' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
-      <span class="material-symbols-outlined text-[15px] mr-1">settings</span> Sanctuary Settings
+      <span class="material-symbols-outlined text-[15px] mr-1">settings</span> Settings
     </a>
 
     <a href="?tab=users" class="px-4 py-2.5 uppercase tracking-wider font-semibold border-b-2 whitespace-nowrap transition-colors {% if active_tab == 'users' %}border-primary text-primary bg-surface-container-low{% else %}border-transparent text-outline hover:text-on-surface{% endif %}">
@@ -210,7 +210,7 @@
           <div class="bg-surface-container border border-surface-container-high p-6">
             <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
               <div>
-                <span class="text-[10px] uppercase tracking-widest text-primary font-bold">24H Bereavement Care Desk</span>
+                <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Recent Enquiries</span>
                 <h2 class="font-serif text-xl text-on-surface">Immediate Family Inquiries</h2>
               </div>
               <a href="?tab=enquiries" class="text-xs text-primary hover:underline">View All &rarr;</a>
@@ -247,7 +247,7 @@
                   </form>
                 </div>
               {% empty %}
-                <p class="text-xs text-outline py-4 text-center">No open bereavement enquiries at this hour.</p>
+                <p class="text-xs text-outline py-4 text-center">No open enquiries.</p>
               {% endfor %}
             </div>
           </div>
@@ -259,7 +259,7 @@
           
           <!-- Low Stock Vault Alerts -->
           <div class="bg-surface-container border border-surface-container-high p-6">
-            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Vault Inventory Monitor</span>
+            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Inventory</span>
             <h2 class="font-serif text-xl text-on-surface mb-4">Stock Attention Required</h2>
 
             <div class="space-y-3">
@@ -272,14 +272,14 @@
                     </div>
                     <div class="flex items-center gap-2">
                       <span class="px-2 py-0.5 text-[10px] font-bold uppercase {% if p.stock == 0 %}bg-error-container text-error{% else %}bg-amber-900/60 text-amber-300 border border-amber-700/60{% endif %}">
-                        {{ p.stock }} in vault
+                        {{ p.stock }} in stock
                       </span>
                       <form method="POST" action="{% url 'admin_dashboard' %}">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="quick_stock"/>
                         <input type="hidden" name="product_id" value="{{ p.id }}"/>
                         <input type="hidden" name="delta" value="1"/>
-                        <button type="submit" title="Add 1 unit to vault" class="w-6 h-6 bg-surface-container-highest hover:bg-primary hover:text-on-primary-container border border-surface-container-high text-xs flex items-center justify-center font-bold">
+                        <button type="submit" title="Add 1 unit to stock" class="w-6 h-6 bg-surface-container-highest hover:bg-primary hover:text-on-primary-container border border-surface-container-high text-xs flex items-center justify-center font-bold">
                           +1
                         </button>
                       </form>
@@ -292,13 +292,13 @@
             </div>
             
             <a href="?tab=inventory" class="mt-4 block text-center bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider py-2 border border-surface-container-high">
-              Manage All Vault Caskets &rarr;
+              Manage Products &rarr;
             </a>
           </div>
 
           <!-- System Status Card -->
           <div class="bg-surface-container border border-surface-container-high p-6">
-            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Crypt Architecture</span>
+            <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Certificate Records</span>
             <h2 class="font-serif text-xl text-on-surface mb-3">Database &amp; SLA Status</h2>
 
             <div class="space-y-2.5 text-xs">
@@ -314,11 +314,11 @@
               </div>
               <div class="flex items-center justify-between py-1.5 border-b border-surface-container-high/40">
                 <span class="text-outline">Chain-of-Custody</span>
-                <span class="text-primary font-medium">Crypt QR Verifiable</span>
+                <span class="text-primary font-medium">QR Code Available</span>
               </div>
               <div class="flex items-center justify-between py-1.5">
-                <span class="text-outline">FTC 16 CFR Rule 453</span>
-                <span class="text-emerald-400 font-semibold">&check; Compliant</span>
+                <span class="text-outline">FTC Funeral Rule</span>
+                <span class="text-on-surface-variant">Information page available</span>
               </div>
             </div>
           </div>
@@ -471,7 +471,7 @@
                       <input type="hidden" name="order_id" value="{{ order.id }}"/>
                       
                       <span class="text-outline uppercase text-[9px] font-bold tracking-wider">Logistics &amp; Mortuary Notes:</span>
-                      <input type="text" name="delivery_notes" value="{{ order.delivery_notes|default:'' }}" placeholder="White-glove courier notes, receiving bay, service timing..." class="flex-1 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
+                      <input type="text" name="delivery_notes" value="{{ order.delivery_notes|default:'' }}" placeholder="Delivery notes or receiving hours..." class="flex-1 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
 
                       <input type="text" name="mortuary_name" value="{{ order.mortuary_name|default:'' }}" placeholder="Mortuary Name" class="w-48 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
                       <input type="text" name="mortuary_director" value="{{ order.mortuary_director|default:'' }}" placeholder="Director Name" class="w-36 bg-surface-container-highest text-on-surface px-2.5 py-1 text-xs border border-surface-container-high"/>
@@ -559,7 +559,7 @@
         <!-- Inventory Table (7 Cols) -->
         <div class="lg:col-span-7 bg-surface-container border border-surface-container-high p-6">
           <div class="flex items-center justify-between pb-4 border-b border-surface-container-high/60 mb-6">
-            <h2 class="font-serif text-2xl text-on-surface">Vault Relic Inventory</h2>
+            <h2 class="font-serif text-2xl text-on-surface">Product Inventory</h2>
             <span class="text-xs text-outline">{{ products|length }} Caskets in Catalog</span>
           </div>
 
@@ -610,7 +610,7 @@
                       </form>
                     </div>
 
-                    <span class="text-[9px] uppercase tracking-wider text-outline">Units in Vault</span>
+                    <span class="text-[9px] uppercase tracking-wider text-outline">Units in Stock</span>
                   </div>
                 </div>
 
@@ -675,8 +675,8 @@
                       <div>
                         <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Dispatch State</label>
                         <select name="dispatch_type" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high">
-                          <option value="ready" {% if p.dispatch_type == 'ready' %}selected{% endif %}>&lt; 24h Ready</option>
-                          <option value="bespoke" {% if p.dispatch_type == 'bespoke' %}selected{% endif %}>Bespoke Handcraft</option>
+                          <option value="ready" {% if p.dispatch_type == 'ready' %}selected{% endif %}>Ready for dispatch</option>
+                          <option value="bespoke" {% if p.dispatch_type == 'bespoke' %}selected{% endif %}>Custom-made</option>
                         </select>
                       </div>
                     </div>
@@ -750,7 +750,7 @@
         <div id="add-product" class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6 scroll-mt-24">
           <div class="pb-3 border-b border-surface-container-high/60 mb-4">
             <span class="text-[10px] uppercase tracking-widest text-primary font-bold">New Catalog Addition</span>
-            <h2 class="font-serif text-xl text-on-surface">Commission Casket Relic</h2>
+            <h2 class="font-serif text-xl text-on-surface">Add a Product</h2>
           </div>
 
           <form method="POST" action="{% url 'admin_dashboard' %}" enctype="multipart/form-data" class="space-y-3 text-xs">
@@ -775,7 +775,7 @@
 
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Vault Stock Units</label>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Stock Quantity</label>
                 {{ product_form.stock }}
               </div>
               <div>
@@ -828,7 +828,7 @@
             </div>
 
             <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3 text-xs uppercase tracking-widest font-bold transition-all shadow-md">
-              Publish &amp; Issue Crypt Certificate
+              Add Product &amp; Create Certificate
             </button>
           </form>
         </div>
@@ -969,7 +969,7 @@
           </div>
         {% empty %}
           <div class="bg-surface-container border border-surface-container-high p-12 text-center text-outline">
-            No bereavement enquiries found in this view.
+            No enquiries found.
           </div>
         {% endfor %}
       </div>
@@ -984,8 +984,8 @@
       <!-- Search & Info Header -->
       <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 class="font-serif text-xl text-on-surface">Chain-of-Custody Crypt Certificates</h2>
-          <span class="text-xs text-outline">Cryptographic verification seals guaranteeing mortuary acceptance &amp; materials integrity</span>
+          <h2 class="font-serif text-xl text-on-surface">Product Certificates</h2>
+          <span class="text-xs text-outline">Review and manage product certificate records.</span>
         </div>
 
         <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
@@ -1060,7 +1060,7 @@
       <div class="lg:col-span-7 bg-surface-container border border-surface-container-high p-6 space-y-6">
         <div>
           <span class="text-[10px] uppercase tracking-widest text-primary font-bold">Policy &amp; Service Config</span>
-          <h2 class="font-serif text-2xl text-on-surface">Sanctuary Operational Settings</h2>
+          <h2 class="font-serif text-2xl text-on-surface">System Settings</h2>
         </div>
 
         <div class="space-y-4">
@@ -1119,8 +1119,8 @@
         </form>
 
         <div class="p-3 bg-surface-container-low border border-surface-container-high/60 text-[11px] text-outline space-y-1">
-          <strong class="text-on-surface block">Predefined Sanctuary Keys:</strong>
-          <p>&bull; <code>bereavement_hotline</code>: Emergency phone displayed on header &amp; urgent form</p>
+          <strong class="text-on-surface block">Available Setting Keys:</strong>
+          <p>&bull; <code>bereavement_hotline</code>: Support phone displayed on the site</p>
           <p>&bull; <code>dispatch_email</code>: Primary logistics coordination inbox</p>
           <p>&bull; <code>ftc_compliance_notice</code>: Legal statement on mortuary casket rights</p>
         </div>
@@ -1135,7 +1135,7 @@
       
       <div class="bg-surface-container border border-surface-container-high p-4 flex items-center justify-between">
         <div>
-          <h2 class="font-serif text-xl text-on-surface">Registered Sanctuary User Accounts</h2>
+          <h2 class="font-serif text-xl text-on-surface">Registered User Accounts</h2>
           <span class="text-xs text-outline">Manage family buyer profiles and Mortuary Administration permissions</span>
         </div>
         <span class="text-xs text-primary font-bold">{{ users_list|length }} Total Users</span>
@@ -1218,6 +1218,7 @@
     </div>
   {% endif %}
 
+</div>
 
 <dialog id="delete-product-dialog" aria-labelledby="delete-product-title" aria-describedby="delete-product-description" class="w-[calc(100%-2rem)] max-w-md border border-outline-variant bg-surface-container p-0 text-on-surface shadow-2xl backdrop:bg-black/70">
   <div class="border-b border-surface-container-high px-6 py-4">
@@ -1273,5 +1274,4 @@
     }
   });
 </script>
-</div>
 {% endblock %}

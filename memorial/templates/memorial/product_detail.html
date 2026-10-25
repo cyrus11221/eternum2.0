@@ -1,6 +1,6 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}{{ product.name }} — ETERNUM Memorial Sanctuary{% endblock %}
+{% block title %}{{ product.name }} — ETERNUM{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
@@ -11,7 +11,7 @@
     <span>/</span>
     <a href="{% url 'catalog' %}" class="hover:text-primary transition-colors">Catalog</a>
     <span>/</span>
-    <a href="{% url 'catalog' %}?category={{ product.category.slug|default:'all' }}" class="hover:text-primary transition-colors">{{ product.category.name|default:"Sanctuary" }}</a>
+    <a href="{% url 'catalog' %}?category={{ product.category.slug|default:'all' }}" class="hover:text-primary transition-colors">{{ product.category.name|default:"Product" }}</a>
     <span>/</span>
     <span class="text-primary">{{ product.name }}</span>
   </nav>
@@ -28,7 +28,7 @@
         <!-- Badges Overlay -->
         <div class="absolute top-4 left-4 flex flex-col gap-2">
           <span class="inline-flex items-center gap-1.5 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 text-primary text-xs tracking-wider border border-primary/30 shadow-lg">
-            <span class="material-symbols-outlined text-[14px]">verified</span> Cryptographically Authenticated
+            <span class="material-symbols-outlined text-[14px]">verified</span> Certificate Available
           </span>
           <span class="bg-surface-variant/90 backdrop-blur-md px-3 py-1 text-secondary text-xs border border-surface-container-high">
             Provenance {{ product.provenance_code|default:"№ 0824" }}
@@ -37,7 +37,7 @@
 
         <div class="absolute bottom-4 right-4">
           <span class="bg-surface-container-high/90 backdrop-blur-md text-primary text-xs px-3 py-1 border border-primary/20">
-            {{ product.stock }} Available in Vault
+            {{ product.stock }} Available
           </span>
         </div>
       </div>
@@ -46,10 +46,10 @@
       <div class="p-6 bg-surface-container-low border border-surface-container-high flex flex-col gap-3">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold">
           <span class="material-symbols-outlined text-[18px]">verified_user</span>
-          <span>Eternum Quality &amp; Legal Seal</span>
+          <span>Product Information</span>
         </div>
         <p class="text-xs text-on-surface-variant leading-relaxed">
-          Every casket crafted by Eternum is certified for North American and European cemetery &amp; cremation standards. Delivered with sealed chain-of-custody verification directly to your appointed mortuary.
+          Review the product details and confirm that the item meets the requirements of your chosen funeral home, cemetery, or crematory.
         </p>
       </div>
 
@@ -61,7 +61,7 @@
       <div>
         <div class="flex items-center justify-between gap-2 mb-2">
           <span class="text-xs uppercase tracking-widest text-primary font-semibold">
-            {{ product.category.name|default:"Sanctuary" }}
+            {{ product.category.name|default:"Product" }}
           </span>
           <span class="text-xs text-outline uppercase tracking-wider">
             ID: #ETR-{{ product.id|stringformat:"04d" }}
@@ -77,7 +77,7 @@
             ₹{{ product.price|floatformat:2 }}
           </span>
           <span class="text-xs text-outline line-through">₹4,200 (Funeral Home Retail)</span>
-          <span class="text-[11px] text-primary bg-primary/10 px-2 py-0.5 border border-primary/20">Zero Mortuary Markup</span>
+          <span class="text-[11px] text-primary bg-primary/10 px-2 py-0.5 border border-primary/20">Price shown upfront</span>
         </div>
 
         <p class="text-xs sm:text-sm text-on-surface-variant leading-relaxed mb-6">
@@ -87,7 +87,7 @@
 
       <!-- Technical Specification Matrix -->
       <div class="bg-surface-container-low p-4 border border-surface-container-high/60 flex flex-col gap-2.5 text-xs">
-        <span class="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">Architectural Specifications</span>
+        <span class="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">Product Specifications</span>
         
         <div class="flex justify-between items-center py-1 border-b border-surface-container-high/40 text-outline">
           <span>Proportions (Exterior):</span>
@@ -134,11 +134,11 @@
 
         <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
-          Place in Memorial Cart
+          Add to Cart
         </button>
       </form>
 
-      <!-- Bespoke Customization CTA -->
+      <!-- Custom options -->
       <div class="pt-4 border-t border-surface-container-high/60 flex flex-col gap-2 text-center">
         <a href="{% url 'urgent_enquiry' %}?product={{ product.name|urlencode }}" class="text-xs uppercase tracking-wider text-primary hover:underline flex items-center justify-center gap-1">
           <span class="material-symbols-outlined text-[16px]">draw</span>
@@ -147,7 +147,7 @@
         {% if certificate %}
           <a href="{% url 'certificate_verify' %}?code={{ certificate.verification_code }}" class="text-[11px] text-outline hover:text-on-surface flex items-center justify-center gap-1">
             <span class="material-symbols-outlined text-[14px]">qr_code</span>
-            View Cryptographic Certificate: {{ certificate.verification_code }}
+            View Product Certificate: {{ certificate.verification_code }}
           </a>
         {% endif %}
       </div>

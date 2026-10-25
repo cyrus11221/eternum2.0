@@ -9,20 +9,20 @@
       <span class="material-symbols-outlined text-primary text-[36px]">mark_email_read</span>
     </div>
     
-    <span class="text-xs uppercase tracking-[0.25em] text-primary font-semibold block mb-2">Priority Bereavement Counsel</span>
-    <h1 class="font-serif text-3xl text-on-surface mb-3">Enquiry Received</h1>
+    <span class="text-xs uppercase tracking-[0.25em] text-primary font-semibold block mb-2">Customer Support</span>
+    <h1 class="font-serif text-3xl text-on-surface mb-3">We Received Your Enquiry</h1>
     
     <div class="inline-block bg-surface-container-low px-6 py-3 border border-surface-container-high my-4 font-mono text-primary text-base">
       Tracking ID: {{ enquiry.tracking_id }}
     </div>
 
     <p class="text-xs sm:text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed mb-8">
-      Your consultation regarding <strong>{{ enquiry.custom_type }}</strong> has been forwarded to our senior directors. A bereavement counselor will contact you via {{ enquiry.phone|default:enquiry.email }} promptly.
+      Your enquiry about <strong>{{ enquiry.custom_type }}</strong> has been received. We’ll contact you at {{ enquiry.phone|default:enquiry.email }}.
     </p>
 
     <div class="flex items-center justify-center gap-4">
       <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-6 py-3 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-colors">
-        Browse Collections
+        Browse Products
       </a>
       <a href="{% url 'home' %}" class="bg-surface-container-high text-on-surface px-6 py-3 text-xs uppercase tracking-wider hover:bg-surface-variant transition-colors border border-surface-container-high">
         Return Home

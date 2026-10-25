@@ -52,8 +52,8 @@ class Category(models.Model):
 
 class Product(models.Model):
     DISPATCH_CHOICES = (
-        ('ready', 'Immediate Crypt Dispatch (< 24h)'),
-        ('bespoke', 'Artisan Atelier Handcraft'),
+        ('ready', 'Ready for dispatch'),
+        ('bespoke', 'Custom-made'),
     )
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
@@ -130,10 +130,10 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = (
-        ('placed', 'Order Placed & Notified'),
-        ('confirmed', 'Confirmed & Crypt Vault Reserved'),
-        ('dispatched', 'White-Glove Dispatched to Mortuary'),
-        ('delivered', 'Directly Received by Mortuary'),
+        ('placed', 'Order placed'),
+        ('confirmed', 'Confirmed'),
+        ('dispatched', 'Dispatched'),
+        ('delivered', 'Delivered'),
         ('cancelled', 'Order Cancelled'),
     )
 

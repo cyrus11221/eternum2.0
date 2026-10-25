@@ -1,6 +1,6 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}Sign In — ETERNUM Sanctuary &amp; Heritage{% endblock %}
+{% block title %}Sign In — ETERNUM{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto px-4 py-20">
@@ -11,9 +11,9 @@
       <div class="w-10 h-10 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-3">
         <span class="material-symbols-outlined text-primary text-[22px]">lock</span>
       </div>
-      <span class="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Sanctuary Access</span>
-      <h1 class="font-serif text-2xl text-on-surface">Welcome Back to Eternum</h1>
-      <p class="text-xs text-on-surface-variant mt-1">Sign in to manage orders, tracking, and family consultations.</p>
+      <span class="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Account Access</span>
+      <h1 class="font-serif text-2xl text-on-surface">Welcome Back</h1>
+      <p class="text-xs text-on-surface-variant mt-1">Sign in to view your orders and account details.</p>
     </div>
 
     <form method="POST" action="{% url 'login' %}" class="space-y-4">
@@ -33,7 +33,7 @@
       </div>
 
       <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl">
-        Sign In to Eternum
+        Sign In
       </button>
 
       <p class="text-[11px] text-outline text-center mt-3 leading-relaxed">

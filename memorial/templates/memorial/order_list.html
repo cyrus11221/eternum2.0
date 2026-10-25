@@ -6,8 +6,8 @@
 <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
   
   <div class="pb-6 border-b border-surface-container-high/60 mb-8">
-    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Sanctuary Chain-of-Custody</span>
-    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Order History &amp; Mortuary Invoices</h1>
+    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Account</span>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Your Orders</h1>
   </div>
 
   {% if orders %}
@@ -32,7 +32,7 @@
             </div>
 
             <h3 class="font-serif text-xl text-on-surface">
-              Destination: {{ order.mortuary_name|default:"Designated Mortuary" }}
+              Delivery to: {{ order.mortuary_name|default:"Designated funeral home" }}
             </h3>
 
             <span class="text-xs text-on-surface-variant">
@@ -46,13 +46,13 @@
 
           <div class="flex items-center gap-6 justify-between lg:justify-end border-t lg:border-t-0 pt-4 lg:pt-0 border-surface-container-high/60">
             <div class="text-left lg:text-right">
-              <span class="text-[10px] uppercase text-outline block">Total Payable</span>
+              <span class="text-[10px] uppercase text-outline block">Order Total</span>
               <span class="font-serif text-2xl text-primary font-semibold">₹{{ order.total_amount|floatformat:2 }}</span>
             </div>
 
             <div class="flex items-center gap-2">
               <a href="{% url 'order_detail' order.id %}" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-2.5 transition-colors border border-surface-container-high">
-                View Tracking &amp; Invoice
+                Order Details
               </a>
             </div>
           </div>
@@ -63,12 +63,12 @@
   {% else %}
     <div class="text-center py-20 bg-surface-container-low border border-surface-container-high p-8 flex flex-col items-center">
       <span class="material-symbols-outlined text-outline text-[48px] mb-3">receipt_long</span>
-      <h3 class="font-serif text-2xl text-on-surface mb-2">No Previous Orders Found</h3>
+      <h3 class="font-serif text-2xl text-on-surface mb-2">No Orders Yet</h3>
       <p class="text-xs text-outline max-w-md mb-6 leading-relaxed">
-        You do not have any active or past casket orders in our registry.
+        Your orders will appear here after checkout.
       </p>
       <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-6 py-2.5 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-colors">
-        Browse Collections
+        Browse Products
       </a>
     </div>
   {% endif %}

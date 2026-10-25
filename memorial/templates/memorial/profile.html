@@ -1,13 +1,13 @@
 {% extends 'memorial/base.html' %}
 
-{% block title %}My Sanctuary Profile — ETERNUM{% endblock %}
+{% block title %}My Account — ETERNUM{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-12">
 
   <div class="pb-6 border-b border-surface-container-high/60 mb-8">
-    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Account &amp; Registry</span>
-    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Sanctuary Profile: {{ user.get_full_name|default:user.username }}</h1>
+    <span class="text-xs uppercase tracking-widest text-primary font-semibold">Account</span>
+    <h1 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Profile: {{ user.get_full_name|default:user.username }}</h1>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -50,14 +50,14 @@
 
       <!-- Saved Addresses -->
       <div class="pt-6 border-t border-surface-container-high/60">
-        <h3 class="font-serif text-lg text-on-surface mb-3">Saved Mortuary Addresses</h3>
+        <h3 class="font-serif text-lg text-on-surface mb-3">Saved Delivery Addresses</h3>
         {% if addresses %}
           <div class="space-y-3">
             {% for addr in addresses %}
               <div class="p-3 bg-surface-container-low border border-surface-container-high text-xs">
                 <span class="text-on-surface font-medium block">{{ addr.line1 }}{% if addr.line2 %}, {{ addr.line2 }}{% endif %}</span>
                 <span class="text-outline">{{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}</span>
-                {% if addr.is_default %}<span class="text-primary text-[10px] block mt-1">&bull; Default Delivery Destination</span>{% endif %}
+                {% if addr.is_default %}<span class="text-primary text-[10px] block mt-1">&bull; Default Address</span>{% endif %}
               </div>
             {% endfor %}
           </div>
@@ -74,7 +74,7 @@
       <!-- Recent Orders Card -->
       <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
         <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
-          <h2 class="font-serif text-xl text-on-surface">Recent Casket Orders</h2>
+          <h2 class="font-serif text-xl text-on-surface">Recent Orders</h2>
           <a href="{% url 'order_list' %}" class="text-xs text-primary hover:underline">View All &rarr;</a>
         </div>
 
@@ -104,8 +104,8 @@
       <!-- Submitted Enquiries Card -->
       <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
         <div class="flex items-center justify-between pb-3 border-b border-surface-container-high/60 mb-4">
-          <h2 class="font-serif text-xl text-on-surface">Submitted Consultations</h2>
-          <a href="{% url 'urgent_enquiry' %}" class="text-xs text-primary hover:underline">+ New Urgent Enquiry</a>
+          <h2 class="font-serif text-xl text-on-surface">Your Enquiries</h2>
+          <a href="{% url 'urgent_enquiry' %}" class="text-xs text-primary hover:underline">+ New Enquiry</a>
         </div>
 
         {% if enquiries %}
@@ -122,7 +122,7 @@
                 <p class="text-outline text-[11px] italic">"{{ enq.message }}"</p>
                 {% if enq.admin_response %}
                   <div class="p-2.5 bg-surface-container border-l-2 border-primary text-[11px] text-on-surface">
-                    <strong class="text-primary block mb-0.5">Counselor Response:</strong>
+                    <strong class="text-primary block mb-0.5">Response:</strong>
                     {{ enq.admin_response }}
                   </div>
                 {% endif %}
