@@ -1,6 +1,22 @@
 from django import forms
 from django.contrib.auth import authenticate
+from PIL import Image
 from .models import User, Order, Enquiry, Product, Address
+
+
+class ValidatedProductImageField(forms.ImageField):
+    def clean(self, data, initial=None):
+        image = super().clean(data, initial)
+        if image:
+            if image.size > 5 * 1024 * 1024:
+                raise forms.ValidationError('Image file must be 5 MB or smaller.')
+            image.seek(0)
+            with Image.open(image) as uploaded_image:
+                image_format = uploaded_image.format
+            image.seek(0)
+            if image_format not in {'JPEG', 'PNG', 'WEBP'}:
+                raise forms.ValidationError('Upload a JPEG, PNG, or WEBP image.')
+        return image
 
 
 class UserRegistrationForm(forms.ModelForm):
@@ -35,6 +51,18 @@ class UserRegistrationForm(forms.ModelForm):
             }),
         }
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('An account with this email already exists.')
+        return email
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if password and len(password) < 8:
+            raise forms.ValidationError('Password must be at least 8 characters long.')
+        return password
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
@@ -47,15 +75,19 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class UserLoginForm(forms.Form):
-    email = forms.EmailInput(attrs={
-        'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
-        'placeholder': 'name@example.com',
-        'autofocus': True
-    })
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
-        'placeholder': 'Enter your password'
-    }))
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
+            'placeholder': 'name@example.com',
+            'autofocus': True,
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
+            'placeholder': 'Enter your password',
+        })
+    )
 
 
 class CheckoutForm(forms.Form):
@@ -117,7 +149,16 @@ class CheckoutForm(forms.Form):
         max_length=20,
         widget=forms.TextInput(attrs={
             'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-2.5 rounded border border-outline/30 focus:border-primary focus:outline-none font-body-md',
-            'placeholder': 'Postal Code'
+            'placeholder': 'Postal Code',
+            'autocomplete': 'postal-code',
+        })
+    )
+    country = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-2.5 rounded border border-outline/30 focus:border-primary focus:outline-none font-body-md',
+            'placeholder': 'Country',
+            'autocomplete': 'country-name',
         })
     )
 
@@ -140,6 +181,38 @@ class CheckoutForm(forms.Form):
         initial='Sandbox Card',
         widget=forms.RadioSelect(attrs={'class': 'accent-primary mr-2'})
     )
+
+    def clean_postal_code(self):
+        postal_code = self.cleaned_data['postal_code']
+        if (
+            sum(character.isalnum() for character in postal_code) < 2
+            or any(not (character.isalnum() or character in ' -') for character in postal_code)
+        ):
+            raise forms.ValidationError(
+                'Enter a valid postal code using letters, numbers, spaces, or hyphens.'
+            )
+        return postal_code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        required_address_fields = {
+            'line1': 'Enter the receiving street address.',
+            'city': 'Enter the receiving city.',
+            'state': 'Enter the receiving state or province.',
+            'postal_code': 'Enter the receiving postal code.',
+            'country': 'Enter the receiving country.',
+        }
+
+        for field, message in required_address_fields.items():
+            value = cleaned_data.get(field)
+            if field not in self.errors and (not value or not value.strip()):
+                self.add_error(field, message)
+
+        return cleaned_data
+
+
+class ProductImageUploadForm(forms.Form):
+    image_file = ValidatedProductImageField(required=False)
 
 
 class UrgentEnquiryForm(forms.ModelForm):
@@ -188,6 +261,13 @@ class UrgentEnquiryForm(forms.ModelForm):
 
 
 class ProductForm(forms.ModelForm):
+    image_file = ValidatedProductImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'w-full text-xs text-on-surface',
+            'accept': 'image/jpeg,image/png,image/webp',
+        })
+    )
     image_url = forms.URLField(
         required=False,
         widget=forms.TextInput(attrs={

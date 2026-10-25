@@ -74,9 +74,9 @@
 
         <div class="flex items-baseline gap-3 mb-4">
           <span class="font-serif text-3xl text-primary font-semibold">
-            ${{ product.price|floatformat:2 }}
+            ₹{{ product.price|floatformat:2 }}
           </span>
-          <span class="text-xs text-outline line-through">$4,200 (Funeral Home Retail)</span>
+          <span class="text-xs text-outline line-through">₹4,200 (Funeral Home Retail)</span>
           <span class="text-[11px] text-primary bg-primary/10 px-2 py-0.5 border border-primary/20">Zero Mortuary Markup</span>
         </div>
 
@@ -171,7 +171,7 @@
               <h3 class="font-serif text-base text-on-surface mt-1">
                 <a href="{% url 'product_detail' rel.id %}" class="hover:text-primary transition-colors">{{ rel.name }}</a>
               </h3>
-              <span class="font-serif text-lg text-primary block mt-1">${{ rel.price|floatformat:0 }}</span>
+              <span class="font-serif text-lg text-primary block mt-1">₹{{ rel.price|floatformat:0 }}</span>
             </div>
             <a href="{% url 'product_detail' rel.id %}" class="mt-3 block text-center py-2 text-[10px] uppercase tracking-wider bg-surface-container-high hover:bg-surface-variant text-on-surface">
               View Details

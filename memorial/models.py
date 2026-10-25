@@ -77,6 +77,8 @@ class Product(models.Model):
     def primary_image_url(self):
         first_img = self.images.first()
         if first_img:
+            if first_img.image:
+                return first_img.image.url
             return first_img.image_url
         return 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBi8k5J9jpxSrq6_Ig5-qZww3t3WrZ2gCIGvUvgQeVzcjgsS1XkffTjHSYWGNzIWKwY2Id2mX2gtd8sKomhJuINTviUuc7TlVmLKHNgn0cVUrKlL_0duld9XRJrE55Pzec7xwU_U4bDpikodDfMB6HRgInIAjZTxXNjuJ94R6YQPe4xpTux-qXMpbNT-Zpx4vPjsdP3vgnolkGnIWXDdww5xOE_QUHhuD7Hb0rj6tvyyI6wV-3QTu8'
 
@@ -84,12 +86,13 @@ class Product(models.Model):
         return f"{self.length}L × {self.width}W × {self.height}H"
 
     def __str__(self):
-        return f"{self.name} (${self.price})"
+        return f"{self.name} (₹{self.price})"
 
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image_url = models.CharField(max_length=500)
+    image = models.ImageField(upload_to='products/', blank=True)
+    image_url = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
         return f"Image for {self.product.name}"
@@ -145,7 +148,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.user.email} - ${self.total_amount}"
+        return f"Order #{self.id} - {self.user.email} - ₹{self.total_amount}"
 
 
 class OrderItem(models.Model):

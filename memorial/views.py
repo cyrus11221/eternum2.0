@@ -18,7 +18,7 @@ from .models import (
 )
 from .forms import (
     UserRegistrationForm, UserLoginForm, CheckoutForm,
-    UrgentEnquiryForm, ProductForm
+    UrgentEnquiryForm, ProductForm, ProductImageUploadForm
 )
 
 
@@ -268,6 +268,7 @@ def checkout_view(request):
             'city': default_address.city,
             'state': default_address.state,
             'postal_code': default_address.postal_code,
+            'country': default_address.country,
         }
 
     if request.method == 'POST':
@@ -282,7 +283,7 @@ def checkout_view(request):
                     city=form.cleaned_data['city'],
                     state=form.cleaned_data['state'],
                     postal_code=form.cleaned_data['postal_code'],
-                    country='United States',
+                    country=form.cleaned_data['country'],
                     is_default=False
                 )
 
@@ -604,14 +605,20 @@ def admin_dashboard_view(request):
             return redirect(f"{reverse('admin_dashboard')}?tab=orders")
 
         elif action == 'add_product':
-            form = ProductForm(request.POST)
+            form = ProductForm(request.POST, request.FILES)
             if form.is_valid():
                 p = form.save(commit=False)
                 prov_code = f"ETR-AUTH-{uuid.uuid4().hex[:4].upper()}"
                 p.provenance_code = prov_code
                 p.save()
-                img_url = form.cleaned_data.get('image_url') or 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80'
-                ProductImage.objects.create(product=p, image_url=img_url)
+                ProductImage.objects.create(
+                    product=p,
+                    image=form.cleaned_data.get('image_file'),
+                    image_url=form.cleaned_data.get('image_url') or (
+                        '' if form.cleaned_data.get('image_file') else
+                        'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80'
+                    ),
+                )
                 AuthenticityCertificate.objects.create(
                     product=p,
                     verification_code=prov_code,
@@ -625,6 +632,11 @@ def admin_dashboard_view(request):
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
         elif action == 'edit_product':
+            image_upload_form = ProductImageUploadForm(request.FILES)
+            if request.FILES.get('image_file') and not image_upload_form.is_valid():
+                messages.error(request, f'Error updating product image: {image_upload_form.errors.as_text()}')
+                return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+
             p_id = request.POST.get('product_id')
             p = get_object_or_404(Product, pk=p_id)
             p.name = request.POST.get('name', p.name).strip()
@@ -653,13 +665,25 @@ def admin_dashboard_view(request):
             p.save()
 
             image_url = request.POST.get('image_url', '').strip()
-            if image_url:
-                first_img = p.images.first()
+            uploaded_image = image_upload_form.cleaned_data.get('image_file') if request.FILES.get('image_file') else None
+            first_img = p.images.first()
+            if uploaded_image or image_url:
                 if first_img:
-                    first_img.image_url = image_url
+                    old_image = first_img.image
+                    if uploaded_image:
+                        first_img.image = uploaded_image
+                        first_img.image_url = ''
+                    else:
+                        first_img.image_url = image_url
                     first_img.save()
+                    if uploaded_image and old_image:
+                        old_image.delete(save=False)
                 else:
-                    ProductImage.objects.create(product=p, image_url=image_url)
+                    ProductImage.objects.create(
+                        product=p,
+                        image=uploaded_image,
+                        image_url='' if uploaded_image else image_url,
+                    )
 
             messages.success(request, f'Vault casket "{p.name}" specifications updated.')
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")

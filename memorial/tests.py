@@ -1,5 +1,10 @@
+from io import BytesIO
+from tempfile import TemporaryDirectory
 from django.test import TestCase, Client
+from django.test.utils import override_settings
 from django.urls import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 from memorial.models import User, Category, Product, AuthenticityCertificate, Order, Enquiry
 from decimal import Decimal
 
@@ -83,7 +88,7 @@ class EternumSystemTests(TestCase):
         self.assertEqual(response.status_code, 200)
         cart_res = self.client.get(reverse('cart'))
         self.assertContains(cart_res, 'The Westminster Solid Oak')
-        self.assertContains(cart_res, '$2850.00')
+        self.assertContains(cart_res, '₹2850.00')
 
     def test_urgent_enquiry_submission(self):
         response = self.client.post(reverse('urgent_enquiry'), {
@@ -118,14 +123,128 @@ class EternumSystemTests(TestCase):
             'city': 'Portland',
             'state': 'OR',
             'postal_code': '97201',
+            'country': 'United States',
             'delivery_notes': 'Please call 30 mins prior to delivery.',
             'payment_method': 'Sandbox Card'
         }, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Order.objects.filter(user=self.buyer).exists())
+        self.assertEqual(Order.objects.get(user=self.buyer).shipping_address.country, 'United States')
+
+    def test_checkout_rejects_invalid_address(self):
+        self.client.login(username='eleanor@example.com', password='user123')
+        self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 1})
+
+        response = self.client.post(reverse('checkout'), {
+            'mortuary_name': 'Graceview Memorial Sanctuary',
+            'mortuary_phone': '+1 (555) 890-1234',
+            'line1': '742 Evergreen Terrace',
+            'city': 'Portland',
+            'state': 'OR',
+            'postal_code': '!!!',
+            'country': 'United States',
+            'payment_method': 'Sandbox Card',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Enter a valid postal code')
+        self.assertFalse(Order.objects.filter(user=self.buyer).exists())
+        self.assertFalse(self.buyer.addresses.exists())
+
+    def test_checkout_rejects_blank_address(self):
+        self.client.login(username='eleanor@example.com', password='user123')
+        self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 1})
+
+        response = self.client.post(reverse('checkout'), {
+            'mortuary_name': 'Graceview Memorial Sanctuary',
+            'mortuary_phone': '+1 (555) 890-1234',
+            'line1': '',
+            'city': '',
+            'state': '',
+            'postal_code': '',
+            'country': '',
+            'payment_method': 'Sandbox Card',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'This field is required.')
+        self.assertFalse(Order.objects.filter(user=self.buyer).exists())
+        self.assertFalse(self.buyer.addresses.exists())
 
     def test_admin_portal_access(self):
         self.client.login(username='admin@eternum.com', password='admin123')
         response = self.client.get(reverse('admin_dashboard'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Eternum Central Director Portal')
+
+    def test_admin_can_add_product_from_inventory(self):
+        self.client.login(username='admin@eternum.com', password='admin123')
+
+        inventory_response = self.client.get(reverse('admin_dashboard'), {'tab': 'inventory'})
+        self.assertContains(inventory_response, 'Add Product')
+        self.assertContains(inventory_response, 'id="add-product"')
+
+        response = self.client.post(reverse('admin_dashboard'), {
+            'action': 'add_product',
+            'name': 'The Cedar Memorial',
+            'category': self.category.id,
+            'price': '24000.00',
+            'stock': '3',
+            'dispatch_type': 'ready',
+            'material': 'Cedar',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        product = Product.objects.get(name='The Cedar Memorial')
+        self.assertTrue(AuthenticityCertificate.objects.filter(product=product).exists())
+
+    def test_admin_can_upload_product_image(self):
+        self.client.login(username='admin@eternum.com', password='admin123')
+        image_buffer = BytesIO()
+        Image.new('RGB', (2, 2), color='navy').save(image_buffer, format='PNG')
+        upload = SimpleUploadedFile(
+            'cedar-memorial.png',
+            image_buffer.getvalue(),
+            content_type='image/png',
+        )
+
+        with TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            response = self.client.post(reverse('admin_dashboard'), {
+                'action': 'add_product',
+                'name': 'The Uploaded Cedar Memorial',
+                'category': self.category.id,
+                'price': '24000.00',
+                'stock': '3',
+                'dispatch_type': 'ready',
+                'material': 'Cedar',
+                'image_file': upload,
+            }, follow=True)
+
+            self.assertEqual(response.status_code, 200)
+            product = Product.objects.get(name='The Uploaded Cedar Memorial')
+            product_image = product.images.get()
+            self.assertTrue(product_image.image)
+            self.assertTrue(product_image.image.storage.exists(product_image.image.name))
+            self.assertEqual(product.primary_image_url(), product_image.image.url)
+            self.assertTrue(product.primary_image_url().startswith('/media/products/'))
+
+    def test_admin_rejects_non_image_product_upload(self):
+        self.client.login(username='admin@eternum.com', password='admin123')
+        upload = SimpleUploadedFile(
+            'not-an-image.png',
+            b'not an image',
+            content_type='image/png',
+        )
+
+        response = self.client.post(reverse('admin_dashboard'), {
+            'action': 'add_product',
+            'name': 'Invalid Image Product',
+            'category': self.category.id,
+            'price': '24000.00',
+            'stock': '3',
+            'dispatch_type': 'ready',
+            'image_file': upload,
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Product.objects.filter(name='Invalid Image Product').exists())

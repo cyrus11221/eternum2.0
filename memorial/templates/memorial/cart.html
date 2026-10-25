@@ -57,8 +57,8 @@
                 </div>
 
                 <div class="text-right">
-                  <span class="text-[11px] text-outline block">${{ item.product.price|floatformat:2 }} each</span>
-                  <span class="font-serif text-xl text-primary font-semibold">${{ item.subtotal|floatformat:2 }}</span>
+                  <span class="text-[11px] text-outline block">₹{{ item.product.price|floatformat:2 }} each</span>
+                  <span class="font-serif text-xl text-primary font-semibold">₹{{ item.subtotal|floatformat:2 }}</span>
                 </div>
               </div>
 
@@ -83,11 +83,11 @@
         <div class="flex flex-col gap-3 text-xs">
           <div class="flex justify-between text-on-surface-variant">
             <span>Selected Sanctuary Total:</span>
-            <span class="text-on-surface font-semibold">${{ total_amount|floatformat:2 }}</span>
+            <span class="text-on-surface font-semibold">₹{{ total_amount|floatformat:2 }}</span>
           </div>
           <div class="flex justify-between text-on-surface-variant">
             <span>White-Glove Mortuary Delivery:</span>
-            <span class="text-primary font-semibold">Included ($0.00)</span>
+            <span class="text-primary font-semibold">Included (₹0.00)</span>
           </div>
           <div class="flex justify-between text-on-surface-variant">
             <span>Direct Mortuary Coordination:</span>
@@ -95,13 +95,13 @@
           </div>
           <div class="flex justify-between text-on-surface-variant">
             <span>Hidden Fees / Surcharges:</span>
-            <span class="text-on-surface font-semibold">$0.00</span>
+            <span class="text-on-surface font-semibold">₹0.00</span>
           </div>
         </div>
 
         <div class="pt-4 border-t border-surface-container-high/60 flex justify-between items-baseline">
           <span class="text-xs uppercase tracking-wider text-outline">Total Payable:</span>
-          <span class="font-serif text-3xl text-primary font-semibold">${{ total_amount|floatformat:2 }}</span>
+          <span class="font-serif text-3xl text-primary font-semibold">₹{{ total_amount|floatformat:2 }}</span>
         </div>
 
         <!-- Dignified Checkout CTA -->

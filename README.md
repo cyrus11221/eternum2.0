@@ -54,7 +54,7 @@ Before running the project, make sure you have:
 Install the project dependencies:
 
 ```bash
-python -m pip install django python-dotenv
+python -m pip install django python-dotenv Pillow
 ```
 
 4. Copy the example environment file and update it for your local setup:
@@ -123,6 +123,7 @@ The app includes a seeded admin user and buyer account for testing:
 ### Admin flows
 
 - Manage products and categories through Django admin or custom dashboard
+- Add product images by uploading JPEG, PNG, or WEBP files (maximum 5 MB) or by providing an image URL
 - Review incoming orders and order states
 - Monitor enquiry history and responses
 - Use the director dashboard for operational summaries and workflow management
@@ -156,5 +157,5 @@ This project includes design and specification documentation that describes the 
 - The project is designed as a respectful memorial commerce demo and is best suited for educational or demonstration use.
 - Payment flows are implemented as a sandbox-style workflow rather than a production payment provider.
 - The default configuration for this repository is SQLite for simple local development and easy setup.
+- Uploaded product images are stored under `media/products/` and served by Django during development; production deployments should configure the web server or object storage to serve uploaded media.
 - The project is intended to be a solid foundation for further extension, real-world compliance review, and production hardening.
-

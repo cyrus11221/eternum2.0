@@ -13,6 +13,12 @@
   <form method="POST" action="{% url 'checkout' %}" class="grid grid-cols-1 lg:grid-cols-12 gap-10">
     {% csrf_token %}
 
+    {% if form.errors %}
+      <div class="lg:col-span-12 border border-error/50 bg-error-container/20 p-4 text-sm text-error" role="alert">
+        Please correct the highlighted checkout details before placing your order.
+      </div>
+    {% endif %}
+
     <!-- Left Column: Forms (8 cols) -->
     <div class="lg:col-span-8 flex flex-col gap-8">
       
@@ -58,7 +64,7 @@
           <div class="sm:col-span-2">
             <label class="block text-xs uppercase tracking-wider text-outline mb-1">Street Address *</label>
             {{ form.line1 }}
-            {{ form.line1.errors }}
+            {% for error in form.line1.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
           </div>
 
           <div class="sm:col-span-2">
@@ -70,20 +76,26 @@
           <div>
             <label class="block text-xs uppercase tracking-wider text-outline mb-1">City *</label>
             {{ form.city }}
-            {{ form.city.errors }}
+            {% for error in form.city.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
           </div>
 
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs uppercase tracking-wider text-outline mb-1">State *</label>
               {{ form.state }}
-              {{ form.state.errors }}
+              {% for error in form.state.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
             </div>
             <div>
               <label class="block text-xs uppercase tracking-wider text-outline mb-1">Postal Code *</label>
               {{ form.postal_code }}
-              {{ form.postal_code.errors }}
+              {% for error in form.postal_code.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
             </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Country *</label>
+            {{ form.country }}
+            {% for error in form.country.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
           </div>
 
           <div class="sm:col-span-2 mt-2">
@@ -157,9 +169,9 @@
             <img src="{{ item.product.primary_image_url }}" alt="{{ item.product.name }}" class="w-12 h-12 object-cover shrink-0 border border-surface-container-high"/>
             <div class="flex-1">
               <span class="font-serif text-sm text-on-surface block">{{ item.product.name }}</span>
-              <span class="text-outline text-[11px]">Qty: {{ item.quantity }} &bull; ${{ item.product.price|floatformat:0 }}</span>
+              <span class="text-outline text-[11px]">Qty: {{ item.quantity }} &bull; ₹{{ item.product.price|floatformat:0 }}</span>
             </div>
-            <span class="font-serif text-sm text-primary font-medium">${{ item.subtotal|floatformat:0 }}</span>
+            <span class="font-serif text-sm text-primary font-medium">₹{{ item.subtotal|floatformat:0 }}</span>
           </div>
         {% endfor %}
       </div>
@@ -168,21 +180,21 @@
       <div class="flex flex-col gap-2 text-xs text-on-surface-variant pt-2 border-t border-surface-container-high/60">
         <div class="flex justify-between">
           <span>Subtotal:</span>
-          <span class="text-on-surface">${{ total_amount|floatformat:2 }}</span>
+          <span class="text-on-surface">₹{{ total_amount|floatformat:2 }}</span>
         </div>
         <div class="flex justify-between text-primary">
           <span>White-Glove Delivery:</span>
-          <span>Included ($0.00)</span>
+          <span>Included (₹0.00)</span>
         </div>
         <div class="flex justify-between">
           <span>Sales Tax (Transparent):</span>
-          <span>$0.00</span>
+          <span>₹0.00</span>
         </div>
       </div>
 
       <div class="pt-3 border-t border-surface-container-high/60 flex justify-between items-baseline">
         <span class="text-xs uppercase tracking-wider text-outline">Total Amount:</span>
-        <span class="font-serif text-3xl text-primary font-semibold">${{ total_amount|floatformat:2 }}</span>
+        <span class="font-serif text-3xl text-primary font-semibold">₹{{ total_amount|floatformat:2 }}</span>
       </div>
 
       <!-- Submit Order Button -->

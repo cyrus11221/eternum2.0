@@ -37,7 +37,7 @@
     
     <div class="bg-surface-container border border-surface-container-high p-4 flex flex-col justify-between">
       <span class="text-[10px] uppercase tracking-widest text-outline">Total Vault Revenue</span>
-      <span class="font-serif text-2xl lg:text-3xl text-primary font-bold mt-1">${{ total_revenue|floatformat:2 }}</span>
+      <span class="font-serif text-2xl lg:text-3xl text-primary font-bold mt-1">₹{{ total_revenue|floatformat:2 }}</span>
       <span class="text-[10px] text-outline mt-1">{{ confirmed_orders_count|add:dispatched_orders_count|add:delivered_orders_count }} Fulfilled / In-Transit</span>
     </div>
 
@@ -168,7 +168,7 @@
                         <span class="text-[10px] text-outline">{{ order.user.email }}</span>
                       </td>
                       <td class="py-2.5 px-3 text-on-surface">{{ order.mortuary_name|default:"Direct Family Residence" }}</td>
-                      <td class="py-2.5 px-3 font-serif font-bold text-primary">${{ order.total_amount|floatformat:2 }}</td>
+                      <td class="py-2.5 px-3 font-serif font-bold text-primary">₹{{ order.total_amount|floatformat:2 }}</td>
                       <td class="py-2.5 px-3">
                         <span class="px-2 py-0.5 text-[10px] uppercase font-semibold
                           {% if order.status == 'delivered' %}bg-primary/20 text-primary border border-primary/40
@@ -431,7 +431,7 @@
                     </div>
                   </td>
                   <td class="py-3.5 px-3 font-serif text-sm text-primary font-bold">
-                    ${{ order.total_amount|floatformat:2 }}
+                    ₹{{ order.total_amount|floatformat:2 }}
                   </td>
                   <td class="py-3.5 px-3">
                     <span class="px-2.5 py-1 text-[10px] uppercase font-semibold inline-block
@@ -532,18 +532,24 @@
         </div>
 
         <!-- Search Bar -->
-        <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
-          <input type="hidden" name="tab" value="inventory"/>
-          <input type="hidden" name="prod_category" value="{{ prod_category }}"/>
-          <input type="hidden" name="prod_stock" value="{{ prod_stock }}"/>
-          <div class="relative">
-            <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[16px]">search</span>
-            <input type="text" name="prod_search" value="{{ prod_search }}" placeholder="Search casket name, material..." class="bg-surface-container-highest text-on-surface text-xs pl-8 pr-3 py-1.5 border border-surface-container-high focus:outline-none focus:border-primary w-52"/>
-          </div>
-          <button type="submit" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs px-3 py-1.5 border border-surface-container-high">
-            Filter
-          </button>
-        </form>
+        <div class="flex items-center gap-2">
+          <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-2">
+            <input type="hidden" name="tab" value="inventory"/>
+            <input type="hidden" name="prod_category" value="{{ prod_category }}"/>
+            <input type="hidden" name="prod_stock" value="{{ prod_stock }}"/>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[16px]">search</span>
+              <input type="text" name="prod_search" value="{{ prod_search }}" placeholder="Search casket name, material..." class="bg-surface-container-highest text-on-surface text-xs pl-8 pr-3 py-1.5 border border-surface-container-high focus:outline-none focus:border-primary w-52"/>
+            </div>
+            <button type="submit" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs px-3 py-1.5 border border-surface-container-high">
+              Filter
+            </button>
+          </form>
+          <a href="#add-product" class="bg-primary hover:bg-primary-container text-on-primary-container text-xs uppercase tracking-wider px-3 py-2 font-bold whitespace-nowrap">
+            <span class="material-symbols-outlined text-[15px] align-middle">add</span>
+            Add Product
+          </a>
+        </div>
 
       </div>
 
@@ -570,7 +576,7 @@
                           <span class="px-1.5 py-0.2 text-[9px] bg-surface-container-high text-outline uppercase">Inactive</span>
                         {% endif %}
                       </div>
-                      <span class="text-primary font-serif font-bold text-sm block mt-0.5">${{ p.price|floatformat:0 }}</span>
+                      <span class="text-primary font-serif font-bold text-sm block mt-0.5">₹{{ p.price|floatformat:0 }}</span>
                       <span class="text-outline text-[11px] block">{{ p.category.name }} &bull; {{ p.material }} &bull; {{ p.finish }}</span>
                       <span class="font-mono text-[10px] text-outline/80">Code: {{ p.provenance_code|default:"Unassigned" }}</span>
                     </div>
@@ -642,7 +648,7 @@
                 <!-- Collapsible Edit Modal / Panel -->
                 <div id="edit-modal-{{ p.id }}" class="hidden pt-3 border-t border-surface-container-high bg-surface-container p-3 space-y-3">
                   <span class="font-serif text-sm text-primary font-bold block">Edit Casket: {{ p.name }}</span>
-                  <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-2 text-xs">
+                  <form method="POST" action="{% url 'admin_dashboard' %}" enctype="multipart/form-data" class="space-y-2 text-xs">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="edit_product"/>
                     <input type="hidden" name="product_id" value="{{ p.id }}"/>
@@ -664,7 +670,7 @@
 
                     <div class="grid grid-cols-3 gap-2">
                       <div>
-                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Price ($)</label>
+                        <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Price (₹)</label>
                         <input type="number" step="0.01" name="price" value="{{ p.price }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
                       </div>
                       <div>
@@ -707,6 +713,11 @@
                     </div>
 
                     <div>
+                      <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Upload Product Image</label>
+                      <input type="file" name="image_file" accept="image/jpeg,image/png,image/webp" class="w-full text-xs text-on-surface"/>
+                    </div>
+
+                    <div>
                       <label class="text-[9px] uppercase tracking-wider text-outline block mb-0.5">Primary Image URL</label>
                       <input type="url" name="image_url" value="{{ p.primary_image_url }}" class="w-full bg-surface-container-highest text-on-surface px-2 py-1 text-xs border border-surface-container-high"/>
                     </div>
@@ -741,13 +752,13 @@
         </div>
 
         <!-- Add New Casket Form (5 Cols) -->
-        <div class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6">
+        <div id="add-product" class="lg:col-span-5 bg-surface-container border border-surface-container-high p-6 scroll-mt-24">
           <div class="pb-3 border-b border-surface-container-high/60 mb-4">
             <span class="text-[10px] uppercase tracking-widest text-primary font-bold">New Catalog Addition</span>
             <h2 class="font-serif text-xl text-on-surface">Commission Casket Relic</h2>
           </div>
 
-          <form method="POST" action="{% url 'admin_dashboard' %}" class="space-y-3 text-xs">
+          <form method="POST" action="{% url 'admin_dashboard' %}" enctype="multipart/form-data" class="space-y-3 text-xs">
             {% csrf_token %}
             <input type="hidden" name="action" value="add_product"/>
 
@@ -762,7 +773,7 @@
                 {{ product_form.category }}
               </div>
               <div>
-                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Price ($) *</label>
+                <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Price (₹) *</label>
                 {{ product_form.price }}
               </div>
             </div>
@@ -805,8 +816,15 @@
             </div>
 
             <div>
-              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Image URL</label>
+              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Upload Product Image (JPEG, PNG, WEBP; up to 5 MB)</label>
+              {{ product_form.image_file }}
+              {% for error in product_form.image_file.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div>
+              <label class="block text-[10px] uppercase tracking-wider text-outline mb-1">Image URL (optional)</label>
               {{ product_form.image_url }}
+              {% for error in product_form.image_url.errors %}<p class="mt-1 text-xs text-error">{{ error }}</p>{% endfor %}
             </div>
 
             <div>
@@ -1007,7 +1025,7 @@
 
                 <div class="space-y-1">
                   <span class="font-serif text-sm font-semibold text-on-surface block">{{ cert.product.name }}</span>
-                  <span class="text-[11px] text-outline block">${{ cert.product.price|floatformat:0 }} &bull; {{ cert.product.category.name }}</span>
+                  <span class="text-[11px] text-outline block">₹{{ cert.product.price|floatformat:0 }} &bull; {{ cert.product.category.name }}</span>
                   <span class="text-[10px] text-outline/80 block">Issued: {{ cert.issued_at|date:"M d, Y" }}</span>
                   <span class="text-[10px] text-outline/80 block">By: {{ cert.issued_by.get_full_name|default:cert.issued_by.email }}</span>
                 </div>
