@@ -182,6 +182,8 @@ class EternumSystemTests(TestCase):
 
         inventory_response = self.client.get(reverse('admin_dashboard'), {'tab': 'inventory'})
         self.assertContains(inventory_response, 'Add Product')
+        self.assertContains(inventory_response, 'id="delete-product-dialog"')
+        self.assertNotContains(inventory_response, 'onsubmit="return confirm(')
         self.assertContains(inventory_response, 'id="add-product"')
 
         response = self.client.post(reverse('admin_dashboard'), {
@@ -197,6 +199,18 @@ class EternumSystemTests(TestCase):
         self.assertEqual(response.status_code, 200)
         product = Product.objects.get(name='The Cedar Memorial')
         self.assertTrue(AuthenticityCertificate.objects.filter(product=product).exists())
+    def test_admin_can_delete_product_with_themed_toast(self):
+        self.client.login(username='admin@eternum.com', password='admin123')
+
+        response = self.client.post(reverse('admin_dashboard'), {
+            'action': 'delete_product',
+            'product_id': self.product.id,
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Product.objects.filter(pk=self.product.pk).exists())
+        self.assertContains(response, 'data-toast')
+        self.assertContains(response, 'was removed from the catalog.')
 
     def test_admin_can_upload_product_image(self):
         self.client.login(username='admin@eternum.com', password='admin123')

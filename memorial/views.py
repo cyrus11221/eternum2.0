@@ -710,7 +710,11 @@ def admin_dashboard_view(request):
             p = get_object_or_404(Product, pk=p_id)
             name = p.name
             p.delete()
-            messages.warning(request, f'Casket "{name}" removed from sanctuary catalog.')
+            messages.warning(
+                request,
+                f'Product "{name}" was removed from the catalog.',
+                extra_tags='toast',
+            )
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
         elif action == 'respond_enquiry':

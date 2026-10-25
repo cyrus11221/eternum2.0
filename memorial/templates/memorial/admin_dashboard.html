@@ -635,14 +635,9 @@
                     </a>
                   </div>
 
-                  <form method="POST" action="{% url 'admin_dashboard' %}" onsubmit="return confirm('Remove casket {{ p.name }} from the catalog?');">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="delete_product"/>
-                    <input type="hidden" name="product_id" value="{{ p.id }}"/>
-                    <button type="submit" class="text-error/80 hover:text-error text-xs">
-                      Delete
-                    </button>
-                  </form>
+                  <button type="button" data-delete-product="{{ p.id }}" data-product-name="{{ p.name }}" class="text-error/80 hover:text-error text-xs">
+                    Delete
+                  </button>
                 </div>
 
                 <!-- Collapsible Edit Modal / Panel -->
@@ -1223,5 +1218,60 @@
     </div>
   {% endif %}
 
+
+<dialog id="delete-product-dialog" aria-labelledby="delete-product-title" aria-describedby="delete-product-description" class="w-[calc(100%-2rem)] max-w-md border border-outline-variant bg-surface-container p-0 text-on-surface shadow-2xl backdrop:bg-black/70">
+  <div class="border-b border-surface-container-high px-6 py-4">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined flex h-10 w-10 items-center justify-center border border-error/40 bg-error-container/30 text-error">delete_forever</span>
+      <div>
+        <h2 id="delete-product-title" class="font-serif text-xl text-on-surface">Remove product?</h2>
+        <p class="text-[10px] uppercase tracking-widest text-outline">Catalog confirmation</p>
+      </div>
+    </div>
+  </div>
+  <form method="POST" action="{% url 'admin_dashboard' %}" class="p-6">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete_product"/>
+    <input id="delete-product-id" type="hidden" name="product_id"/>
+    <p id="delete-product-description" class="text-sm leading-relaxed text-on-surface-variant">
+      Remove <span id="delete-product-name" class="font-semibold text-on-surface"></span> from the catalog? This action cannot be undone.
+    </p>
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" id="cancel-delete-product" class="border border-surface-container-high px-4 py-2 text-xs uppercase tracking-wider text-on-surface-variant transition-colors hover:border-primary hover:text-primary">
+        Cancel
+      </button>
+      <button type="submit" class="flex items-center gap-2 border border-error/60 bg-error-container/30 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-error transition-colors hover:bg-error-container/60">
+        <span class="material-symbols-outlined text-[16px]">delete</span>
+        Remove product
+      </button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const deleteProductDialog = document.getElementById('delete-product-dialog');
+  const deleteProductId = document.getElementById('delete-product-id');
+  const deleteProductName = document.getElementById('delete-product-name');
+
+  document.querySelectorAll('[data-delete-product]').forEach((button) => {
+    button.addEventListener('click', () => {
+      deleteProductId.value = button.dataset.deleteProduct;
+      deleteProductName.textContent = button.dataset.productName;
+      deleteProductDialog.showModal();
+    });
+  });
+
+  document.getElementById('cancel-delete-product').addEventListener('click', () => {
+    deleteProductDialog.close();
+  });
+
+  deleteProductDialog.addEventListener('click', (event) => {
+    if (event.target === deleteProductDialog) {
+      deleteProductDialog.close();
+    }
+  });
+</script>
 </div>
 {% endblock %}
