@@ -80,16 +80,23 @@ WSGI_APPLICATION = 'eternum_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+DB_NAME = os.environ.get('DB_NAME', str(BASE_DIR / 'db.sqlite3'))
+DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3')
+
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.environ.get('DB_NAME', 'eternum_db'),
+        'ENGINE': DB_ENGINE,
+        'NAME': DB_NAME,
+    }
+}
+
+if DB_ENGINE != 'django.db.backends.sqlite3':
+    DATABASES['default'].update({
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'admin123'),
         'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DB_PORT', '5432'),
-    }
-}
+    })
 
 
 # Password validation
