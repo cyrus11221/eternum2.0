@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Q, Count, Sum
+from django.db.models.deletion import ProtectedError
 from decimal import Decimal
 import uuid
 import datetime
@@ -24,6 +25,32 @@ from .forms import (
 
 def is_admin(user):
     return user.is_authenticated and (user.role == 'admin' or user.is_staff or user.is_superuser)
+
+
+def _sync_guest_cart_to_user(request, user):
+    """Merge guest session cart items into the user's cart, skipping unavailable products."""
+    session_cart = request.session.get('guest_cart', {})
+    if not session_cart:
+        return
+    cart, _ = Cart.objects.get_or_create(user=user)
+    skipped_unavailable = []
+    for prod_id, qty in session_cart.items():
+        try:
+            product = Product.objects.get(id=prod_id, is_active=True)
+        except Product.DoesNotExist:
+            continue
+        if not product.is_available:
+            skipped_unavailable.append(product.name)
+            continue
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        cart_item.quantity = cart_item.quantity + qty if not created else qty
+        cart_item.save()
+    request.session['guest_cart'] = {}
+    if skipped_unavailable:
+        messages.warning(
+            request,
+            f'Removed unavailable product(s) from your cart: {", ".join(skipped_unavailable)}.',
+        )
 
 
 # --- Public Navigation Views ---
@@ -131,24 +158,29 @@ def product_detail_view(request, pk):
 def cart_view(request):
     cart_items = []
     total = Decimal('0.00')
+    unavailable_items = []
 
     if request.user.is_authenticated:
         cart, _ = Cart.objects.get_or_create(user=request.user)
-        cart_items = cart.items.select_related('product').all()
+        cart_items = list(cart.items.select_related('product', 'product__category').all())
         total = cart.total_amount()
+        unavailable_items = [item for item in cart_items if not item.product.is_purchasable()]
     else:
         session_cart = request.session.get('guest_cart', {})
         for prod_id, qty in session_cart.items():
             try:
-                prod = Product.objects.get(id=prod_id, is_active=True)
+                prod = Product.objects.select_related('category').get(id=prod_id, is_active=True)
                 subtotal = prod.price * qty
-                cart_items.append({
+                entry = {
                     'product': prod,
                     'quantity': qty,
                     'subtotal': subtotal,
                     'is_session': True,
                     'id': prod.id,
-                })
+                }
+                cart_items.append(entry)
+                if not prod.is_purchasable():
+                    unavailable_items.append(entry)
                 total += subtotal
             except Product.DoesNotExist:
                 pass
@@ -156,12 +188,27 @@ def cart_view(request):
     return render(request, 'memorial/cart.html', {
         'cart_items': cart_items,
         'total_amount': total,
+        'unavailable_items': unavailable_items,
+        'has_unavailable_items': bool(unavailable_items),
     })
 
 
 def cart_add_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id, is_active=True)
-    qty = int(request.POST.get('quantity', 1))
+    if not product.is_available:
+        messages.error(
+            request,
+            f'"{product.name}" is currently out of stock and cannot be added to your cart.',
+        )
+        next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+        if next_url:
+            return redirect(next_url)
+        return redirect('product_detail', pk=product.id)
+
+    try:
+        qty = max(1, int(request.POST.get('quantity', 1)))
+    except (TypeError, ValueError):
+        qty = 1
 
     if request.user.is_authenticated:
         cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -185,14 +232,22 @@ def cart_add_view(request, product_id):
 
 
 def cart_update_view(request, item_id):
-    qty = int(request.POST.get('quantity', 1))
+    try:
+        qty = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        qty = 1
 
     if request.user.is_authenticated:
         try:
-            item = CartItem.objects.get(id=item_id, cart__user=request.user)
+            item = CartItem.objects.select_related('product').get(id=item_id, cart__user=request.user)
             if qty <= 0:
                 item.delete()
                 messages.info(request, 'Item removed from your cart.')
+            elif not item.product.is_purchasable():
+                messages.error(
+                    request,
+                    f'"{item.product.name}" is currently out of stock. Please remove it from your cart.',
+                )
             else:
                 item.quantity = qty
                 item.save()
@@ -207,8 +262,15 @@ def cart_update_view(request, item_id):
                 del session_cart[str_id]
                 messages.info(request, 'Item removed from your cart.')
             else:
-                session_cart[str_id] = qty
-                messages.success(request, 'Cart quantity updated.')
+                prod = Product.objects.filter(id=str_id).first()
+                if not prod or not prod.is_purchasable():
+                    messages.error(
+                        request,
+                        'This product is currently out of stock. Please remove it from your cart.',
+                    )
+                else:
+                    session_cart[str_id] = qty
+                    messages.success(request, 'Cart quantity updated.')
             request.session['guest_cart'] = session_cart
             request.session.modified = True
 
@@ -250,13 +312,14 @@ def cart_clear_view(request):
 @login_required(login_url='login')
 def checkout_view(request):
     cart, _ = Cart.objects.get_or_create(user=request.user)
-    items = cart.items.select_related('product').all()
+    items = list(cart.items.select_related('product').all())
 
-    if not items.exists():
+    if not items:
         messages.warning(request, 'Your cart is empty. Add a product before checking out.')
         return redirect('catalog')
 
     total_amount = cart.total_amount()
+    unavailable_items = [item for item in items if not item.product.is_purchasable()]
 
     # Pre-fill address if available
     default_address = request.user.addresses.filter(is_default=True).first() or request.user.addresses.first()
@@ -273,8 +336,47 @@ def checkout_view(request):
 
     if request.method == 'POST':
         form = CheckoutForm(request.POST)
+        if unavailable_items:
+            unavailable_names = ', '.join(f'"{item.product.name}"' for item in unavailable_items)
+            messages.error(
+                request,
+                f'Checkout cannot proceed because {unavailable_names} is currently out of stock. Please remove unavailable items from your cart.',
+            )
+            return render(request, 'memorial/checkout.html', {
+                'form': form,
+                'cart_items': items,
+                'total_amount': total_amount,
+                'unavailable_items': unavailable_items,
+                'has_unavailable_items': True,
+            })
+
         if form.is_valid():
             with transaction.atomic():
+                # Re-verify product availability inside the transaction
+                locked_products = {
+                    p.id: p
+                    for p in Product.objects.select_for_update().filter(
+                        pk__in=[item.product_id for item in items]
+                    )
+                }
+                tx_unavailable = [
+                    item for item in items
+                    if item.product_id not in locked_products or not locked_products[item.product_id].is_purchasable()
+                ]
+                if tx_unavailable:
+                    unavailable_names = ', '.join(f'"{item.product.name}"' for item in tx_unavailable)
+                    messages.error(
+                        request,
+                        f'Checkout cannot proceed because {unavailable_names} is currently out of stock. Please remove unavailable items from your cart.',
+                    )
+                    return render(request, 'memorial/checkout.html', {
+                        'form': form,
+                        'cart_items': items,
+                        'total_amount': total_amount,
+                        'unavailable_items': tx_unavailable,
+                        'has_unavailable_items': True,
+                    })
+
                 # 1. Save Address
                 address = Address.objects.create(
                     user=request.user,
@@ -301,14 +403,16 @@ def checkout_view(request):
 
                 # 3. Create OrderItems & decrement stock
                 for cart_item in items:
+                    product = locked_products[cart_item.product_id]
                     OrderItem.objects.create(
                         order=order,
-                        product=cart_item.product,
+                        product=product,
+                        product_name=product.name,
                         quantity=cart_item.quantity,
-                        unit_price=cart_item.product.price
+                        unit_price=product.price
                     )
-                    cart_item.product.stock = max(0, cart_item.product.stock - cart_item.quantity)
-                    cart_item.product.save()
+                    product.stock = max(0, product.stock - cart_item.quantity)
+                    product.save()
 
                 # 4. Create Payment
                 txn_ref = f"TXN-ETR-{uuid.uuid4().hex[:8].upper()}"
@@ -341,6 +445,8 @@ def checkout_view(request):
         'form': form,
         'cart_items': items,
         'total_amount': total_amount,
+        'unavailable_items': unavailable_items,
+        'has_unavailable_items': bool(unavailable_items),
     })
 
 
@@ -469,18 +575,7 @@ def register_view(request):
             Cart.objects.get_or_create(user=user)
 
             # Sync guest session cart to user cart
-            session_cart = request.session.get('guest_cart', {})
-            if session_cart:
-                cart = user.cart
-                for prod_id, qty in session_cart.items():
-                    try:
-                        p = Product.objects.get(id=prod_id)
-                        ci, created = CartItem.objects.get_or_create(cart=cart, product=p)
-                        ci.quantity = ci.quantity + qty if not created else qty
-                        ci.save()
-                    except Product.DoesNotExist:
-                        pass
-                request.session['guest_cart'] = {}
+            _sync_guest_cart_to_user(request, user)
 
             login(request, user)
             messages.success(request, f'Welcome to Eternum, {user.first_name or user.username}.')
@@ -516,18 +611,7 @@ def login_view(request):
                 Cart.objects.get_or_create(user=user)
 
                 # Sync guest session cart
-                session_cart = request.session.get('guest_cart', {})
-                if session_cart:
-                    cart = user.cart
-                    for prod_id, qty in session_cart.items():
-                        try:
-                            p = Product.objects.get(id=prod_id)
-                            ci, created = CartItem.objects.get_or_create(cart=cart, product=p)
-                            ci.quantity = ci.quantity + qty if not created else qty
-                            ci.save()
-                        except Product.DoesNotExist:
-                            pass
-                    request.session['guest_cart'] = {}
+                _sync_guest_cart_to_user(request, user)
 
                 messages.success(request, f'Welcome back, {user.get_full_name() or user.username}.')
                 next_url = request.GET.get('next') or ('admin_dashboard' if user.is_administrator() else 'home')
@@ -662,6 +746,8 @@ def admin_dashboard_view(request):
             p.dispatch_type = request.POST.get('dispatch_type', p.dispatch_type)
             p.description = request.POST.get('description', p.description)
             p.is_active = request.POST.get('is_active') in ['on', 'true', 'True', '1']
+            if 'availability_submitted' in request.POST or 'is_available' in request.POST:
+                p.is_available = request.POST.get('is_available') in ['on', 'true', 'True', '1']
             p.save()
 
             image_url = request.POST.get('image_url', '').strip()
@@ -705,16 +791,37 @@ def admin_dashboard_view(request):
             messages.info(request, f'Product "{p.name}" active status: {p.is_active}')
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
+        elif action == 'toggle_availability':
+            p_id = request.POST.get('product_id')
+            p = get_object_or_404(Product, pk=p_id)
+            p.is_available = not p.is_available
+            p.save(update_fields=['is_available'])
+            status_label = 'Available' if p.is_available else 'Unavailable'
+            messages.info(request, f'Product "{p.name}" marked as {status_label}.')
+            return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+
         elif action == 'delete_product':
             p_id = request.POST.get('product_id')
             p = get_object_or_404(Product, pk=p_id)
             name = p.name
-            p.delete()
-            messages.warning(
-                request,
-                f'Product "{name}" was removed from the catalog.',
-                extra_tags='toast',
-            )
+            if OrderItem.objects.filter(product=p).exists():
+                messages.error(
+                    request,
+                    f'Cannot delete "{name}" because it is referenced by existing orders. Mark it as Unavailable instead.',
+                )
+                return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
+            try:
+                p.delete()
+                messages.warning(
+                    request,
+                    f'Product "{name}" was removed from the catalog.',
+                    extra_tags='toast',
+                )
+            except ProtectedError:
+                messages.error(
+                    request,
+                    f'Cannot delete "{name}" because it is referenced by existing orders. Mark it as Unavailable instead.',
+                )
             return redirect(f"{reverse('admin_dashboard')}?tab=inventory")
 
         elif action == 'respond_enquiry':
@@ -856,7 +963,13 @@ def admin_dashboard_view(request):
     prod_category = request.GET.get('prod_category', 'all')
     prod_search = request.GET.get('prod_search', '').strip()
     prod_stock = request.GET.get('prod_stock', 'all')
-    products_qs = Product.objects.select_related('category', 'certificate').prefetch_related('images').order_by('-id')
+    prod_availability = request.GET.get('prod_availability', 'all')
+    products_qs = (
+        Product.objects.select_related('category', 'certificate')
+        .prefetch_related('images')
+        .annotate(order_item_count=Count('orderitem', distinct=True))
+        .order_by('-id')
+    )
 
     if prod_category != 'all':
         products_qs = products_qs.filter(category__id=prod_category)
@@ -864,6 +977,10 @@ def admin_dashboard_view(request):
         products_qs = products_qs.filter(stock__lte=2, stock__gt=0)
     elif prod_stock == 'out':
         products_qs = products_qs.filter(stock=0)
+    if prod_availability == 'available':
+        products_qs = products_qs.filter(is_available=True)
+    elif prod_availability == 'unavailable':
+        products_qs = products_qs.filter(is_available=False)
     if prod_search:
         products_qs = products_qs.filter(
             Q(name__icontains=prod_search) |
@@ -936,6 +1053,7 @@ def admin_dashboard_view(request):
         'prod_category': prod_category,
         'prod_search': prod_search,
         'prod_stock': prod_stock,
+        'prod_availability': prod_availability,
         'enq_status': enq_status,
         'enq_urgency': enq_urgency,
         'cert_search': cert_search,

@@ -36,9 +36,15 @@
         </div>
 
         <div class="absolute bottom-4 right-4">
-          <span class="bg-surface-container-high/90 backdrop-blur-md text-primary text-xs px-3 py-1 border border-primary/20">
-            {{ product.stock }} Available
-          </span>
+          {% if product.is_available %}
+            <span class="bg-surface-container-high/90 backdrop-blur-md text-primary text-xs px-3 py-1 border border-primary/20">
+              {{ product.stock }} Available
+            </span>
+          {% else %}
+            <span class="bg-error-container/95 backdrop-blur-md text-error text-xs uppercase tracking-wider font-semibold px-3 py-1 border border-error/50">
+              Out of Stock
+            </span>
+          {% endif %}
         </div>
       </div>
 
@@ -116,27 +122,40 @@
       </div>
 
       <!-- Add to Cart Form -->
-      <form action="{% url 'cart_add' product.id %}" method="POST" class="flex flex-col gap-4 pt-2">
-        {% csrf_token %}
-        <div class="flex items-center gap-4">
-          <div class="flex flex-col">
-            <label class="text-[10px] uppercase tracking-widest text-outline mb-1">Quantity</label>
-            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 bg-surface-container-highest text-on-surface text-center py-2.5 text-sm border border-surface-container-high focus:outline-none focus:border-primary"/>
-          </div>
-          <div class="flex-1 flex flex-col">
-            <span class="text-[10px] uppercase tracking-widest text-outline mb-1">Logistics Dispatch</span>
-            <div class="flex items-center gap-1.5 text-xs text-primary pt-2">
-              <span class="material-symbols-outlined text-[16px]">local_shipping</span>
-              <span>{{ product.get_dispatch_type_display }}</span>
+      {% if product.is_available %}
+        <form action="{% url 'cart_add' product.id %}" method="POST" class="flex flex-col gap-4 pt-2">
+          {% csrf_token %}
+          <div class="flex items-center gap-4">
+            <div class="flex flex-col">
+              <label class="text-[10px] uppercase tracking-widest text-outline mb-1">Quantity</label>
+              <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-20 bg-surface-container-highest text-on-surface text-center py-2.5 text-sm border border-surface-container-high focus:outline-none focus:border-primary"/>
+            </div>
+            <div class="flex-1 flex flex-col">
+              <span class="text-[10px] uppercase tracking-widest text-outline mb-1">Logistics Dispatch</span>
+              <div class="flex items-center gap-1.5 text-xs text-primary pt-2">
+                <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                <span>{{ product.get_dispatch_type_display }}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
-          Add to Cart
-        </button>
-      </form>
+          <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+            Add to Cart
+          </button>
+        </form>
+      {% else %}
+        <div class="flex flex-col gap-4 pt-2">
+          <div class="p-3 bg-error-container/25 border border-error/40 text-error text-xs flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+            <span>Out of Stock — This product is currently unavailable for purchase.</span>
+          </div>
+          <button type="button" disabled aria-disabled="true" class="w-full bg-surface-container-high text-outline py-3.5 text-xs uppercase tracking-widest font-bold border border-surface-container-highest opacity-60 cursor-not-allowed flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+            Add to Cart
+          </button>
+        </div>
+      {% endif %}
 
       <!-- Custom options -->
       <div class="pt-4 border-t border-surface-container-high/60 flex flex-col gap-2 text-center">
@@ -172,6 +191,9 @@
                 <a href="{% url 'product_detail' rel.id %}" class="hover:text-primary transition-colors">{{ rel.name }}</a>
               </h3>
               <span class="font-serif text-lg text-primary block mt-1">₹{{ rel.price|floatformat:0 }}</span>
+              {% if not rel.is_available %}
+                <span class="inline-block mt-1 px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-error-container/60 text-error border border-error/40">Out of Stock</span>
+              {% endif %}
             </div>
             <a href="{% url 'product_detail' rel.id %}" class="mt-3 block text-center py-2 text-[10px] uppercase tracking-wider bg-surface-container-high hover:bg-surface-variant text-on-surface">
               View Details

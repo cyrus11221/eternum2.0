@@ -291,6 +291,28 @@
     document.querySelectorAll('[data-toast]').forEach((toast) => {
       window.setTimeout(() => toast.remove(), 5000);
     });
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const field = button.closest('[data-password-field]');
+        const input = field ? field.querySelector('input') : null;
+        const icon = button.querySelector('[data-password-toggle-icon]');
+        if (!input) return;
+
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        button.setAttribute('aria-pressed', String(isHidden));
+        button.setAttribute(
+          'aria-label',
+          isHidden
+            ? (button.dataset.hideLabel || 'Hide password')
+            : (button.dataset.showLabel || 'Show password')
+        );
+        if (icon) {
+          icon.textContent = isHidden ? 'visibility_off' : 'visibility';
+        }
+      });
+    });
   </script>
 
   {% block extra_scripts %}{% endblock %}

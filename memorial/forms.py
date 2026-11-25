@@ -21,11 +21,11 @@ class ValidatedProductImageField(forms.ImageField):
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
+        'class': 'w-full bg-surface-container-highest text-on-surface pl-4 pr-11 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
         'placeholder': 'Create secure password'
     }))
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
+        'class': 'w-full bg-surface-container-highest text-on-surface pl-4 pr-11 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
         'placeholder': 'Confirm your password'
     }))
 
@@ -84,7 +84,7 @@ class UserLoginForm(forms.Form):
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
+            'class': 'w-full bg-surface-container-highest text-on-surface pl-4 pr-11 py-3 rounded border border-outline/20 focus:border-primary focus:outline-none font-body-md',
             'placeholder': 'Enter your password',
         })
     )

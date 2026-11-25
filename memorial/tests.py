@@ -4,8 +4,9 @@ from django.test import TestCase, Client
 from django.test.utils import override_settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db.models.deletion import ProtectedError
 from PIL import Image
-from memorial.models import User, Category, Product, AuthenticityCertificate, Order, Enquiry
+from memorial.models import User, Category, Product, AuthenticityCertificate, Order, OrderItem, Enquiry, Cart, CartItem
 from decimal import Decimal
 
 
@@ -263,3 +264,186 @@ class EternumSystemTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Product.objects.filter(name='Invalid Image Product').exists())
+
+    def test_login_and_register_include_password_visibility_toggle(self):
+        login_response = self.client.get(reverse('login'))
+        self.assertEqual(login_response.status_code, 200)
+        self.assertContains(login_response, '<div class="relative" data-password-field>', count=1)
+        self.assertContains(login_response, 'data-password-toggle-icon>visibility</span>', count=1)
+        self.assertContains(login_response, 'aria-label="Show password"', count=1)
+        self.assertContains(login_response, 'pr-11', count=1)
+
+        register_response = self.client.get(reverse('register'))
+        self.assertEqual(register_response.status_code, 200)
+        self.assertContains(register_response, '<div class="relative" data-password-field>', count=2)
+        self.assertContains(register_response, 'data-password-toggle-icon>visibility</span>', count=2)
+        self.assertContains(register_response, 'aria-label="Show password"', count=1)
+        self.assertContains(register_response, 'aria-label="Show confirm password"', count=1)
+        self.assertContains(register_response, 'pr-11', count=2)
+
+    def test_newly_created_products_are_available_by_default(self):
+        created = Product.objects.create(
+            category=self.category,
+            name='The Default Available Oak',
+            price=Decimal('3100.00'),
+            stock=2,
+        )
+        self.assertTrue(created.is_available)
+        self.assertTrue(self.product.is_available)
+
+        self.client.login(username='admin@eternum.com', password='admin123')
+        response = self.client.post(reverse('admin_dashboard'), {
+            'action': 'add_product',
+            'name': 'The Admin Created Elm',
+            'category': self.category.id,
+            'price': '2750.00',
+            'stock': '4',
+            'dispatch_type': 'ready',
+            'material': 'Elm',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        admin_created = Product.objects.get(name='The Admin Created Elm')
+        self.assertTrue(admin_created.is_available)
+        self.assertContains(response, 'Available')
+        self.assertContains(response, 'Mark Unavailable')
+
+    def test_admin_can_toggle_availability_and_storefront_displays_out_of_stock(self):
+        self.client.login(username='admin@eternum.com', password='admin123')
+
+        # Mark product unavailable
+        toggle_off = self.client.post(reverse('admin_dashboard'), {
+            'action': 'toggle_availability',
+            'product_id': self.product.id,
+        }, follow=True)
+        self.assertEqual(toggle_off.status_code, 200)
+        self.product.refresh_from_db()
+        self.assertFalse(self.product.is_available)
+        self.assertContains(toggle_off, 'Unavailable')
+        self.assertContains(toggle_off, 'Mark Available')
+
+        # Storefront pages keep product visible with Out of Stock label and disabled Add to Cart
+        self.client.logout()
+        for url in [
+            reverse('home'),
+            reverse('catalog'),
+            reverse('product_detail', args=[self.product.id]),
+        ]:
+            page = self.client.get(url)
+            self.assertEqual(page.status_code, 200)
+            self.assertContains(page, self.product.name)
+            self.assertContains(page, 'Out of Stock')
+            self.assertContains(page, 'disabled aria-disabled="true"')
+
+        # Admin reactivates product
+        self.client.login(username='admin@eternum.com', password='admin123')
+        toggle_on = self.client.post(reverse('admin_dashboard'), {
+            'action': 'toggle_availability',
+            'product_id': self.product.id,
+        }, follow=True)
+        self.assertEqual(toggle_on.status_code, 200)
+        self.product.refresh_from_db()
+        self.assertTrue(self.product.is_available)
+
+        self.client.logout()
+        detail_page = self.client.get(reverse('product_detail', args=[self.product.id]))
+        self.assertNotContains(detail_page, 'Out of Stock')
+        self.assertContains(detail_page, f'action="{reverse("cart_add", args=[self.product.id])}"')
+
+    def test_customers_cannot_add_unavailable_product_to_cart(self):
+        self.product.is_available = False
+        self.product.save(update_fields=['is_available'])
+
+        # Guest direct POST
+        guest_res = self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 1}, follow=True)
+        self.assertEqual(guest_res.status_code, 200)
+        self.assertContains(guest_res, 'out of stock')
+        self.assertEqual(self.client.session.get('guest_cart', {}), {})
+
+        # Authenticated direct POST
+        self.client.login(username='eleanor@example.com', password='user123')
+        auth_res = self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 2}, follow=True)
+        self.assertEqual(auth_res.status_code, 200)
+        self.assertContains(auth_res, 'out of stock')
+        self.assertFalse(CartItem.objects.filter(cart__user=self.buyer, product=self.product).exists())
+
+    def test_checkout_rejects_product_that_became_unavailable(self):
+        self.client.login(username='eleanor@example.com', password='user123')
+        self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 1})
+
+        # Admin marks product unavailable while it's in the customer's cart
+        self.product.is_available = False
+        self.product.save(update_fields=['is_available'])
+
+        cart_res = self.client.get(reverse('cart'))
+        self.assertEqual(cart_res.status_code, 200)
+        self.assertContains(cart_res, 'Out of Stock')
+
+        checkout_get = self.client.get(reverse('checkout'))
+        self.assertEqual(checkout_get.status_code, 200)
+        self.assertContains(checkout_get, 'currently out of stock')
+
+        # Direct POST to checkout must be rejected
+        checkout_post = self.client.post(reverse('checkout'), {
+            'mortuary_name': 'Graceview Memorial Sanctuary',
+            'mortuary_director': 'Director Robert Sterling',
+            'mortuary_phone': '+1 (555) 890-1234',
+            'line1': '742 Evergreen Terrace',
+            'city': 'Portland',
+            'state': 'OR',
+            'postal_code': '97201',
+            'country': 'United States',
+            'payment_method': 'Sandbox Card',
+        })
+        self.assertEqual(checkout_post.status_code, 200)
+        self.assertContains(checkout_post, 'Checkout cannot proceed')
+        self.assertFalse(Order.objects.filter(user=self.buyer).exists())
+
+    def test_existing_orders_remain_accessible_and_product_deletion_is_protected(self):
+        self.client.login(username='eleanor@example.com', password='user123')
+        self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 2})
+        self.client.post(reverse('checkout'), {
+            'mortuary_name': 'Graceview Memorial Sanctuary',
+            'mortuary_phone': '+1 (555) 890-1234',
+            'line1': '742 Evergreen Terrace',
+            'city': 'Portland',
+            'state': 'OR',
+            'postal_code': '97201',
+            'country': 'United States',
+            'payment_method': 'Sandbox Card',
+        })
+        order = Order.objects.get(user=self.buyer)
+        order_item = order.items.get()
+        self.assertEqual(order_item.product_name, 'The Westminster Solid Oak')
+        self.assertEqual(order_item.unit_price, Decimal('2850.00'))
+        self.assertEqual(order_item.quantity, 2)
+
+        # Product becomes unavailable and its current price/name changes later
+        self.product.is_available = False
+        self.product.name = 'The Westminster Revised'
+        self.product.price = Decimal('3999.00')
+        self.product.save()
+
+        # Existing order remains accessible with historical snapshot values
+        order_list_res = self.client.get(reverse('order_list'))
+        self.assertEqual(order_list_res.status_code, 200)
+        self.assertContains(order_list_res, f'#ETR-{order.id:04d}')
+
+        order_detail_res = self.client.get(reverse('order_detail', args=[order.id]))
+        self.assertEqual(order_detail_res.status_code, 200)
+        self.assertContains(order_detail_res, 'The Westminster Solid Oak')
+        self.assertContains(order_detail_res, '2850.00')
+        self.assertContains(order_detail_res, '5700.00')
+
+        # ORM-level PROTECT blocks deleting products referenced by OrderItems
+        with self.assertRaises(ProtectedError):
+            self.product.delete()
+
+        # Admin delete_product action also refuses deletion and preserves product
+        self.client.login(username='admin@eternum.com', password='admin123')
+        del_res = self.client.post(reverse('admin_dashboard'), {
+            'action': 'delete_product',
+            'product_id': self.product.id,
+        }, follow=True)
+        self.assertEqual(del_res.status_code, 200)
+        self.assertContains(del_res, 'referenced by existing orders')
+        self.assertTrue(Product.objects.filter(pk=self.product.pk).exists())

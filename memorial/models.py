@@ -72,7 +72,11 @@ class Product(models.Model):
     dispatch_type = models.CharField(max_length=50, choices=DISPATCH_CHOICES, default='ready')
     provenance_code = models.CharField(max_length=100, blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_purchasable(self):
+        return self.is_active and self.is_available
 
     def primary_image_url(self):
         first_img = self.images.first()
@@ -153,15 +157,24 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product_name = models.CharField(max_length=200, blank=True, default='')
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        if not self.product_name and self.product_id:
+            self.product_name = self.product.name
+        super().save(*args, **kwargs)
+
+    def display_name(self):
+        return self.product_name or self.product.name
 
     def subtotal(self):
         return self.quantity * self.unit_price
 
     def __str__(self):
-        return f"{self.quantity}x {self.product.name} (Order #{self.order.id})"
+        return f"{self.quantity}x {self.display_name()} (Order #{self.order.id})"
 
 
 class Payment(models.Model):

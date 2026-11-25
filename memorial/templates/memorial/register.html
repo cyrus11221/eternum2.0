@@ -4,16 +4,19 @@
 
 {% block content %}
 <div class="max-w-md mx-auto px-4 py-16">
-  
+
   <div class="bg-surface-container border border-surface-container-high p-8 sm:p-10 shadow-2xl">
-    
+
     <div class="text-center pb-6 border-b border-surface-container-high/60 mb-6">
-      <div class="w-10 h-10 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-3">
+      <div
+        class="w-10 h-10 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-3">
         <span class="material-symbols-outlined text-primary text-[22px]">person_add</span>
       </div>
-      <span class="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Create an Account</span>
+      <span class="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Create an
+        Account</span>
       <h1 class="font-serif text-2xl text-on-surface">Register</h1>
-      <p class="text-xs text-on-surface-variant mt-1">Create an account to save delivery addresses and view your orders.</p>
+      <p class="text-xs text-on-surface-variant mt-1">Create an account to save delivery addresses and view your orders.
+      </p>
     </div>
 
     <form method="POST" action="{% url 'register' %}" class="space-y-4">
@@ -46,13 +49,19 @@
 
       <div>
         <label class="block text-xs uppercase tracking-wider text-outline mb-1">Password *</label>
-        {{ form.password }}
+        <div class="relative" data-password-field>
+          {{ form.password }}
+          {% include 'memorial/includes/password_toggle_button.html' %}
+        </div>
         {{ form.password.errors }}
       </div>
 
       <div>
         <label class="block text-xs uppercase tracking-wider text-outline mb-1">Confirm Password *</label>
-        {{ form.confirm_password }}
+        <div class="relative" data-password-field>
+          {{ form.confirm_password }}
+          {% include 'memorial/includes/password_toggle_button.html' with show_label='Show confirm password' hide_label='Hide confirm password' %}
+        </div>
         {{ form.confirm_password.errors }}
       </div>
 
@@ -60,12 +69,13 @@
         <em>Note: Public registration creates a Family / Buyer account. Admin accounts are managed internally.</em>
       </div>
 
-      <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl">
+      <button type="submit"
+        class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl">
         Create Account
       </button>
 
       <div class="pt-4 border-t border-surface-container-high/60 text-center text-xs text-on-surface-variant">
-        Already have an account? 
+        Already have an account?
         <a href="{% url 'login' %}" class="text-primary hover:underline font-semibold ml-1">Sign In</a>
       </div>
 

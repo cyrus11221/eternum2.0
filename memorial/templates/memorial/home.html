@@ -6,44 +6,53 @@
 <div class="flex flex-col w-full">
 
   <!-- Atmospheric Top Ambient Canvas & Hero Banner -->
-  <section class="relative w-full bg-surface-container-lowest px-4 md:px-8 lg:px-12 pt-16 pb-24 overflow-hidden border-b border-surface-container-high/40">
-    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-primary/15 via-primary/5 to-transparent blur-3xl pointer-events-none"></div>
-    
+  <section
+    class="relative w-full bg-surface-container-lowest px-4 md:px-8 lg:px-12 pt-16 pb-24 overflow-hidden border-b border-surface-container-high/40">
+    <div
+      class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-primary/15 via-primary/5 to-transparent blur-3xl pointer-events-none">
+    </div>
+
     <div class="relative z-10 max-w-5xl mx-auto flex flex-col items-center text-center">
-      
+
       <!-- FTC & Provenance Badge -->
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-surface-container-high border border-primary/20 rounded-full mb-6 shadow-lg">
+      <div
+        class="inline-flex items-center gap-2 px-4 py-1.5 bg-surface-container-high border border-primary/20 rounded-full mb-6 shadow-lg">
         <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-[11px] uppercase tracking-widest text-primary font-semibold">Clear Product Information &amp; Pricing</span>
+        <span class="text-[11px] uppercase tracking-widest text-primary font-semibold">Clear Product Information &amp;
+          Pricing</span>
         <span class="text-outline text-xs">&bull;</span>
         <span class="text-[11px] uppercase tracking-wider text-on-surface-variant">FTC Funeral Rule Information</span>
       </div>
 
       <!-- Main Headline -->
       <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-on-surface tracking-tight mb-6 leading-[1.15]">
-        Memorial Products for Every Family.<br/>
+        Memorial Products for Every Family.<br />
         <span class="italic font-normal text-primary">Thoughtfully Made</span> with Care.
       </h1>
 
       <!-- Subtitle -->
       <p class="text-sm sm:text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed mb-8">
-        Compare caskets by material, style, and price. Find product details and delivery information to help you make an informed choice.
+        Compare caskets by material, style, and price. Find product details and delivery information to help you make an
+        informed choice.
       </p>
 
       <!-- CTA Buttons -->
       <div class="flex flex-col sm:flex-row items-center gap-4">
-        <a href="{% url 'catalog' %}" class="bg-primary text-on-primary-container px-8 py-3.5 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-all shadow-xl flex items-center gap-2">
+        <a href="{% url 'catalog' %}"
+          class="bg-primary text-on-primary-container px-8 py-3.5 text-xs uppercase tracking-widest font-bold hover:bg-primary-container transition-all shadow-xl flex items-center gap-2">
           <span class="material-symbols-outlined text-[18px]">view_in_ar</span>
           Browse Products
         </a>
-        <a href="{% url 'urgent_enquiry' %}" class="bg-surface-container-high border border-primary/40 text-on-surface px-8 py-3.5 text-xs uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
+        <a href="{% url 'urgent_enquiry' %}"
+          class="bg-surface-container-high border border-primary/40 text-on-surface px-8 py-3.5 text-xs uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-error"></span>
           Contact Support
         </a>
       </div>
 
       <!-- Trust Metrics Bar -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-16 p-6 bg-surface-container/70 backdrop-blur-md border border-surface-container-high shadow-2xl">
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl mt-16 p-6 bg-surface-container/70 backdrop-blur-md border border-surface-container-high shadow-2xl">
         <div class="flex flex-col items-center text-center p-2">
           <span class="font-serif text-2xl text-primary font-medium">Prices</span>
           <span class="text-[10px] uppercase tracking-widest text-outline mt-1">Shown with Products</span>
@@ -73,71 +82,87 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      
+
       <!-- Category 1 -->
-      <a href="{% url 'catalog' %}?category=hardwood" class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
+      <a href="{% url 'catalog' %}?category=hardwood"
+        class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
         <div>
-          <div class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
+          <div
+            class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
             <span class="material-symbols-outlined text-primary text-[20px]">forest</span>
           </div>
           <span class="text-[10px] uppercase tracking-widest text-outline">Category 01</span>
-          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Hardwood Caskets</h3>
+          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Hardwood
+            Caskets</h3>
           <p class="text-xs text-on-surface-variant mt-2 line-clamp-3">
             Options made from American white oak, Honduran mahogany, and northern ash.
           </p>
         </div>
-        <span class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+        <span
+          class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
           View Products &rarr;
         </span>
       </a>
 
       <!-- Category 2 -->
-      <a href="{% url 'catalog' %}?category=metal" class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
+      <a href="{% url 'catalog' %}?category=metal"
+        class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
         <div>
-          <div class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
+          <div
+            class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
             <span class="material-symbols-outlined text-primary text-[20px]">shield</span>
           </div>
           <span class="text-[10px] uppercase tracking-widest text-outline">Category 02</span>
-          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Metal Caskets</h3>
+          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Metal Caskets
+          </h3>
           <p class="text-xs text-on-surface-variant mt-2 line-clamp-3">
             Options include steel, copper, and bronze, with specifications listed for each product.
           </p>
         </div>
-        <span class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+        <span
+          class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
           View Products &rarr;
         </span>
       </a>
 
       <!-- Category 3 -->
-      <a href="{% url 'catalog' %}?category=eco" class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
+      <a href="{% url 'catalog' %}?category=eco"
+        class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
         <div>
-          <div class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
+          <div
+            class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
             <span class="material-symbols-outlined text-primary text-[20px]">eco</span>
           </div>
           <span class="text-[10px] uppercase tracking-widest text-outline">Category 03</span>
-          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Eco-friendly Caskets</h3>
+          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Eco-friendly
+            Caskets</h3>
           <p class="text-xs text-on-surface-variant mt-2 line-clamp-3">
             Willow, bamboo, and pine options made with natural materials.
           </p>
         </div>
-        <span class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+        <span
+          class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
           View Products &rarr;
         </span>
       </a>
 
       <!-- Category 4 -->
-      <a href="{% url 'catalog' %}?category=artisanal" class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
+      <a href="{% url 'catalog' %}?category=artisanal"
+        class="group p-6 bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all flex flex-col justify-between h-64">
         <div>
-          <div class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
+          <div
+            class="w-10 h-10 border border-primary/30 flex items-center justify-center bg-surface-container-lowest mb-4 group-hover:border-primary transition-colors">
             <span class="material-symbols-outlined text-primary text-[20px]">auto_awesome</span>
           </div>
           <span class="text-[10px] uppercase tracking-widest text-outline">Category 04</span>
-          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Custom Designs</h3>
+          <h3 class="font-serif text-xl text-on-surface group-hover:text-primary transition-colors mt-1">Custom Designs
+          </h3>
           <p class="text-xs text-on-surface-variant mt-2 line-clamp-3">
             Caskets with detailed carvings and custom design options.
           </p>
         </div>
-        <span class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+        <span
+          class="text-[11px] uppercase tracking-widest text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
           View Products &rarr;
         </span>
       </a>
@@ -152,76 +177,96 @@
         <span class="text-[11px] uppercase tracking-[0.25em] text-primary font-semibold">Featured Products</span>
         <h2 class="font-serif text-3xl sm:text-4xl text-on-surface mt-1">Popular Caskets</h2>
       </div>
-      <a href="{% url 'catalog' %}" class="text-xs uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
+      <a href="{% url 'catalog' %}"
+        class="text-xs uppercase tracking-widest text-primary hover:underline flex items-center gap-1">
         View All Products &rarr;
       </a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {% for product in featured_products %}
-        <article class="group flex flex-col bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all duration-300">
-          
-          <!-- Image Container -->
-          <div class="relative w-full h-64 overflow-hidden bg-surface-container-lowest">
-            <img src="{{ product.primary_image_url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"/>
-            
-            <div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
-              <span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-md px-2 py-0.5 text-primary text-[10px] tracking-wider border border-primary/20">
-                <span class="material-symbols-outlined text-[12px]">verified</span> Certificate Available
-              </span>
+      <article
+        class="group flex flex-col bg-surface-container border border-surface-container-high hover:border-primary/60 transition-all duration-300">
+
+        <!-- Image Container -->
+        <div class="relative w-full h-64 overflow-hidden bg-surface-container-lowest">
+          <img src="{{ product.primary_image_url }}" alt="{{ product.name }}"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+
+          <div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+            <span
+              class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-md px-2 py-0.5 text-primary text-[10px] tracking-wider border border-primary/20">
+              <span class="material-symbols-outlined text-[12px]">verified</span> Certificate Available
+            </span>
+          </div>
+
+          <div class="absolute bottom-3 right-3">
+            {% if product.is_available %}
+            <span class="bg-surface-variant/90 backdrop-blur-md text-primary text-[10px] px-2 py-0.5">
+              {{ product.stock }} available
+            </span>
+            {% else %}
+            <span
+              class="bg-error-container/95 backdrop-blur-md text-error text-[10px] uppercase tracking-wider font-semibold px-2.5 py-0.5 border border-error/50">
+              Out of Stock
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="text-[10px] uppercase tracking-widest text-primary">{{ product.category.name|default:"Product" }}</span>
+              <span class="font-serif text-xl text-primary font-semibold">₹{{ product.price|floatformat:0 }}</span>
             </div>
 
-            <div class="absolute bottom-3 right-3">
-              <span class="bg-surface-variant/90 backdrop-blur-md text-primary text-[10px] px-2 py-0.5">
-                {{ product.stock }} available
-              </span>
+            <h3 class="font-serif text-lg text-on-surface group-hover:text-primary transition-colors mb-2">
+              <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+            </h3>
+
+            <p class="text-xs text-on-surface-variant line-clamp-2 mb-4 leading-relaxed">
+              {{ product.description }}
+            </p>
+          </div>
+
+          <!-- Proportions & Actions -->
+          <div class="flex flex-col gap-2 pt-2 border-t border-surface-container-high/60">
+            <div class="flex justify-between text-[11px] text-outline">
+              <span>Exterior:</span>
+              <span class="text-on-surface">{{ product.proportions_display }}</span>
+            </div>
+            <div class="flex justify-between text-[11px] text-outline">
+              <span>Material:</span>
+              <span class="text-on-surface">{{ product.material|truncatewords:3 }}</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <a href="{% url 'product_detail' product.id %}"
+                class="text-center py-2 text-[11px] uppercase tracking-wider bg-surface-container-high hover:bg-surface-variant text-on-surface transition-colors">
+                Details
+              </a>
+              {% if product.is_available %}
+              <form action="{% url 'cart_add' product.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1" />
+                <button type="submit"
+                  class="w-full text-center py-2 text-[11px] uppercase tracking-wider bg-primary hover:bg-primary-container text-on-primary-container font-bold transition-colors">
+                  Add to Cart
+                </button>
+              </form>
+              {% else %}
+              <button type="button" disabled aria-disabled="true"
+                class="w-full text-center py-2 text-[11px] uppercase tracking-wider bg-surface-container-high text-outline border border-surface-container-highest font-bold opacity-60 cursor-not-allowed">
+                Add to Cart
+              </button>
+              {% endif %}
             </div>
           </div>
 
-          <!-- Body -->
-          <div class="p-5 flex-1 flex flex-col justify-between">
-            <div>
-              <div class="flex items-baseline justify-between mb-1">
-                <span class="text-[10px] uppercase tracking-widest text-primary">{{ product.category.name|default:"Product" }}</span>
-                <span class="font-serif text-xl text-primary font-semibold">₹{{ product.price|floatformat:0 }}</span>
-              </div>
-
-              <h3 class="font-serif text-lg text-on-surface group-hover:text-primary transition-colors mb-2">
-                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
-              </h3>
-
-              <p class="text-xs text-on-surface-variant line-clamp-2 mb-4 leading-relaxed">
-                {{ product.description }}
-              </p>
-            </div>
-
-            <!-- Proportions & Actions -->
-            <div class="flex flex-col gap-2 pt-2 border-t border-surface-container-high/60">
-              <div class="flex justify-between text-[11px] text-outline">
-                <span>Exterior:</span>
-                <span class="text-on-surface">{{ product.proportions_display }}</span>
-              </div>
-              <div class="flex justify-between text-[11px] text-outline">
-                <span>Material:</span>
-                <span class="text-on-surface">{{ product.material|truncatewords:3 }}</span>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2 mt-3">
-                <a href="{% url 'product_detail' product.id %}" class="text-center py-2 text-[11px] uppercase tracking-wider bg-surface-container-high hover:bg-surface-variant text-on-surface transition-colors">
-                  Details
-                </a>
-                <form action="{% url 'cart_add' product.id %}" method="POST">
-                  {% csrf_token %}
-                  <input type="hidden" name="quantity" value="1"/>
-                  <button type="submit" class="w-full text-center py-2 text-[11px] uppercase tracking-wider bg-primary hover:bg-primary-container text-on-primary-container font-bold transition-colors">
-                    Add to Cart
-                  </button>
-                </form>
-              </div>
-            </div>
-
-          </div>
-        </article>
+        </div>
+      </article>
       {% endfor %}
     </div>
   </section>
@@ -229,23 +274,26 @@
   <!-- Information and support -->
   <section class="max-w-7xl mx-auto px-6 md:px-12 py-16 w-full">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-      
+
       <!-- FTC Funeral Rights Box (8 Cols) -->
-      <div class="lg:col-span-7 p-8 bg-surface-container-low border border-surface-container-high flex flex-col justify-between">
+      <div
+        class="lg:col-span-7 p-8 bg-surface-container-low border border-surface-container-high flex flex-col justify-between">
         <div>
           <div class="inline-flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold mb-3">
             <span class="material-symbols-outlined text-[18px]">gavel</span>
             <span>Federal Trade Commission (FTC) Funeral Rule Rights</span>
           </div>
           <h3 class="font-serif text-2xl text-on-surface mb-3 leading-snug">
-          You can choose where to purchase a casket.
+            You can choose where to purchase a casket.
           </h3>
           <p class="text-xs text-on-surface-variant leading-relaxed mb-4">
-            The FTC Funeral Rule includes protections for people purchasing funeral goods. Review current guidance and contact your funeral provider with questions about delivery and acceptance.
+            The FTC Funeral Rule includes protections for people purchasing funeral goods. Review current guidance and
+            contact your funeral provider with questions about delivery and acceptance.
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-surface-container-high/60">
-          <a href="{% url 'about' %}" class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-2.5 transition-colors">
+          <a href="{% url 'about' %}"
+            class="bg-surface-container-high hover:bg-surface-variant text-on-surface text-xs uppercase tracking-wider px-4 py-2.5 transition-colors">
             Learn About the FTC Funeral Rule &rarr;
           </a>
           <a href="tel:18003837686" class="text-xs text-primary hover:underline flex items-center gap-1">
@@ -255,8 +303,10 @@
       </div>
 
       <!-- Urgent Dispatch Box (5 Cols) -->
-      <div class="lg:col-span-5 p-8 bg-surface-container-high border border-primary/40 flex flex-col justify-between relative overflow-hidden shadow-2xl">
-        <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div
+        class="lg:col-span-5 p-8 bg-surface-container-high border border-primary/40 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+        <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-primary/10 rounded-full blur-2xl pointer-events-none">
+        </div>
         <div>
           <div class="inline-flex items-center gap-2 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
@@ -264,14 +314,17 @@
           </div>
           <h3 class="font-serif text-2xl text-on-surface mb-2">Need help with an order?</h3>
           <p class="text-xs text-on-surface-variant leading-relaxed">
-            Contact us about delivery timing, custom requests, or other questions. We’ll help you review the available options.
+            Contact us about delivery timing, custom requests, or other questions. We’ll help you review the available
+            options.
           </p>
         </div>
         <div class="mt-6 flex flex-col gap-2.5">
-          <a href="{% url 'urgent_enquiry' %}" class="w-full text-center bg-primary text-on-primary-container hover:bg-primary-container py-3 text-xs uppercase tracking-widest font-bold transition-all shadow-md">
+          <a href="{% url 'urgent_enquiry' %}"
+            class="w-full text-center bg-primary text-on-primary-container hover:bg-primary-container py-3 text-xs uppercase tracking-widest font-bold transition-all shadow-md">
             Contact Us
           </a>
-          <a href="tel:18003837686" class="w-full text-center bg-surface-container-lowest text-on-surface hover:text-primary py-2.5 text-xs uppercase tracking-wider border border-surface-container transition-colors">
+          <a href="tel:18003837686"
+            class="w-full text-center bg-surface-container-lowest text-on-surface hover:text-primary py-2.5 text-xs uppercase tracking-wider border border-surface-container transition-colors">
             Call: 1-800-383-7686
           </a>
         </div>
@@ -288,7 +341,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
+
       <div class="p-6 bg-surface-container border border-surface-container-high">
         <h3 class="text-sm font-semibold text-primary mb-3">Product details</h3>
         <p class="text-sm text-on-surface-variant leading-relaxed">

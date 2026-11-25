@@ -19,8 +19,8 @@ class AuthenticityCertificateInline(admin.StackedInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'stock', 'material', 'finish', 'dispatch_type', 'is_active')
-    list_filter = ('category', 'dispatch_type', 'is_active', 'finish', 'fabric')
+    list_display = ('name', 'category', 'price', 'stock', 'material', 'finish', 'dispatch_type', 'is_available', 'is_active')
+    list_filter = ('category', 'dispatch_type', 'is_available', 'is_active', 'finish', 'fabric')
     search_fields = ('name', 'material', 'description', 'provenance_code')
     inlines = [ProductImageInline, AuthenticityCertificateInline]
 

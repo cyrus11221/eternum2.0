@@ -14,14 +14,35 @@
     {% csrf_token %}
 
     {% if form.errors %}
-      <div class="lg:col-span-12 border border-error/50 bg-error-container/20 p-4 text-sm text-error" role="alert">
-        Please correct the highlighted checkout details before placing your order.
+    <div class="lg:col-span-12 border border-error/50 bg-error-container/20 p-4 text-sm text-error" role="alert">
+      Please correct the highlighted checkout details before placing your order.
+    </div>
+    {% endif %}
+
+    {% if has_unavailable_items %}
+    <div
+      class="lg:col-span-12 border border-error/60 bg-error-container/30 p-4 text-xs sm:text-sm text-error flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      role="alert">
+      <div class="flex items-center gap-2.5">
+        <span class="material-symbols-outlined text-[20px] shrink-0">error</span>
+        <span>
+          Checkout cannot proceed because the following item(s) are currently out of stock:
+          <strong>
+            {% for item in unavailable_items %}{{ item.product.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          </strong>.
+          Please remove unavailable items from your cart before placing your order.
+        </span>
       </div>
+      <a href="{% url 'cart' %}"
+        class="shrink-0 bg-surface-container-high hover:bg-surface-variant text-on-surface border border-error/40 px-3 py-1.5 text-xs uppercase tracking-wider font-semibold text-center">
+        Return to Cart
+      </a>
+    </div>
     {% endif %}
 
     <!-- Left Column: Forms (8 cols) -->
     <div class="lg:col-span-8 flex flex-col gap-8">
-      
+
       <!-- Section 1: Mortuary / Funeral Home Details -->
       <div class="bg-surface-container border border-surface-container-high p-6 sm:p-8">
         <div class="flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-semibold mb-4">
@@ -34,13 +55,15 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="sm:col-span-2">
-            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Mortuary / Funeral Home Name *</label>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Mortuary / Funeral Home Name
+              *</label>
             {{ form.mortuary_name }}
             {{ form.mortuary_name.errors }}
           </div>
 
           <div>
-            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Funeral Director Name (Optional)</label>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Funeral Director Name
+              (Optional)</label>
             {{ form.mortuary_director }}
             {{ form.mortuary_director.errors }}
           </div>
@@ -99,7 +122,8 @@
           </div>
 
           <div class="sm:col-span-2 mt-2">
-            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Service Date or Delivery Notes (Optional)</label>
+            <label class="block text-xs uppercase tracking-wider text-outline mb-1">Service Date or Delivery Notes
+              (Optional)</label>
             {{ form.delivery_notes }}
             {{ form.delivery_notes.errors }}
           </div>
@@ -113,7 +137,8 @@
           <span>FTC Funeral Rule Information</span>
         </div>
         <p class="text-xs text-on-surface-variant leading-relaxed">
-          The FTC Funeral Rule includes requirements for funeral providers receiving products purchased elsewhere. Contact your provider if you have questions about delivery arrangements.
+          The FTC Funeral Rule includes requirements for funeral providers receiving products purchased elsewhere.
+          Contact your provider if you have questions about delivery arrangements.
         </p>
       </div>
 
@@ -130,15 +155,17 @@
 
         <div class="space-y-3">
           {% for radio in form.payment_method %}
-            <label class="flex items-center gap-3 p-3 bg-surface-container-low border border-surface-container-high cursor-pointer hover:border-primary/50 transition-colors">
-              {{ radio.tag }}
-              <span class="text-xs text-on-surface font-medium">{{ radio.choice_label }}</span>
-            </label>
+          <label
+            class="flex items-center gap-3 p-3 bg-surface-container-low border border-surface-container-high cursor-pointer hover:border-primary/50 transition-colors">
+            {{ radio.tag }}
+            <span class="text-xs text-on-surface font-medium">{{ radio.choice_label }}</span>
+          </label>
           {% endfor %}
         </div>
 
         <!-- Simulated Card Details Pre-Fill -->
-        <div class="mt-4 p-4 bg-surface-container-lowest border border-surface-container-high/60 grid grid-cols-2 gap-3 text-xs">
+        <div
+          class="mt-4 p-4 bg-surface-container-lowest border border-surface-container-high/60 grid grid-cols-2 gap-3 text-xs">
           <div class="col-span-2 flex justify-between items-center text-outline text-[11px]">
             <span>Test Card:</span>
             <span class="text-primary font-mono">4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</span>
@@ -156,8 +183,9 @@
     </div>
 
     <!-- Right Column: Order Ledger & Confirmation CTA (4 cols) -->
-    <div class="lg:col-span-4 bg-surface-container border border-surface-container-high p-6 flex flex-col gap-6 sticky top-28">
-      
+    <div
+      class="lg:col-span-4 bg-surface-container border border-surface-container-high p-6 flex flex-col gap-6 sticky top-28">
+
       <h2 class="font-serif text-2xl text-on-surface pb-3 border-b border-surface-container-high/60">
         Order Summary
       </h2>
@@ -165,14 +193,20 @@
       <!-- Items List -->
       <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
         {% for item in cart_items %}
-          <div class="flex items-center gap-3 text-xs pb-3 border-b border-surface-container-high/40">
-            <img src="{{ item.product.primary_image_url }}" alt="{{ item.product.name }}" class="w-12 h-12 object-cover shrink-0 border border-surface-container-high"/>
-            <div class="flex-1">
-              <span class="font-serif text-sm text-on-surface block">{{ item.product.name }}</span>
-              <span class="text-outline text-[11px]">Qty: {{ item.quantity }} &bull; ₹{{ item.product.price|floatformat:0 }}</span>
-            </div>
-            <span class="font-serif text-sm text-primary font-medium">₹{{ item.subtotal|floatformat:0 }}</span>
+        <div class="flex items-center gap-3 text-xs pb-3 border-b border-surface-container-high/40">
+          <img src="{{ item.product.primary_image_url }}" alt="{{ item.product.name }}"
+            class="w-12 h-12 object-cover shrink-0 border border-surface-container-high" />
+          <div class="flex-1">
+            <span class="font-serif text-sm text-on-surface block">{{ item.product.name }}</span>
+            <span class="text-outline text-[11px]">Qty: {{ item.quantity }} &bull; ₹{{ item.product.price|floatformat:0 }}</span>
+            {% if not item.product.is_purchasable %}
+            <span
+              class="inline-block mt-1 px-1.5 py-0.5 text-[9px] uppercase tracking-wider font-semibold bg-error-container/60 text-error border border-error/40">Out
+              of Stock</span>
+            {% endif %}
           </div>
+          <span class="font-serif text-sm text-primary font-medium">₹{{ item.subtotal|floatformat:0 }}</span>
+        </div>
         {% endfor %}
       </div>
 
@@ -198,10 +232,19 @@
       </div>
 
       <!-- Submit Order Button -->
-      <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-4 text-xs uppercase tracking-widest font-bold transition-all shadow-2xl flex items-center justify-center gap-2">
+      {% if has_unavailable_items %}
+      <button type="button" disabled aria-disabled="true"
+        class="w-full bg-surface-container-high text-outline border border-surface-container-highest py-4 text-xs uppercase tracking-widest font-bold opacity-60 cursor-not-allowed flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">block</span>
+        Unavailable Item in Cart
+      </button>
+      {% else %}
+      <button type="submit"
+        class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-4 text-xs uppercase tracking-widest font-bold transition-all shadow-2xl flex items-center justify-center gap-2">
         <span class="material-symbols-outlined text-[18px]">verified_user</span>
         Confirm &amp; Place Order
       </button>
+      {% endif %}
 
       <span class="text-[11px] text-outline text-center block leading-relaxed">
         An order confirmation and invoice will be provided after checkout.

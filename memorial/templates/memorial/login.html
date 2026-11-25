@@ -4,11 +4,12 @@
 
 {% block content %}
 <div class="max-w-md mx-auto px-4 py-20">
-  
+
   <div class="bg-surface-container border border-surface-container-high p-8 sm:p-10 shadow-2xl">
-    
+
     <div class="text-center pb-6 border-b border-surface-container-high/60 mb-6">
-      <div class="w-10 h-10 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-3">
+      <div
+        class="w-10 h-10 border border-primary/50 flex items-center justify-center bg-surface-container-lowest mx-auto mb-3">
         <span class="material-symbols-outlined text-primary text-[22px]">lock</span>
       </div>
       <span class="text-[10px] uppercase tracking-[0.25em] text-primary font-semibold block mb-1">Account Access</span>
@@ -18,10 +19,12 @@
 
     <form method="POST" action="{% url 'login' %}" class="space-y-4">
       {% csrf_token %}
-      
+
       <div>
         <label class="block text-xs uppercase tracking-wider text-outline mb-1">Email Address</label>
-        <input type="email" id="id_email" name="email" required autofocus class="w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-surface-container-high focus:border-primary focus:outline-none text-xs" placeholder="name@example.com"/>
+        <input type="email" id="id_email" name="email" required autofocus
+          class="w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-surface-container-high focus:border-primary focus:outline-none text-xs"
+          placeholder="name@example.com" />
       </div>
 
       <div>
@@ -29,10 +32,16 @@
           <label class="text-xs uppercase tracking-wider text-outline">Password</label>
           <a href="#" class="text-[11px] text-outline hover:text-primary">Forgot password?</a>
         </div>
-        <input type="password" id="id_password" name="password" required class="w-full bg-surface-container-highest text-on-surface px-4 py-3 rounded border border-surface-container-high focus:border-primary focus:outline-none text-xs" placeholder="••••••••"/>
+        <div class="relative" data-password-field>
+          <input type="password" id="id_password" name="password" required
+            class="w-full bg-surface-container-highest text-on-surface pl-4 pr-11 py-3 rounded border border-surface-container-high focus:border-primary focus:outline-none text-xs"
+            placeholder="••••••••" />
+          {% include 'memorial/includes/password_toggle_button.html' %}
+        </div>
       </div>
 
-      <button type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl">
+      <button type="submit"
+        class="w-full bg-primary hover:bg-primary-container text-on-primary-container py-3.5 text-xs uppercase tracking-widest font-bold transition-all shadow-xl">
         Sign In
       </button>
 
@@ -41,7 +50,7 @@
       </p>
 
       <div class="pt-4 border-t border-surface-container-high/60 text-center text-xs text-on-surface-variant">
-        Don't have an account? 
+        Don't have an account?
         <a href="{% url 'register' %}" class="text-primary hover:underline font-semibold ml-1">Create Account</a>
       </div>
 
